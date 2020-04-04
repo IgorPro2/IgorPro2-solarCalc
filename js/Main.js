@@ -8,6 +8,7 @@
         //CharDigits2Number: CharDigits2Number,   //TODO make reference
     };  // something like global variables
 
+    window.currentAction = "calc";
 
 //document.body.style.background = 'green'; // сделать фон красным
 //setTimeout(() => document.body.style.background = '', 3000); // вернуть назад    alert (ddGrad);

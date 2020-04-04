@@ -20,7 +20,7 @@
     var sDay = dateDay.value;
     var sMonth = dateMonth.value;
     var sYear = dateYear.value;
-    var sDay3M = sDay ;                 //Variable for changing in function show3Month
+    var sDay3M = sDay;                 //Variable for changing in function show3Month
     var sMonth3M = sMonth;              //Variable for changing in function show3Month
     var sYear3M = sYear;                //Variable for changing in function show3Month
     var ht = timeHour.value;
@@ -66,8 +66,10 @@
     var zenithLb = window.locales['zenithLb'], nadirLb = window.locales['nadirLb'], northLb = window.locales['northLb'];
     var southLb = window.locales['southLb'], eastLb = window.locales['eastLb'], westLb = window.locales['westLb'];
     var latLb = window.locales['latLb'], lonLb = window.locales['lonLb'], momentLb = window.locales['momentLb'];
-    var dayAnimTimeLb = window.locales['dayAnimTimeLb'], dayHtLb = window.locales['dayHtLb'], dayAzLb = window.locales['dayAzLb'];
-    var yearAnimTimeLb = window.locales['yearAnimTimeLb'], yearHtLb = window.locales['yearHtLb'], yearAzLb = window.locales['yearAzLb'];
+    var dayAnimTimeLb = window.locales['dayAnimTimeLb'], dayHtLb = window.locales['dayHtLb'],
+        dayAzLb = window.locales['dayAzLb'];
+    var yearAnimTimeLb = window.locales['yearAnimTimeLb'], yearHtLb = window.locales['yearHtLb'],
+        yearAzLb = window.locales['yearAzLb'];
 
     window.Utils.defineDimensions = function () {
         /////////////////////////////////////////////////      DEFINE DRAW DIMENSIONS          /////////////////////////////////
@@ -101,6 +103,7 @@
     window.Utils.hideGraphic = function () {
         !graphicContainer.classList.contains("hidden") && graphicContainer.classList.toggle("hidden");
         calcContainer.classList.contains("hidden") && calcContainer.classList.toggle("hidden");
+        window.currentAction = "calc";
         paper.project._activeLayer.clear();
         var layers = paper.project.layers;
         for (i = 0; i < layers.length - 1; i++) {
@@ -114,6 +117,7 @@
         window.timerIsOn = false;       // to stop showTimer() in function showResultTimer()
         graphicContainer.classList.contains("hidden") && graphicContainer.classList.toggle("hidden");
         !calcContainer.classList.contains("hidden") && calcContainer.classList.toggle("hidden");
+        window.currentAction = "graphic";
         var axisLayer = new Layer();
         axisLayer.name = "axisLyr";
         //////////////////////////////////////      SHOW CALCULATION RESULTS BEFORE DRAWING
@@ -135,17 +139,19 @@
         sDay = dateDay.value;
         sMonth = dateMonth.value;
         sYear = dateYear.value;
-        sDay3M = sDay;  sMonth3M = sMonth; sYear3M=sYear;
+        sDay3M = sDay;
+        sMonth3M = sMonth;
+        sYear3M = sYear;
 
         var dayPathLayer = new Layer();
         dayPathLayer.name = "dayPathLyr";
-        options = {Day: sDay, Month: sMonth, Year: sYear,  Scale: s, xOrigin: ox, yOrigin: oy, isPrint: false };
+        options = {Day: sDay, Month: sMonth, Year: sYear, Scale: s, xOrigin: ox, yOrigin: oy, isPrint: false};
         window.Utils.dayPath(options);
 
         ///////////////////////////////////////////////         DAY  ANIMATION; TEXT;         //////////////////////////////
         var dayAnimLayer = new Layer();
         dayAnimLayer.name = "dayAnimLyr";
-        options = {Day: sDay, Month: sMonth, Year: sYear,  Scale: s, xOrigin: ox, yOrigin: oy };
+        options = {Day: sDay, Month: sMonth, Year: sYear, Scale: s, xOrigin: ox, yOrigin: oy};
         window.Utils.dayAnimation(options);
 
         ////////////////////////////////////////////      YEAR PATH AT  90° x 180° RESOLUTION     //////////////////////////
@@ -155,20 +161,44 @@
         ht = timeHour.value;
         mt = timeMin.value;
         st = timeSec.value;
-        options = {Day: sDay, Month: sMonth, Year: sYear, Hour: ht, Minute: mt, Second: st, dUTC: dUTCval, Scale: s, xOrigin: ox, yOrigin: oy};
+        options = {
+            Day: sDay,
+            Month: sMonth,
+            Year: sYear,
+            Hour: ht,
+            Minute: mt,
+            Second: st,
+            dUTC: dUTCval,
+            Scale: s,
+            xOrigin: ox,
+            yOrigin: oy
+        };
         window.Utils.yearPath(options);
 
         ////////////////////////////     YEAR ANIMATION; TEXT;    /////////////////////////////
         var yearAnimLayer = new Layer();
         yearAnimLayer.name = "yearAnimLyr";
-        options = {Day: sDay, Month: sMonth, Year: sYear, Hour: ht, Minute: mt, Second: st, dUTC: dUTCval, Scale: s, xOrigin: ox, yOrigin: oy};
+        options = {
+            Day: sDay,
+            Month: sMonth,
+            Year: sYear,
+            Hour: ht,
+            Minute: mt,
+            Second: st,
+            dUTC: dUTCval,
+            Scale: s,
+            xOrigin: ox,
+            yOrigin: oy
+        };
         window.Utils.yearAnimation(options);
 
     };
 
-    var debouncedShowGraphic = window._.debounce(window.Utils.showGraphic,300);
+    var debouncedShowGraphic = window._.debounce(window.Utils.showGraphic, 300);
 
-    paper.view.onResize = debouncedShowGraphic;
+    paper.view.onResize = function () {
+        if (window.currentAction === 'graphic') debouncedShowGraphic();
+    };
 
 ////////////////////////////////////////////            TOGGLE PAUSING ONCLICK    //////////////////////////////////////
     var isPaused = false;
@@ -351,9 +381,9 @@
     };
 
     window.Utils.dayPath = function (options) {
-        var sYear =  options.Year;
+        var sYear = options.Year;
         var sMonth = options.Month;
-        var sDay =   options.Day;
+        var sDay = options.Day;
         var s = options.Scale;
         var ox = options.xOrigin;
         var oy = options.yOrigin;
@@ -364,7 +394,7 @@
         var dayArr = res[0];    //Array of 1440 pairs of Ht,Az;Every 2 minute during a day. Starts from given time.
         var aTime = res[2];    //Array  of Time 2 for pairs of Ht,Az
 
-        var pathD, tx2,  diff, du, i, ct, text, localTime, jump, cur3month;
+        var pathD, tx2, diff, du, i, ct, text, localTime, jump, cur3month;
         var hFont, SunRadius, TicRadius, do0 = true, do6 = true, do12 = true, do18 = true, do24 = true;
         hFont = less * 2.5;
         SunRadius = less;
@@ -479,23 +509,28 @@
         var curPointX = ox - 180 * s + dayArr[1] * s;
         var curPointY = oy - dayArr[0] * s, x, y;
         var curPoint = new Point(curPointX, curPointY), rad;
-        if (isPrintMoment) { rad = 8} else { rad = 10}
+        if (isPrintMoment) {
+            rad = 8
+        } else {
+            rad = 10
+        }
         var circle1 = new Shape.Circle({center: curPoint, radius: rad, fillColor: sunColor, strokeColor: fontSunColor});
         if (dayArr[0] < 0) circle1.fillColor = sunColorDark;
         else circle1.fillColor = sunColor;
 
         if (isPrintMoment) {
-            var arr= aTime[1440].split(" ");
-            cur3month = new PointText({ fillColor: fontSunColor, fontFamily: sunFont,  fontWeight: axisFontWeight,
-                fontSize: hFont,  point: [curPointX + 10, curPointY-10],  content: arr[0]+arr[1]
+            var arr = aTime[1440].split(" ");
+            cur3month = new PointText({
+                fillColor: fontSunColor, fontFamily: sunFont, fontWeight: axisFontWeight,
+                fontSize: hFont, point: [curPointX + 10, curPointY - 10], content: arr[0] + arr[1]
             });
         }
     };
 
-    window.Utils.dayAnimation = function (options){
-        var sYear =  options.Year;
+    window.Utils.dayAnimation = function (options) {
+        var sYear = options.Year;
         var sMonth = options.Month;
-        var sDay =   options.Day;
+        var sDay = options.Day;
         var s = options.Scale;
         var ox = options.xOrigin;
         var oy = options.yOrigin;
@@ -571,8 +606,9 @@
         });
 
         /////////////////////////////////////////////////  DAY ANIMATION function(event)   /////////////////////////
-        var curPointX = ox - 180 * s + dayArr[1] * s;      var curPointY = oy - dayArr[0] * s, x, y;
-        var curPoint = new Point(curPointX , curPointY);
+        var curPointX = ox - 180 * s + dayArr[1] * s;
+        var curPointY = oy - dayArr[0] * s, x, y;
+        var curPoint = new Point(curPointX, curPointY);
         var k = 0;
         var circle1 = new Shape.Circle({center: curPoint, radius: 10, fillColor: sunColor, strokeColor: fontSunColor});
 
@@ -605,10 +641,10 @@
     };
 
     ////////////////////////////////////////////      YEAR PATH AT  90° x 180° RESOLUTION     //////////////////////////
-    window.Utils.yearPath = function (options){
-        var sYear =  options.Year;
+    window.Utils.yearPath = function (options) {
+        var sYear = options.Year;
         var sMonth = options.Month;
-        var sDay =   options.Day;
+        var sDay = options.Day;
         var ht = options.Hour;
         var mt = options.Minute;
         var st = options.Second;
@@ -630,20 +666,21 @@
             yt1 = oy - yearArr[i] * s;
             diff = Math.abs(yearArr[i + 1] - xt2);        //Not 2Draw strait line when Azimuth jumps from 360° to 0° !!!!
             //console.log('diff='+diff.toFixed(1));
-            xt2= yearArr[i + 1];
+            xt2 = yearArr[i + 1];
             if (diff < 330) {
                 pathY.add(new Point(xt1, yt1));
+            } else {
+                pathY = new Path({strokeColor: "magenta"});
             }
-            else { pathY = new Path({strokeColor: "magenta"});}
             //console.log(" i="+ i + " aDate[]="+ aDate[i/2]+" Ht0="+yearArr[i].toFixed(1)+" Az0="+yearArr[i + 1].toFixed(1)+'diff='+diff.toFixed(1));
         }
         pathY.add(new Point(ox - 180 * s + yearArr[1] * s, oy - yearArr[0] * s));    //close line gap to 1-st point
     };
 
-    window.Utils.yearAnimation = function (options){
-        var sYear =  options.Year;
+    window.Utils.yearAnimation = function (options) {
+        var sYear = options.Year;
         var sMonth = options.Month;
-        var sDay =   options.Day;
+        var sDay = options.Day;
         var ht = options.Hour;
         var mt = options.Minute;
         var st = options.Second;
@@ -657,7 +694,7 @@
         var curPoint, i, x, y;
         x = ox - 180 * s + yearArr[1] * s;
         y = oy - yearArr[0] * s;
-        curPoint=new paper.Point(xt1, yt1);
+        curPoint = new paper.Point(xt1, yt1);
 
         var textYearTime = new PointText({
             fillColor: fontAxisColor,
@@ -680,7 +717,7 @@
             fontSize: hFont,
             point: [20, 180]
         });
-        i=0;
+        i = 0;
         var circle2 = new Shape.Circle({center: curPoint, radius: 6, fillColor: sunColor, strokeColor: fontSunColor});
         circle2.onFrame = function (event) {
             x = ox - 180 * s + yearArr[i + 1] * s;
@@ -729,7 +766,7 @@
 
         var month3Layer = new Layer();
         month3Layer.name = "month3Lyr";
-        options = {Day: sDay3M, Month: sMonth3M, Year: sYear3M,  Scale: s, xOrigin: ox, yOrigin: oy, isPrint: true };
+        options = {Day: sDay3M, Month: sMonth3M, Year: sYear3M, Scale: s, xOrigin: ox, yOrigin: oy, isPrint: true};
         window.Utils.dayPath(options);
 
     };
@@ -739,9 +776,13 @@
         var aDuration = 2000; //timelaps in miliseconds
         graphicContainer.classList.contains("hidden") && graphicContainer.classList.toggle("hidden");
         // Take input values
-        var g = latGrad.value;        m = latMin.value;        s = latSec.value;
+        var g = latGrad.value;
+        m = latMin.value;
+        s = latSec.value;
         var Lat = Utils.grad_textGMS2number(g, m, s);
-        g = lonGrad.value;        m = lonMin.value;        s = lonSec.value;
+        g = lonGrad.value;
+        m = lonMin.value;
+        s = lonSec.value;
         var Lon = Utils.grad_textGMS2number(g, m, s);
 
         var params = {Day: sDay, Month: sMonth, Year: sYear};
@@ -761,27 +802,29 @@
         }
         paper.project._activeLayer.clear();
         var lyr3D = new Layer();
-        lyr3D .name = "lyr3D";
+        lyr3D.name = "lyr3D";
 
-        var a= width/2-gap*8; b=a/2;
-        var center =new Point(ox-a/2, oy-b/2);
+        var a = width / 2 - gap * 8;
+        b = a / 2;
+        var center = new Point(ox - a / 2, oy - b / 2);
         var rectangle = new Rectangle(center, new Size(a, b));
         var path = new Path.Ellipse(rectangle);
         path.strokeColor = fontAxisColor;
         // Get ephemeris
-        var EphArr = ReadDataFromResourceString(sDay, sMonth, sYear, (12-dUTCval), Lon, dUTCval);
+        var EphArr = ReadDataFromResourceString(sDay, sMonth, sYear, (12 - dUTCval), Lon, dUTCval);
         var Decl = EphArr[3];
         var path2 = path.clone();
         //debugger
-        path2.rotate(-1*((90-Lat) + Decl));  // Sun culmination height = 90°- Latitude + Declination
+        path2.rotate(-1 * ((90 - Lat) + Decl));  // Sun culmination height = 90°- Latitude + Declination
         //path2.translate(100, -100);
-        path2.strokeColor = fontSunColor ;
+        path2.strokeColor = fontSunColor;
 
 
         var amount = 1440;
         var length = path2.length;
         var offset, point, circle, x, y;
-        var ArrX = new Array( amount);         var ArrY = new Array( amount);
+        var ArrX = new Array(amount);
+        var ArrY = new Array(amount);
         // Fill Array with x,y points  of path
         for (var i = 0; i < amount + 1; i++) {
             offset = i / amount * length;
@@ -789,18 +832,18 @@
             point = path2.getPointAt(offset);
             ArrX [i] = point.x;
             ArrY [i] = point.y;
-            console.log(i, ArrX [i] .toFixed(0), ArrY [i] .toFixed(0),offset.toFixed(0));
+            console.log(i, ArrX [i].toFixed(0), ArrY [i].toFixed(0), offset.toFixed(0));
         }
 
-        point = new Point(ArrX [0] , ArrY [0] );
+        point = new Point(ArrX [0], ArrY [0]);
         circle = new Shape.Circle({center: point, radius: 10, fillColor: sunColor, strokeColor: fontSunColor});
-        var k= 0;
+        var k = 0;
         circle.onFrame = function (event) {
-            x = ArrX [k] ;
+            x = ArrX [k];
             y = ArrY [k];
             circle.position = new paper.Point(x, y);
             //Change sun to dark color if under horizon    TODO FIND CORRELATION WITH offset
-            if (dayArr[k*2] < 0) {
+            if (dayArr[k * 2] < 0) {
                 circle.fillColor = sunColorDark;            //TODO IN DATADELIVERY MAKE SEPARATE ARRAYS OF HT AZ
             } else {
                 circle.fillColor = sunColor;
@@ -809,10 +852,6 @@
             if (k > ArrX.length - 1) k = 0;
 
         };
-
-
-
-
 
 
     }
