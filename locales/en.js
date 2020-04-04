@@ -1,8 +1,7 @@
 ;(function () {
-
     if (!window.locales) window.locales = {};
-
-    window.locales.en = {
+    else return console.error("WINDOW.LOCALES already exists");
+    window.locales = {
         zenithLb: 'Zenith',
         nadirLb: 'Nadir',
         northLb: 'North 0°',

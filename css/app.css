@@ -15,6 +15,10 @@
 /*    color: blue;*/
 /*}*/
 
+.localesSwitch {
+    float: right;
+}
+
 input[type=text], input[type=number] {
     padding: 2px;
     border-width: 1px;

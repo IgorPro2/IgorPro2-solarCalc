@@ -57,10 +57,16 @@
     // var dayAnimTimeLb='Местное время дневного положения= ', dayHtLb='Высота (день)=', dayAzLb='Азимут (день)=';
     // var yearAnimTimeLb='Дата годового положения= ', yearHtLb='Высота (год)= ', yearAzLb='Азимут (год)= ';
     // ENGLISH
-    var zenithLb ='Zenith', nadirLb ='Nadir', northLb='North 0°', southLb='South 180°', eastLb='East 90°', westLb='West 270°';
-    var latLb='Latitude= ', lonLb='Longitude= ', momentLb='Given Moment= ';
-    var dayAnimTimeLb='Local time of day position= ', dayHtLb='Height (day)=', dayAzLb='Aziuth (day)=';
-    var yearAnimTimeLb='Date of year position= ', yearHtLb='Height (year)= ', yearAzLb='Azimuth (year)= ';
+    // var zenithLb ='Zenith', nadirLb ='Nadir', northLb='North 0°', southLb='South 180°', eastLb='East 90°', westLb='West 270°';
+    // var latLb='Latitude= ', lonLb='Longitude= ', momentLb='Given Moment= ';
+    // var dayAnimTimeLb='Local time of day position= ', dayHtLb='Height (day)=', dayAzLb='Aziuth (day)=';
+    // var yearAnimTimeLb='Date of year position= ', yearHtLb='Height (year)= ', yearAzLb='Azimuth (year)= ';
+
+    var zenithLb = window.locales['zenithLb'], nadirLb = window.locales['nadirLb'], northLb = window.locales['northLb'];
+    var southLb = window.locales['southLb'], eastLb = window.locales['eastLb'], westLb = window.locales['westLb'];
+    var latLb = window.locales['latLb'], lonLb = window.locales['lonLb'], momentLb = window.locales['momentLb'];
+    var dayAnimTimeLb = window.locales['dayAnimTimeLb'], dayHtLb = window.locales['dayHtLb'], dayAzLb = window.locales['dayAzLb'];
+    var yearAnimTimeLb = window.locales['yearAnimTimeLb'], yearHtLb = window.locales['yearHtLb'], yearAzLb = window.locales['yearAzLb'];
 
     window.Utils.defineDimensions = function () {
         /////////////////////////////////////////////////      DEFINE DRAW DIMENSIONS          /////////////////////////////////
