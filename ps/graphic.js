@@ -4,6 +4,7 @@
 ;(function () {
 
     var graphicContainer = document.getElementById("graphicContainer");
+    var calcContainer = document.getElementById("calcContainer");
     var latGrad = document.getElementById("latGrad");
     var latMin = document.getElementById("latMin");
     var latSec = document.getElementById("latSec");
@@ -99,6 +100,7 @@
 ////////////////////////////////////////////      HIDE GRAPHICS    //////////////////////////
     window.Utils.hideGraphic = function () {
         !graphicContainer.classList.contains("hidden") && graphicContainer.classList.toggle("hidden");
+        calcContainer.classList.contains("hidden") && calcContainer.classList.toggle("hidden");
         paper.project._activeLayer.clear();
         var layers = paper.project.layers;
         for (i = 0; i < layers.length - 1; i++) {
@@ -108,9 +110,10 @@
 
 ///////////   SHOW GRAPHIC   SHOW GRAPhIC   SHOW GRAPHIC   SHOW GRAPhIC SHOW GRAPHIC   SHOW GRAPhIC   SHOW GRAPHIC  ////
 /////////////////////////////////////////////        SUN PATH AT GIVEN DAY          ////////////////////////////////////
-    window.Utils.showGraphic = function () {
+    window.Utils.showGraphic = function (redraw) {
         window.timerIsOn = false;       // to stop showTimer() in function showResultTimer()
         graphicContainer.classList.contains("hidden") && graphicContainer.classList.toggle("hidden");
+        !calcContainer.classList.contains("hidden") && calcContainer.classList.toggle("hidden");
         var axisLayer = new Layer();
         axisLayer.name = "axisLyr";
         //////////////////////////////////////      SHOW CALCULATION RESULTS BEFORE DRAWING
@@ -162,6 +165,10 @@
         window.Utils.yearAnimation(options);
 
     };
+
+    var debouncedShowGraphic = window._.debounce(window.Utils.showGraphic,300);
+
+    paper.view.onResize = debouncedShowGraphic;
 
 ////////////////////////////////////////////            TOGGLE PAUSING ONCLICK    //////////////////////////////////////
     var isPaused = false;
