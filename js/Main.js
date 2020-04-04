@@ -4,8 +4,8 @@
         getLocation: getLocation,
         showResultTimer: showResultTimer,
         show_results: show_results,
-        getNow: getNow,
-        calcTimeAtGivenHA: calcTimeAtGivenHA
+        calcTimeAtGivenHA: calcTimeAtGivenHA,
+        //CharDigits2Number: CharDigits2Number,   //TODO make reference
     };  // something like global variables
 
 
@@ -32,9 +32,9 @@
     //4Debugging
     latGrad.value="44";latMin.value="06";latSec.value="16";
     lonGrad.value="39";lonMin.value="04";lonSec.value="03"; dUTC.value="3";
-    dateYear.value="2020"; dateMonth.value="3"; dateDay.value="07";
-    timeHour.value="7";timeMin.value="18"; timeSec.value="00";
-    tempC.value="20"; pressP.value="756"; eyeHeight.value="2";
+    dateYear.value="2020"; dateMonth.value="3"; dateDay.value="20";
+    timeHour.value="7";timeMin.value="00"; timeSec.value="00";
+    tempC.value="20"; pressP.value="756"; eyeHeight.value="1.68";
 
     let sunHeight = document.getElementById("sunHeight");
     let sunAzimuth = document.getElementById("sunAzimuth");
@@ -64,7 +64,7 @@
     let moveAz1min = document.getElementById("moveAz1min");
     let moveAz1hour = document.getElementById("moveAz1hour");
     let tx = document.getElementById("shadowLabel").textContent;
-    document.getElementById("shadowLabel").innerText = tx + (eyeHeight.value).trim();
+    document.getElementById("shadowLabel").innerText = tx + (eyeHeight.value).trim()+':';
     let shadowLength = document.getElementById("shadowLength");
     let nextDaydH = document.getElementById("nextDaydH");
     let nextDaydAz = document.getElementById("nextDaydAz");
@@ -75,12 +75,27 @@
     let givAg = document.getElementById("givAg");
     let givAm = document.getElementById("givAm");
     let givAs = document.getElementById("givAs");
-
     let radioHt = document.getElementById("radio1");
     let radioAz = document.getElementById("radio2");
     let checkPM = document.getElementById("check1");
 
     let sunSetTime, sunRiseTime, dayDur, Time2Dawn;
+
+    dateYear.addEventListener('input', function () {
+        let inp = this;
+        if (inp.value > 2120) inp.value = 2120;
+        if (inp.value < 2018) inp.value = 2018;
+    });
+    dateMonth.addEventListener('input', function () {
+        let inp = this;
+        if (inp.value > 12) inp.value = 12;
+        if (inp.value < 1) inp.value = 1;
+    });
+    dateDay.addEventListener('input', function () {
+        let inp = this;
+        if (inp.value > 31) inp.value = 31;
+        if (inp.value < 1) inp.value = 1;
+    });
 
     latGrad.addEventListener('input', function () {
         let inp = this;
@@ -100,26 +115,86 @@
     eyeHeight.addEventListener('input', function () {
         let inp = this;
         //tx = inp.value;  // Define upper
-        document.getElementById("shadowLabel").innerText = tx + (inp.value).trim();
+        document.getElementById("shadowLabel").innerText = tx + (inp.value).trim()+':';
     });
     givAg.addEventListener('input', function () {
         radioAz.checked = true;
+        let inp = this;
+        if (inp.value > 360) inp.value = 360;
+        if (inp.value < 0) inp.value = 0;
     });
     givAm.addEventListener('input', function () {
         radioAz.checked = true;
+        let inp = this;
+        if (inp.value > 59) inp.value = 59;
+        if (inp.value < 0) inp.value = 0;
     });
     givAs.addEventListener('input', function () {
         radioAz.checked = true;
+        let inp = this;
+        if (inp.value > 60) inp.value = 60;
+        if (inp.value < 0) inp.value = 0;
     });
     givHg.addEventListener('input', function () {
         radioHt.checked = true;
+        let inp = this;
+        if (inp.value > 90) inp.value = 90;
+        if (inp.value < -90) inp.value = -90;
     });
     givHm.addEventListener('input', function () {
         radioHt.checked = true;
+        let inp = this;
+        if (inp.value > 59) inp.value = 59;
+        if (inp.value < 0) inp.value = 0;
     });
     givHs.addEventListener('input', function () {
         radioHt.checked = true;
+        let inp = this;
+        if (inp.value > 60) inp.value = 60;
+        if (inp.value < 0) inp.value = 0;
     });
+
+    timeHour.addEventListener('input', function () {
+        timeHour.classList.remove("calcVal") ;
+        timeMin.classList.remove("calcVal") ;
+        timeSec.classList.remove("calcVal") ;
+        window.timerIsOn = false;       // to stop showTimer() in function showResultTimer()
+        let inp = this;
+        if (inp.value > 24) inp.value = 24;
+        if (inp.value < 0) inp.value = 0;
+    });
+    timeMin.addEventListener('input', function () {
+        timeHour.classList.remove("calcVal") ;
+        timeMin.classList.remove("calcVal") ;
+        timeSec.classList.remove("calcVal") ;
+        window.timerIsOn = false;       // to stop showTimer() in function showResultTimer()
+        let inp = this;
+        if (inp.value > 59) inp.value = 59;
+        if (inp.value < 0) inp.value = 0;
+    });
+    timeSec.addEventListener('input', function () {
+        timeHour.classList.remove("calcVal") ;
+        timeMin.classList.remove("calcVal") ;
+        timeSec.classList.remove("calcVal") ;
+        window.timerIsOn = false;       // to stop showTimer() in function showResultTimer()
+        let inp = this;
+        if (inp.value > 60) inp.value = 60;
+        if (inp.value < 0) inp.value = 0;
+    });
+
+    // // Reformat lat Lon if case of wrong user input
+    // let g = lonGrad.value;       let m = lonMin.value;     let   s = lonSec.value;
+    // let L = Utils.grad_textGMS2number(g, m, s);
+    // g = latGrad.value;  m = latMin.value;  s = latSec.value;
+    // let B =   Utils.grad_textGMS2number(g, m, s);
+    // let lat = Utils.grad_number2text(L, undefined, undefined, undefined, true);
+    // let lon = Utils.grad_number2text(B, undefined, undefined, undefined, true);
+    // lonGrad.value = lon[0];
+    // lonMin.value =  lon[1];
+    // lonSec.value =  lon[2];
+    // latGrad.value = lat[0];
+    // latMin.value =  lat[1];
+    // latSec.value =  lat[2];
 
     let buttonCalculate = document.getElementById("buttonCalc");
     buttonCalculate.addEventListener("click", show_results);
@@ -132,8 +207,8 @@
         }
     }
 
-    let buttonNow = document.getElementById("buttonNow");
-    buttonNow.addEventListener("click", getNow);
+    // let buttonNow = document.getElementById("buttonNow");
+    // buttonNow.addEventListener("click", getNow);
 
     function getNow() {
         let x = new Date();
@@ -185,12 +260,24 @@
         calcVelocities();
         calcSunRise();
         calcEquinoxSolstice();
+        timeHour.classList.remove("calcVal") ;
+        timeMin.classList.remove("calcVal") ;
+        timeSec.classList.remove("calcVal") ;
+        givHg.classList.remove("invalidVal") ;
+        givHm.classList.remove("invalidVal") ;
+        givHs.classList.remove("invalidVal") ;
+        givAg.classList.remove("invalidVal") ;
+        givAm.classList.remove("invalidVal") ;
+        givAs.classList.remove("invalidVal") ;
 
     }
 ///////////////////////////////////////////////////   SHOW RESULTS TIMER    ////////////////////////////////////////////
 
     function showResultTimer() {
         window.timerIsOn = true;
+        timeHour.classList.remove("calcVal") ;
+        timeMin.classList.remove("calcVal") ;
+        timeSec.classList.remove("calcVal") ;
         let g, m, s, B, L, D, E, utcTime, Radius, resArr, dUTCval, rAsc;
         let sDay, sMonth, sYear;
         let digits = Number(nDigits.value);
@@ -211,7 +298,6 @@
         calcEquinoxSolstice();
 
         (function delay(duration) {
-            //let solar, options;
             if (!window.timerIsOn) return false;
             g = latGrad.value;            m = latMin.value;            s = latSec.value;
             B = Utils.grad_textGMS2number(g, m, s);
@@ -241,17 +327,18 @@
             sunRadius.textContent =      Utils.grad_number2text(Radius, digits);
             rightAscension.textContent = Utils.grad_number2text(rAsc, digits);
 
-            // if (dayDur === 24 || dayDur === 0) Time2Dawn = Utils.grad_number2text(0, digits, "", ":: ");      //Time2Dawn At Polar Day -:)
-            // else Time2Dawn= Utils.grad_number2text((sunSetTime - utcTime ), digits, "", ":: ");      // Time 2 Dawn at common day
-            // time2SunSet.textContent = (Time2Dawn);
-
             calcSunRise();
             calcVelocities();
+            givHg.classList.remove("invalidVal") ;
+            givHm.classList.remove("invalidVal") ;
+            givHs.classList.remove("invalidVal") ;
+            givAg.classList.remove("invalidVal") ;
+            givAm.classList.remove("invalidVal") ;
+            givAs.classList.remove("invalidVal") ;
 
             if (++counter <= 200 && window.timerIsOn) setTimeout(delay, duration, duration);
 
         })(aDuration)
-
     }
 
     function calcEquinoxSolstice() {
@@ -553,7 +640,8 @@
         velH1m = Utils.grad_number2text(Ht1m-Ht0, digits);  velH1h = Utils.grad_number2text(Ht1h-Ht0, digits);  velHtDay = Utils.grad_number2text(Ht1d-Ht0, digits);
         velA1m = Utils.grad_number2text(Az1m-Az0, digits);  velA1h = Utils.grad_number2text(Az1h-Az0, digits);  velAzDay = Utils.grad_number2text(Az1d-Az0, digits);
         shadLen = hEye/Math.tan(Utils.toRadians(Ht0));
-        shadowLength.textContent = shadLen.toFixed(digits);
+        if (shadLen > 0){  shadowLength.textContent =  shadLen.toFixed(digits);}
+        else{shadowLength.textContent = 'Ночь'}
         moveH1min.textContent = velH1m;
         moveH1hour.textContent = velH1h;
         moveAz1min.textContent = velA1m;
@@ -592,6 +680,9 @@
             timeHour.value = g;
             timeMin.value =  m;
             timeSec.value =  s;
+            timeHour.classList.add("calcVal") ;
+            timeMin.classList.add("calcVal") ;
+            timeSec.classList.add("calcVal") ;
         }
         if (radioAz.checked){
             options ={Lat:B, Lon:L, Day:sDay, Month:sMonth, Year:sYear, dUTC:dUTCval, Temp:temp, Press:press, isAM: isAM, sunHeight: givenHt, sunAzimuth:givenAz};
@@ -599,9 +690,12 @@
             resArr = solar._timeAtSunPositionA();
             aTime= resArr[1];        //aTime= Utils.grad_number2text((resArr[1]+dUTCval), digits, "", ":: ");
             g = Math.floor(aTime);  m = Math.floor((aTime - g)*60);  s = (3600*(aTime - g - (m/60))).toFixed(digits);
-            timeHour.value = (g.toString());
-            timeMin.value =  (m.toString());
-            timeSec.value =  (s.toString());
+            timeHour.value = g;
+            timeMin.value =  m;
+            timeSec.value =  s;
+            timeHour.classList.add("calcVal") ;
+            timeMin.classList.add("calcVal") ;
+            timeSec.classList.add("calcVal") ;
 
         }
 
@@ -616,12 +710,13 @@
         let sDay =   params.Day;
         let g, m, s, B, L, resArr, dUTCval, options, solar;
         let ht, mt, st;
-        let utcTime, curTime, i, index, tt;
+        let utcTime, curTime, i, index, tt, minH, maxH, minA, maxA, Ht0, Az0, Az1, southCulm = false;
         let EphArr, ExistYear;
-        let resultsHA = new Array(1440); //Array of 1440 pairs of Ht,Az;Every 2 minutes during a day (60min/2)*24h*2pair =1440
-        let givenHA =  new Array(2);     //Array of  Ht,Az at given moment
-        let aTime =    new Array(1400);  //Array of  Local Time for each pairs of Ht,Az in resultsHA[]
-        let results;                                //Array of  3 Arrays for this function Return
+        let resultsHA = new Array(1440);  //Array of 1440 pairs of Ht,Az;Every 2 minutes during a day (60min/2)*24h*2pair =1440
+        let givenHA =   new Array(2);     //Array of  Ht,Az at given moment
+        let aTime =     new Array(1400);  //Array of  Local Time for each pairs of Ht,Az in resultsHA[]
+        let minMax =    new Array(4);     //Array of  HtMin, HtMax, AzMin, AzMax which are minimals and maximals at this day
+        let results;                                 //Array of  4 Arrays for this function Return
 
         g = latGrad.value;        m = latMin.value;        s = latSec.value;
         B = Utils.grad_textGMS2number(g, m, s);
@@ -643,6 +738,19 @@
         resArr = solar._calculate();
         givenHA[0] = resArr[1];                //Position at given moment
         givenHA[1] = resArr[0];
+        minH = resArr[1];
+        maxH = resArr[1];
+        minA = resArr[0];
+        maxA = resArr[0];
+        //Az1 =  resArr[0];
+        let culmTime = EphArr[14];              //Time of upper culmination at LocalTime corrected at given Longitude
+        options = { Lat: B, Lon: L, Day: sDay, Month: sMonth, Year: sYear, UTCTime: (culmTime-dUTCval), dUTC: dUTCval, Temp: 0, Press: 0 };
+        solar = new Solar(options);
+        resArr = solar._calculate();
+        let culmAz = resArr[0];
+        //console.log('culmTime=',culmTime, 'culmAz=',culmAz);
+        if (Math.abs(180-culmAz) < 1) {southCulm = true;}
+        if ( ! southCulm && minA > 180) {  minA = minA - 360;  }   //Distance from NORTH 2 Azimuth
 
         for  (i=0; i < 1439; i=i+2) {
             utcTime = ((index + i)/60 ) % 24;     //UTC time each 2-minutes starts from current time
@@ -656,30 +764,44 @@
             tt=(utcTime+dUTCval);
             if (tt < 0) tt= tt+24;
             if (tt > 24) tt= tt-24;
-            aTime[i/2] = tt;            // Local time of pairs
+            aTime[i/2] = tt;                         // Local time of pairs
+            Ht0 = resArr[5];
+            if (Ht0 < minH) minH= Ht0;               // found Min Max
+            if (Ht0 > maxH) maxH= Ht0;
+            Az0 = resArr[0];
+            // if ( (Az1 < 180 && Az0 > 180)  && Math.abs(Az1-Az0) < 330 ) {southCulm = true;}
+            // Az1 = Az0;
+            if ( ! southCulm && Az0 > 180) {  Az0 = Az0 - 360;  }   //Distance from NORTH 2 Azimuth
+            if (Az0 < minA) minA = Az0;
+            if (Az0 > maxA) maxA = Az0;
+            //console.log(Az0)
         }
-        //aTime[1440] = sYear+"-"+sMonth+"-"+sDay+" "+ht+":"+mt+":"+st ;            // Pass given Date&Time in last element
-        aTime[1440] = moment(sYear+"-"+sMonth+"-"+sDay+" "+ht+":"+mt+":"+st).format('MMMM Do YYYY, HH:mm:ss')+" ,dUTC="+dUTCval;  // Pass given Date&Time in last array element
-        results = [resultsHA, givenHA, aTime];
+        // Pass given Date&Time in last array element
+        aTime[1440] = moment(sYear+"-"+sMonth+"-"+sDay+" "+ht+":"+mt+":"+st).format('MMMM Do YYYY, HH:mm:ss')+" ,dUTC="+dUTCval;
+        if ( ! southCulm) {minA = minA+360;}  //Reverse Distance from NORTH 2 real Azimuth
+        minMax[0]=minH; minMax[1]=maxH; minMax[2]=minA; minMax[3]=maxA; minMax[4]=southCulm;
+        results = [resultsHA, givenHA, aTime, minMax];
         return results;
     }
 
-    function dataDeliveryYear() {
-        let g, m, s, B, L, resArr, dUTCval, options, solar;
-        let sDay, sMonth, sYear;
+    function dataDeliveryYear(params) {
+        let sYear =  params.Year;
+        let sMonth = params.Month;
+        let sDay =   params.Day;
+        let ht =     params.aHour;
+        let mt =     params.aMinute;
+        let st =     params.aSecond;
+        let dUTCval= params.dUTC;
+        let curYear = sYear;
+        let g, m, s, B, L, resArr, options, solar;
         let utcTime, Az0, Ht0, i ;
         //Array of 365 pairs of Ht,Az; At given local Time every Day in Year; Last 2pairs are: minH,minA,maxH,maxA
-        //Array starts from current Date&Time
+        //Array starts from current Date&Time     TODO     WHEN LEAP YEAR HAPPENS WE MISS ONE DAY :-(
         let resultsHA = new Array(734);
         let aDate =    new Array( 365);  //Array of  Dates for each pairs of Ht,Az in resultsHA[] starts from current date
         let results;                                //Array of  3 Arrays for this function Return
-        let EphArr, ExistYear, aMoment, sMoment, ht, mt, st, minH=-90, maxH=90, minA=0, maxA=360;
+        let EphArr, ExistYear, aMoment, sMoment, minH=-90, maxH=90, minA=0, maxA=360;
 
-        sDay = dateDay.value;
-        sMonth = dateMonth.value;
-        sYear = dateYear.value;
-        ht = timeHour.value;       mt = timeMin.value;       st = timeSec.value;
-        dUTCval = +dUTC.value;
         utcTime = +ht+mt/60+st/3600 - dUTCval;
         g = latGrad.value;        m = latMin.value;        s = latSec.value;
         B = Utils.grad_textGMS2number(g, m, s);
@@ -689,15 +811,17 @@
         // Get ephemeris
         EphArr = ReadDataFromResourceString(sDay, sMonth, sYear, utcTime, L, dUTCval);
         ExistYear = EphArr[15];
-        if ((+sYear !== +ExistYear)) dateYear.value = ExistYear;   // Desired year replaced by nearest we have ephemeris. &change input value
-
-        for  (i=0; i < 729; i=i+2) {
+        if ((+sYear !== +ExistYear)) {dateYear.value = ExistYear; sYear=ExistYear }  // Desired year replaced by nearest we have ephemeris. &change input value
+        moment.locale('ru');
+        for  (i=0; i < 731; i=i+2) {
             //SunPosition one day later
             sMoment = sYear+"-"+ sMonth+"-"+sDay+" "+ht+":"+mt+":"+st;
-            if (i > 0){aMoment = moment(sMoment, "").add(1,'day');}
-            else aMoment = moment(sMoment, "");
+            if (i > 0){aMoment = moment(sMoment, "").add(1,'day')}
+            else {     aMoment = moment(sMoment, "")}
             sYear = moment(aMoment).format('YYYY'); sMonth = moment(aMoment).format('MM');  sDay = moment(aMoment).format('DD');
-            //options ={Lat:B, Lon:L, Day:sDay, Month:sMonth, Year:sYear, UTCTime:utcTime, dUTC:dUTCval, Temp:0, Press:0};
+            if (+sYear !== +curYear) {
+                sYear = curYear      //Not to Jump to Next year and Return to CURRENT year.
+            }
             options ={Lat:B, Lon:L, Day:sDay, Month:sMonth, Year:sYear, UTCTime:utcTime, dUTC:dUTCval, Temp:0, Press:0};
             solar = new Solar(options);
             resArr = solar._calculate();
@@ -716,12 +840,12 @@
 
             resultsHA[i] = Ht0;
             resultsHA[i+1] = Az0 ;
-            aDate[i/2] =  sMoment; //moment(aMoment).format();
-            //console.log(" i="+ i + " aMoment="+ sMoment+" Ht0="+Ht0+" Az0="+Az0);
+            sMoment = sYear+"-"+ sMonth+"-"+sDay+" "+ht+":"+mt+":"+st;       // TO FORMAT aMoment
+            aDate[i/2] =  moment(sMoment).format('lll'); //sMoment;           // moment(sMoment).format(LLL);
             //console.log(" i="+ i + " aDateTime="+ aDate[i/2]+" Ht0="+Ht0+" Az0="+Az0);
         }
         resultsHA[730] = minH; resultsHA[731] = minA; resultsHA[732] = maxH; resultsHA[733] = maxA;
-        results = [resultsHA, aDate]
+        results = [resultsHA, aDate];
         return results;
     }
 

@@ -17,8 +17,8 @@ function Solar(options) {
     let givHm = document.getElementById("givHm");
     let givHs = document.getElementById("givHs");
     let givAg = document.getElementById("givAg");
-    // let givAm = document.getElementById("givAm");
-    // let givAs = document.getElementById("givAs");
+    let givAm = document.getElementById("givAm");
+    let givAs = document.getElementById("givAs");
 
     let timeHour = document.getElementById("timeHour");
     let timeMin = document.getElementById("timeMin");
@@ -137,15 +137,14 @@ function Solar(options) {
         }
         else {
             aSolution = false;          //NO SOLUTION 4 THAT HEIGHT
-            //givHg.value = 999;
             givHg.classList.add("invalidVal") ;
             givHm.classList.add("invalidVal") ;
             givHs.classList.add("invalidVal") ;
         }
 
         while  ( aSolution ) {   // Here we iterate while Time difference 'dTfit' will be less than 0.001 second in Sun's height
-                                 // (or till we understand that solution absent (dTfit < 0.000001)-:(
-                                 //UTC of calculated moment (Tfit)
+            // (or till we understand that solution absent (dTfit < 0.000001)-:(
+            //UTC of calculated moment (Tfit)
             EfArr = ReadDataFromResourceString(sDay, sMonth, sYear, (Tfit), Longitude, dUTCval);
             fitD = EfArr[11];            fitE = EfArr[12];            SunRadius= EfArr[13];
 
@@ -188,7 +187,6 @@ function Solar(options) {
         let Tfit, dTfit;
         let culmTime, culmTimeN, lowculmTime ;
         let T1, T2, mSolar, tResult, SunA1, SunA2, aSolution, params;
-        let afterLowCulm = false;
         let sMoment, aMoment, nYear, nMonth, nDay ;
 
         // Any time. 12.0, simply to calculate CULMINATION TIME at given Date
@@ -204,7 +202,6 @@ function Solar(options) {
         lowculmTime = (culmTimeN + culmTime)/2 - 12;        // LOW CULMINATION TIME AT GIVEN DAY
         //EfArr = ReadDataFromResourceString(sDay, sMonth, sYear, 12.0, Longitude, dUTCval);
 
-
         if (givenA <= 180) {        // Find A 0 -180
             T1 = lowculmTime;
             T2 = culmTime;          // LOCAL TIME
@@ -213,17 +210,7 @@ function Solar(options) {
             T1 = culmTime;          // Find A 180 -360
             T2 = lowculmTime+24;
         }
-        params = {
-            Lat: Latitude,
-            Lon: Longitude,
-            Day: sDay,
-            Month: sMonth,
-            Year: sYear,
-            UTCTime: (T1-dUTCval),
-            dUTC: dUTCval,
-            Temp: tempC,
-            Press: pressP
-        };
+        params = {Lat: Latitude, Lon: Longitude, Day: sDay, Month: sMonth, Year: sYear, UTCTime: (T1-dUTCval), dUTC: dUTCval, Temp: tempC, Press: pressP };
         mSolar = new Solar(params);
         tResult = mSolar._calculate();
         SunA1 = tResult[0];                   //Sun's azimuth at time T1 BEFORE;
@@ -250,46 +237,22 @@ function Solar(options) {
         aSolution = true;
         Tfit = (T2+T1)/2;
         dTfit = Tfit / 2;              // Iteration's limit
-
-
-
-
-
-
         while  ( aSolution ) {
-            // Here we iterate while Time difference 'dTfit' will be less than 0.001 second in Sun's azimuth
-            // UTC of calculated moment = (Tfit)
-            // EfArr = ReadDataFromResourceString(sDay, sMonth, sYear, (Tfit), Longitude, dUTCval);
-            // fitD = EfArr[11];            fitE = EfArr[12];            SunRadius= EfArr[13];
-
-            //TODO
-            // if (Tfit > 24) {
-            //     sMoment = sYear + "-" + sMonth + "-" + sDay;
-            //     aMoment = moment(sMoment, "").add(1, 'day');
-            //     nYear = moment(aMoment).format('YYYY');
-            //     nMonth = moment(aMoment).format('MM');
-            //     nDay = moment(aMoment).format('DD');
-            //     params ={Lat:Latitude, Lon:Longitude, Day:nDay, Month:nMonth, Year:nYear, UTCTime:(Tfit-24-dUTCval), dUTC:dUTCval, Temp:tempC, Press:pressP};
-            //
-            // }
-            // else  {
-            //     params ={Lat:Latitude, Lon:Longitude, Day:sDay, Month:sMonth, Year:sYear, UTCTime:(Tfit-dUTCval), dUTC:dUTCval, Temp:tempC, Press:pressP};
-            //     }
-
             params ={Lat:Latitude, Lon:Longitude, Day:sDay, Month:sMonth, Year:sYear, UTCTime:(Tfit-dUTCval), dUTC:dUTCval, Temp:tempC, Press:pressP};
             mSolar = new Solar(params);
             tResult= mSolar._calculate();
 
             SunA1= tResult[0];
 
-            if (Math.abs( SunA1 - givenA) < (0.00001/3600) )
+            if (Math.abs( SunA1 - givenA) < (0.001/3600) )
                 break;
             else {
-                if (dTfit < 0.00000001) {
+                if (dTfit < 0.000000001) {
                     aSolution = false;
                 }
                 else {
-                    // if (afterLowCulm) {SunA1= SunA1 + 360;}
+                    //console.log('givenA='+givenA.toFixed(4)+'SunA1='+SunA1.toFixed(4))
+                    if (SunA1 > 359 && givenA < 1) { SunA1 = SunA1-360 }                 //When iterations cross 0-360
                     if (givenA > SunA1) {
                         T1 = Tfit;
                     }
@@ -298,12 +261,22 @@ function Solar(options) {
                     }
                     Tfit = (T2 + T1) / 2;
                     dTfit = Math.abs(T2 - T1);
-
-
                 }
             }
         }
-        Results[1]= Tfit;         // Local time (in hours) when Sun is at givenA
+        if (aSolution) {
+            Results[1] = Tfit;         // Local time (in hours) when Sun is at givenA
+            givAg.classList.remove("invalidVal") ;
+            givAm.classList.remove("invalidVal") ;
+            givAs.classList.remove("invalidVal") ;
+        }
+        else {
+            //givAg.value = 999;
+            givAg.classList.add("invalidVal") ;
+            givAm.classList.add("invalidVal") ;
+            givAs.classList.add("invalidVal") ;
+            Results[1] = 0;
+        }
         return Results;
     }
 

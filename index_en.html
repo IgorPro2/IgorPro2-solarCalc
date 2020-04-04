@@ -66,9 +66,9 @@
 
     <div class="row justify-content-center rowInput">
 
-        <div class="col-sm-12 col-md-auto text-center text-nowrap">
-            <button id="buttonNow" onclick="Utils.getNow();">Now</button>
-        </div>
+        <!-- <div class="col-sm-12 col-md-auto text-center text-nowrap">
+            <button id="buttonNow" onclick="Utils.getNow();">Сейчас</button>
+        </div> -->
         <div class="col-sm-12 col-md-auto text-center text-nowrap">
             <label for="dateYear">Date</label>
             <input id="dateYear" type="number" placeholder="Year" value="" size="2" max="2020" min="2017" step="1">
@@ -109,41 +109,43 @@
             <label for="nDigits">Decimals=</label>
             <input id="nDigits" type="number" placeholder='1' value="2" size="2" max="4" min="0" step="1">
         </div>
-
-        <div class="col-sm-12 col-md-auto text-center text-nowrap">
-            <labek>PM</labek><input id="check1" type="checkbox" name="ch1">
-        </div>
-
     </div>
 
 
     <div class="row justify-content-center">
 
         <div class="col-sm-12 col-md-auto text-center text-nowrap">
-            <button class="btn btn-primary" onclick=Utils.show_results() id="buttonCalc" name="calculate"
+            <button class="btn btn-primary" onclick=Utils.show_results(); id="buttonCalc" name="calculate"
                     value="CALCULATE">CALCULATE
             </button>
         </div>
 
         <div class="col-sm-12 col-md-auto text-center text-nowrap">
-            <button class="btn btn-primary" onclick=Utils.showResultTimer() id="buttonCurrent" name="now"
+            <button class="btn btn-primary" onclick=Utils.showResultTimer(); id="buttonCurrent" name="now"
                     value="NOW">CURRENT
             </button>
         </div>
 
         <div class="col-sm-12 col-md-auto text-center text-nowrap">
-            <button class="btn btn-primary" onclick=Utils.showGraphic() id="buttonGraph" name="graph"
-                    value="GRAPHICS">GRAPHICS
+            <button class="btn btn-primary" onclick=Utils.showGraphic(); id="buttonGraph" name="graph"
+                    value="GRAPHICS">GRAPH
             </button>
         </div>
 
         <div class="col-sm-12 col-md-auto text-center text-nowrap">
-            <button class="btn btn-primary"  onclick=Utils.calcTimeAtGivenHA() id="buttonGiven" name="given"
-                    value="GRAPHICS">Given Ht Az
+            <button class="btn btn-primary" onclick=Utils.calcTimeAtGivenHA(); id="buttonGiven" name="given"
+                    value="GIVEN">Given Height/Azimuth
             </button>
         </div>
 
+        <div class="col-sm-12 col-md-auto text-center text-nowrap">
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+                HELP
+            </button>
+        </div>
+    </div>
 
+    <div class="row justify-content-center">
         <div class="col-sm-12 col-md-auto text-center text-nowrap">
             <labek>Ht</labek><input type="radio" id="radio1" name="whatHA" value="yes">
         </div>
@@ -159,19 +161,12 @@
         <div class="col-sm-12 col-md-auto text-center text-nowrap">
             <label for="timeHour"></label>
             <input id="givAg" type="number" placeholder="grd" value="0" size="2" max="360" min="0" step="1">
-            <input id="givAm" type="number" placeholder="min" value="16" size="2" max="60" min="0" step="1">
-            <input id="givAs" type="number" placeholder='sec' value="16" size="2" max="60" min="0" step="1">
+            <input id="givAm" type="number" placeholder="min" value="3" size="2" max="60" min="0" step="1">
+            <input id="givAs" type="number" placeholder='sec' value="0" size="2" max="60" min="0" step="1">
         </div>
-
-
-        <!--
         <div class="col-sm-12 col-md-auto text-center text-nowrap">
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
-                Help
-            </button>
+            <labek>PM</labek><input id="check1" type="checkbox" name="ch1">
         </div>
-        -->
-
     </div>
 
 
@@ -208,7 +203,7 @@
 
     <table class="valuesTable table table-bordered mb-0 bg-light">
         <tr>
-            <td class="tableMainHeader text-center" colspan="12">SUN POSITION THIS DAY (SUNRISE & SUNSET TIME FOR UPPER EDJE):</td>
+            <td class="tableMainHeader text-center" colspan="12">SUN POSITION THIS DAY (SUNRISE & SUNSET TIME FOR SUN'S UPPER EDJE):</td>
         </tr>
         <tr class="table-info">
             <td class="tableValueHeader">Sunrise</td>
@@ -251,9 +246,9 @@
             <td class="tableMainHeader text-center" colspan="14">SUN VELOCITIES:</td>
         </tr>
         <tr  class="table-info">
-            <td class="tableValueHeader">dH min.</td>
+            <td class="tableValueHeader">dHt min.</td>
             <td class="tableValue" id="moveH1min"></td>
-            <td class="tableValueHeader">dH hr.</td>
+            <td class="tableValueHeader">dHt hr.</td>
             <td class="tableValue" id="moveH1hour"></td>
             <td class="tableValueHeader">dAz min.</td>
             <td class="tableValue" id="moveAz1min"></td>
@@ -261,7 +256,7 @@
             <td class="tableValue" id="moveAz1hour"></td>
             <td class="tableValueHeader" id="shadowLabel">Shadow length of </td>
             <td class="tableValue" id="shadowLength"></td>
-            <td class="tableValueHeader">NextDay dH</td>
+            <td class="tableValueHeader">NextDay dHt</td>
             <td class="tableValue" id="nextDaydH"></td>
             <td class="tableValueHeader">NextDay dAz</td>
             <td class="tableValue" id="nextDaydAz"></td>
@@ -277,14 +272,18 @@
 <div class="canvasContainer hidden" id="graphicContainer">
     <canvas id="myCanvas" data-paper-resize="true"></canvas>
 
-    <button type="button" class="close closeGraphicBtn" onclick=Utils.hideGraphic() aria-label="Close">
+    <button type="button" class="close closeGraphicBtn" onclick=Utils.hideGraphic(); aria-label="Close">
         <span aria-hidden="true">&times;</span>
     </button>
-    <button type="button" class="show Graphics2Btn" onclick=Utils.show3Month() aria-label="show">
-        <span aria-hidden="true">+3Month</span>
+    <button type="button" class="show Graphics2Btn" onclick=Utils.show3Month(); aria-label="show">
+        <span aria-hidden="true">+3 Month</span>
     </button>
-    <button type="button" class="show Graphics1Btn" onclick=Utils.showGraphic() aria-label="show">
+    <button type="button" class="show Graphics1Btn" onclick=Utils.showGraphic(); aria-label="show">
         <span aria-hidden="true">Now</span>
+    </button>
+
+    <button type="button" class="show Graphics3Btn" onclick=Utils.show3D(); aria-label="show">
+        <span aria-hidden="true">3D</span>
     </button>
 
 </div>
@@ -300,12 +299,16 @@
             </div>
             <div class="modal-body text-left">
                 <ol>
-                    <li>Input your: Latitude/Longitude and TimeZone difference from UTC</li>
-                    <li>Input your: Date/Time and Meteo-parameters (for vertical refraction)</li>
-                    <li>"CALCULATE"- Calculate sun's position at given Date/Time</li>
-                    <li>"CURRENT"-Calculate current sun's position at system clock time</li>
-                    <li>"GRAPHICS"- Draw Sun's year(analemma) and day moves</li>
-                    <li>"Given Ht Az"- Calculate Time when Sun is at given Height (or Azimuth)</li>
+                    <li>Input your: Latitude/Longitude and TimeZone difference from UTC.</li>
+                    <li>Input your: Date/Time and Temperature/Pressure (for correction SunHeight on vertical refraction).
+                        BUTTONS ARE:</li>
+                    <li>"CALCULATE"- Calculate apparent sun's position at given Place Date and Time.</li>
+                    <li>"CURRENT"  - Calculate SunPosition each second at system clock Time.</li>
+                    <li>"GRAPH" - Draw and animate SunPathes: Year(analemma) and Day moves.</li>
+                    <li>"GivenHtAz"- Calculate local Time moment when Sun's Center is at your specified Height or Azimuth.
+                        The Altitude/Azimuth values you need, are set in the line below the BUTTONS.
+                        To calculate the Time when the Sun is at a given height in the afternoon, check the box in this line.
+                        If Sun's Height or Azimuth impossible  at the specified Place/Date, their values are given in red.</li>
                 </ol>
             </div>
             <div class="modal-footer">

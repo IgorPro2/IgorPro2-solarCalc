@@ -33,7 +33,7 @@ function ReadDataFromResourceString(aDay, aMonth, aYear, utcTime, Longitude, Loc
     /* ReadDatafromResourceString ( string aDay, string aMonth, string aYear, double aTime, double Longitude, double LocalMinusUTC)
     aTime - UTC Time in hours.dd      LocalMinusUTC - Difference to Local time from UTC in hours.dd
     2017-11-06(4JAVA)   double aTime instead string aTime. Must be  UTC decimal degrees!!!
-    Arrays Ephemeris[year] declare in index.html [2020.js...] when script starts;
+    Arrays Ephemeris[year] declare in index_en.html [2020.js...] when script starts;
     Each row in Ephemeris[year]  contains at 0h of Time Dynamical Terrestrial: 10 values separated with comma;
     Return Results[15] array with values:
     Results [0-9] are table values at 0h UTC:
