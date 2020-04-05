@@ -30,10 +30,10 @@
     let tempC = document.getElementById("temp");
     let pressP = document.getElementById("press");
     let eyeHeight = document.getElementById("height");
-    //4Debugging
+    //4Debugging Time & Place it was pushed to wwww
     latGrad.value="44";latMin.value="06";latSec.value="16";
     lonGrad.value="39";lonMin.value="04";lonSec.value="03"; dUTC.value="3";
-    dateYear.value="2020"; dateMonth.value="3"; dateDay.value="20";
+    dateYear.value="2020"; dateMonth.value="04"; dateDay.value="04";
     timeHour.value="7";timeMin.value="00"; timeSec.value="00";
     tempC.value="20"; pressP.value="756"; eyeHeight.value="1.68";
 

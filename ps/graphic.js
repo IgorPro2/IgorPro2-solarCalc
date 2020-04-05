@@ -63,6 +63,7 @@
     // var dayAnimTimeLb='Local time of day position= ', dayHtLb='Height (day)=', dayAzLb='Aziuth (day)=';
     // var yearAnimTimeLb='Date of year position= ', yearHtLb='Height (year)= ', yearAzLb='Azimuth (year)= ';
 
+    // LABELS FOR GRAPHICS PAGE DEFINED IN ENGLISH.JS
     var zenithLb = window.locales['zenithLb'], nadirLb = window.locales['nadirLb'], northLb = window.locales['northLb'];
     var southLb = window.locales['southLb'], eastLb = window.locales['eastLb'], westLb = window.locales['westLb'];
     var latLb = window.locales['latLb'], lonLb = window.locales['lonLb'], momentLb = window.locales['momentLb'];
@@ -832,7 +833,7 @@
             point = path2.getPointAt(offset);
             ArrX [i] = point.x;
             ArrY [i] = point.y;
-            console.log(i, ArrX [i].toFixed(0), ArrY [i].toFixed(0), offset.toFixed(0));
+            //console.log(i, ArrX [i].toFixed(0), ArrY [i].toFixed(0), offset.toFixed(0));
         }
 
         point = new Point(ArrX [0], ArrY [0]);
