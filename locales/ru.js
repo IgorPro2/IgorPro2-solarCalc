@@ -18,6 +18,7 @@
         yearHtLb:        'Высота (год)= ',
         yearAzLb:        'Азимут (год)= ',
 
+        sunCalcLb:'SOLAR CALCULATOR',
         sunRiseLb:       'Восход= ',
         culmTimeLb:      'Время верхней кульминации= ',
         maxHeightLb:     'Максимальная высота= ',

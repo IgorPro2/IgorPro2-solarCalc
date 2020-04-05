@@ -19,7 +19,7 @@
         yearHtLb:        'Height (year): ',
         yearAzLb:        'Azimuth (year): ',
 
-
+        sunCalcLb:'SOLAR CALCULATOR',
         sunPosDayLb:     'SUN POSITION THIS DAY (SUNRISE & SUNSET TIME FOR SUN\'S UPPER EDGE):',
         sunRiseLb:       'Sunrise time',
         culmTimeLb:      'Time of upper culmination',
