@@ -64,13 +64,14 @@
     // var yearAnimTimeLb='Date of year position= ', yearHtLb='Height (year)= ', yearAzLb='Azimuth (year)= ';
 
     // LABELS FOR GRAPHICS PAGE DEFINED IN ENGLISH.JS
-    var zenithLb = window.locales['zenithLb'], nadirLb = window.locales['nadirLb'], northLb = window.locales['northLb'];
-    var southLb = window.locales['southLb'], eastLb = window.locales['eastLb'], westLb = window.locales['westLb'];
-    var latLb = window.locales['latLb'], lonLb = window.locales['lonLb'], momentLb = window.locales['momentLb'];
-    var dayAnimTimeLb = window.locales['dayAnimTimeLb'], dayHtLb = window.locales['dayHtLb'],
-        dayAzLb = window.locales['dayAzLb'];
-    var yearAnimTimeLb = window.locales['yearAnimTimeLb'], yearHtLb = window.locales['yearHtLb'],
-        yearAzLb = window.locales['yearAzLb'];
+
+    // var zenithLb = window.locales['zenithLb'], nadirLb = window.locales['nadirLb'], northLb = window.locales['northLb'];
+    // var southLb = window.locales['southLb'], eastLb = window.locales['eastLb'], westLb = window.locales['westLb'];
+    // var latLb = window.locales['latLb'], lonLb = window.locales['lonLb'], momentLb = window.locales['momentLb'];
+    // var dayAnimTimeLb = window.locales['dayAnimTimeLb'], dayHtLb = window.locales['dayHtLb'],
+    //     dayAzLb = window.locales['dayAzLb'];
+    // var yearAnimTimeLb = window.locales['yearAnimTimeLb'], yearHtLb = window.locales['yearHtLb'],
+    //     yearAzLb = window.locales['yearAzLb'];
 
     window.Utils.defineDimensions = function () {
         /////////////////////////////////////////////////      DEFINE DRAW DIMENSIONS          /////////////////////////////////
@@ -235,7 +236,7 @@
         axisX.add(new Point(ox - lx, oy), new Point(ox + lx, oy));         // axis X
         text = new PointText({
             point: [ox - lx, oy - tic * 1.5],
-            content: northLb,
+            content: window.locales['northLb'],
             fillColor: fontAxisColor,
             fontFamily: axisFont,
             fontWeight: axisFontWeight,
@@ -268,7 +269,7 @@
         axisX.add(new Point(ox - 90 * s, oy + tic));
         text = new PointText({
             point: [ox - 90 * s, oy - tic * 1.5],
-            content: eastLb,
+            content: window.locales['eastLb'],
             fillColor: fontAxisColor,
             fontFamily: axisFont,
             fontWeight: axisFontWeight,
@@ -277,7 +278,7 @@
         });
         text = new PointText({
             point: [ox, oy - tic * 1.5],
-            content: southLb,
+            content: window.locales['southLb'],
             fillColor: fontAxisColor,
             fontFamily: axisFont,
             fontWeight: axisFontWeight,
@@ -290,7 +291,7 @@
         axisX.add(new Point(ox + 90 * s, oy + tic));
         text = new PointText({
             point: [ox + 90 * s, oy - tic * 1.5],
-            content: westLb,
+            content: window.locales['westLb'],
             fillColor: fontAxisColor,
             fontFamily: axisFont,
             fontWeight: axisFontWeight,
@@ -303,7 +304,7 @@
         axisX.add(new Point(ox + 180 * s, oy + tic));
         text = new PointText({
             point: [ox + 180 * s, oy - tic * 1.5],
-            content: northLb,
+            content: window.locales['northLb'],
             fillColor: fontAxisColor,
             fontFamily: axisFont,
             fontWeight: axisFontWeight,
@@ -346,7 +347,7 @@
         });
         text = new PointText({
             point: [ox + tic * 3, oy - 90 * s + tic * 2],
-            content: zenithLb,
+            content: window.locales['zenithLb'],
             fillColor: fontAxisColor,
             fontFamily: axisFont,
             fontWeight: axisFontWeight,
@@ -366,7 +367,7 @@
         });
         text = new PointText({
             point: [ox + tic * 3, oy + 90 * s - tic],
-            content: nadirLb,
+            content: window.locales['nadirLb'],
             fillColor: fontAxisColor,
             fontFamily: axisFont,
             fontWeight: axisFontWeight,
@@ -552,7 +553,7 @@
             fontWeight: axisFontWeight,
             fontSize: hFont,
             point: [20, 20],
-            content: latLb + lat
+            content: window.locales['latLb'] + lat
         });
         var textLon = new PointText({
             fillColor: fontAxisColor,
@@ -560,7 +561,7 @@
             fontWeight: axisFontWeight,
             fontSize: hFont,
             point: [20, 40],
-            content: lonLb + lon
+            content: window.locales['lonLb'] + lon
         });
         var textMoment = new PointText({
             fillColor: fontAxisColor,
@@ -568,7 +569,7 @@
             fontWeight: axisFontWeight,
             fontSize: hFont,
             point: [20, 60],
-            content: momentLb + aTime[1440]
+            content: window.locales['momentLb'] + aTime[1440]
         });
 
         var textDayTime = new PointText({
@@ -632,9 +633,9 @@
             textH.content = "H=" + dayArr[k].toFixed(0) + "°";
             textA.point = new paper.Point(x + tic * 4, y + 14);
             textA.content = "A=" + dayArr[k + 1].toFixed(0) + "°";
-            textHDay.content = dayHtLb + dayArr[k].toFixed(0) + "°";   //Output at fixed position
-            textADay.content = dayAzLb + dayArr[k + 1].toFixed(0) + "°";
-            textDayTime.content = dayAnimTimeLb + Utils.grad_number2text(aTime[k / 2], 0, "", ": ");
+            textHDay.content = window.locales['dayHtLb'] + dayArr[k].toFixed(0) + "°";   //Output at fixed position
+            textADay.content = window.locales['dayAzLb'] + dayArr[k + 1].toFixed(0) + "°";
+            textDayTime.content = window.locales['dayAnimTimeLb'] + Utils.grad_number2text(aTime[k / 2], 0, "", ": ");
             k = k + 2;
             if (k > dayArr.length - 1) k = 0;
         };
@@ -731,9 +732,9 @@
                 circle2.fillColor = sunColor; //textH.fillColor = fontSunColor; textA.fillColor = fontSunColor;
             }
             //H A output
-            textHYear.content = yearHtLb + yearArr[i].toFixed(0) + "°";
-            textAYear.content = yearAzLb + yearArr[i + 1].toFixed(0) + "°";
-            textYearTime.content = yearAnimTimeLb + aDate[i / 2];
+            textHYear.content = window.locales['yearHtLb'] + yearArr[i].toFixed(0) + "°";
+            textAYear.content = window.locales['yearAzLb'] + yearArr[i + 1].toFixed(0) + "°";
+            textYearTime.content = window.locales['yearAnimTimeLb'] + aDate[i / 2];
             i = i + 2;
             //console.log(" i="+ i + " aDate[]="+ aDate[i/2]+" Ht0="+yearArr[i].toFixed(1)+" Az0="+yearArr[i + 1].toFixed(1));
             if (i > yearArr.length - 5) i = 0;

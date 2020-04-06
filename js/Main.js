@@ -5,7 +5,6 @@
         showResultTimer: showResultTimer,
         show_results: show_results,
         calcTimeAtGivenHA: calcTimeAtGivenHA,
-        //CharDigits2Number: CharDigits2Number,   //TODO make reference
     };  // something like global variables
 
     window.currentAction = "calc";
@@ -30,7 +29,7 @@
     let tempC = document.getElementById("temp");
     let pressP = document.getElementById("press");
     let eyeHeight = document.getElementById("height");
-    //4Debugging Time & Place it was pushed to wwww
+    //Time & Place it was pushed to wwww.solarcalculator.ru
     latGrad.value="44";latMin.value="06";latSec.value="16";
     lonGrad.value="39";lonMin.value="04";lonSec.value="03"; dUTC.value="3";
     dateYear.value="2020"; dateMonth.value="04"; dateDay.value="04";
@@ -51,7 +50,6 @@
     let sunSet = document.getElementById("sunSet");
     let dayDuration = document.getElementById("dayDuration");
     let time2SunSet = document.getElementById("time2SunSet");
-
 
     let winterSolstice = document.getElementById("winterSolstice");
     let minHeight = document.getElementById("minHeight");
