@@ -185,21 +185,7 @@
         if (inp.value > 60) inp.value = 60;
         if (inp.value < 0) inp.value = 0;
     });
-
-    // // Reformat lat Lon if case of wrong user input
-    // let g = lonGrad.value;       let m = lonMin.value;     let   s = lonSec.value;
-    // let L = Utils.grad_textGMS2number(g, m, s);
-    // g = latGrad.value;  m = latMin.value;  s = latSec.value;
-    // let B =   Utils.grad_textGMS2number(g, m, s);
-    // let lat = Utils.grad_number2text(L, undefined, undefined, undefined, true);
-    // let lon = Utils.grad_number2text(B, undefined, undefined, undefined, true);
-    // lonGrad.value = lon[0];
-    // lonMin.value =  lon[1];
-    // lonSec.value =  lon[2];
-    // latGrad.value = lat[0];
-    // latMin.value =  lat[1];
-    // latSec.value =  lat[2];
-
+    
     let buttonCalculate = document.getElementById("buttonCalc");
     buttonCalculate.addEventListener("click", show_results);
     let x;
@@ -246,15 +232,26 @@
 ///////////////////////////////////////////////////   SHOW RESULTS     /////////////////////////////////////////////////
     function show_results() {
         window.timerIsOn = false;       // to stop showTimer() in function showResultTimer()
-        let g, m, s, L;
+        let g, m, s, B, L;
         let utcTime, dUTCval;
         let curTime, sDay, sMonth, sYear, ht, mt, st;
         let EphArr, ExistYear;
 
-        g = lonGrad.value;
-        m = lonMin.value;
-        s = lonSec.value;
+        // Reformat B Lon if case of wrong user input
+        g = latGrad.value;  m = latMin.value;  s = latSec.value;
+        B =   Utils.grad_textGMS2number(g, m, s);
+        if (B > 90)  B =  90;
+        if (B < -90) B = -90;
+        B = Utils.grad_number2text(B, nDigits, undefined, undefined, true);
+        latGrad.value = B[3]+B[0];        latMin.value =  B[1];        latSec.value =  B[2];
+        g = lonGrad.value;            m = lonMin.value;            s = lonSec.value;
         L = Utils.grad_textGMS2number(g, m, s);
+        if (L > 180)  L =  180;
+        if (L < -180) L = -180;
+        L = Utils.grad_number2text(L, nDigits, undefined, undefined, true);
+        lonGrad.value = L[3]+L[0];        lonMin.value =  L[1];        lonSec.value =  L[2];
+
+
         ht = timeHour.value;
         mt = timeMin.value;
         st = timeSec.value;
@@ -316,14 +313,24 @@
 
         (function delay(duration) {
             if (!window.timerIsOn) return false;
-            g = latGrad.value;
-            m = latMin.value;
-            s = latSec.value;
-            B = Utils.grad_textGMS2number(g, m, s);
-            g = lonGrad.value;
-            m = lonMin.value;
-            s = lonSec.value;
+
+            // Reformat B Lon if case of wrong user input
+            g = latGrad.value;  m = latMin.value;  s = latSec.value;
+            B =   Utils.grad_textGMS2number(g, m, s);
+            if (B > 90)  B =  90;
+            if (B < -90) B = -90;
+            B = Utils.grad_number2text(B, nDigits, undefined, undefined, true);
+            latGrad.value = B[3]+B[0];        latMin.value =  B[1];        latSec.value =  B[2];
+            g = lonGrad.value;            m = lonMin.value;            s = lonSec.value;
             L = Utils.grad_textGMS2number(g, m, s);
+            if (L > 180)  L =  180;
+            if (L < -180) L = -180;
+            L = Utils.grad_number2text(L, nDigits, undefined, undefined, true);
+            lonGrad.value = L[3]+L[0];        lonMin.value =  L[1];        lonSec.value =  L[2];
+
+
+
+
             digits = Number(nDigits.value);
 
             getNow();

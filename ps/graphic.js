@@ -404,16 +404,20 @@
         if (hFont < 12) hFont = 12;
 
         pathD = new Path({strokeColor: 'red'});
-        tx2 = dayArr[1];
+        //tx2 = dayArr[1];
+        tx2 = ox - 180 * s + dayArr[1] * s;
 
         for (i = 0; i < (dayArr.length - 2); i = i + 2) {
             tx = ox - 180 * s + dayArr[i + 1] * s;
             ty = oy - dayArr[i] * s;
-            diff = Math.abs(dayArr[i + 1] - tx2);
-            tx2 = dayArr[i + 1];
+            // diff = Math.abs(dayArr[i + 1] - tx2);
+            // tx2 = dayArr[i + 1];
+            diff = Math.abs(tx - tx2);
+            tx2 = tx;
             localTime = aTime[i / 2];
             //console.log("tx=" + tx.toFixed(2) + " ty=" + ty.toFixed(2) + " localTime=" + Utils.grad_number2text(localTime, 0, "", ":::")+" diff= "+ diff.toFixed(0));
-            if (diff < 330) {
+            // if (diff < 330) {
+            if (diff < width/2 && diff < height/2) {
                 pathD.add(new Point(tx, ty));
             } else {                                 //Not 2Draw strait line when Azimuth jumps from 360° to 0° !!!!
                 pathD = new Path({strokeColor: 'red'});
@@ -662,17 +666,13 @@
         var xt1, yt1, xt2, yt2, i, diff, pathY;
         pathY = new Path({strokeColor: "magenta"});
 
-        //xt2 = yearArr[1];
         xt2 = ox - 180 * s + yearArr[1] * s;
         for (i = 0; i < (yearArr.length - 5); i = i + 2) {
             xt1 = ox - 180 * s + yearArr[i + 1] * s;
             yt1 = oy - yearArr[i] * s;
-            //diff = Math.abs(yearArr[i + 1] - xt2);        //Not 2Draw strait line when Azimuth jumps from 360° to 0° !!!!
             diff = Math.abs(xt1 - xt2);        //Not 2Draw strait line when Azimuth jumps from 360° to 0° !!!!
-            console.log('diff='+diff.toFixed(1));
-            //xt2 = yearArr[i + 1];
+            //console.log('diff='+diff.toFixed(1));
             xt2 = xt1;
-            //if (diff < 330) {
             if (diff < width/2 && diff < height/2) {
                     pathY.add(new Point(xt1, yt1));
             } else {
