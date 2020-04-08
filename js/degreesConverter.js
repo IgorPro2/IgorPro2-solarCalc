@@ -32,7 +32,7 @@
         switch (delLength) {
             case 1:
                 g = dmsNum.toFixed(numSigns);
-                result = g + strDel.charAt(0);
+                result = SignStr + g + strDel.charAt(0);
                 break;
             case 2:
                 g = Math.floor(module);
@@ -52,7 +52,7 @@
                 result = SignStr + g.toString() + strDel.charAt(0) + spc + m.toString() + strDel.charAt(1) + spc + s + strDel.charAt(2);
                 break;
         }
-        if (returnArray) return [g || 0, m || 0, s || 0];
+        if (returnArray) return [g || 0, m || 0, s || 0, SignStr ];
         return result
     }
 

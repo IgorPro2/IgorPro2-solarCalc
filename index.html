@@ -48,7 +48,7 @@
 
 <div class="container" id="calcContainer">
     <div class="localesSwitch">
-        <a href="#" onclick="window.setLocale('en');">EN</a>/<a href="#" onclick="window.setLocale('ru');">RU</a>
+        <a href="#" onclick="window.setLocale('en');">{{engLb}}</a>/<a href="#" onclick="window.setLocale('ru');">{{rusLb}}</a>
     </div>
     <div class="logoSign">
         <span>{{logoSignLb}}</span>
@@ -139,28 +139,28 @@
     </div>
 
 
-    <div class="row justify-content-center">
+    <div id="mainPageButtons" class="row justify-content-center">
 
         <div class="col-sm-12 col-md-auto text-center text-nowrap">
-            <button class="btn btn-primary" onclick=Utils.show_results(); id="buttonCalc" name="calculate"
+            <button class="btn btn-primary" data-action="showResults" id="buttonCalc" name="calculate"
                     value="CALCULATE">{{calculateBtLb}}
             </button>
         </div>
 
         <div class="col-sm-12 col-md-auto text-center text-nowrap">
-            <button class="btn btn-primary" onclick=Utils.showResultTimer(); id="buttonCurrent" name="now"
+            <button class="btn btn-primary" data-action="showResultTimer" id="buttonCurrent" name="now"
                     value="NOW">{{currentBtLb}}
             </button>
         </div>
 
         <div class="col-sm-12 col-md-auto text-center text-nowrap">
-            <button class="btn btn-primary" onclick=Utils.showGraphic(); id="buttonGraph" name="graph"
+            <button class="btn btn-primary" data-action="showGraphic" id="buttonGraph" name="graph"
                     value="GRAPHICS">{{graphBtLb}}
             </button>
         </div>
 
         <div class="col-sm-12 col-md-auto text-center text-nowrap">
-            <button class="btn btn-primary" onclick=Utils.calcTimeAtGivenHA(); id="buttonGiven" name="given"
+            <button class="btn btn-primary" data-action="calcTimeAtGivenHA" id="buttonGiven" name="given"
                     value="GIVEN">{{givenHtAzBtLb}}
             </button>
         </div>
@@ -201,9 +201,9 @@
 
     <div class="row">
         <div class="table-responsive">
-            <table class="valuesTable table table-bordered mb-0 bg-dark w-a">
+            <table class="valuesTable table table-bordered mb-0 bg-light w-100">
                 <tr class="table-secondary">
-                    <td class="tableMainHeader text-center" colspan="8">{{apparentPosHdLb}}</td>
+                    <td class="tableMainHeader text-center bg-light" colspan="14">{{apparentPosHdLb}}</td>
                 </tr>
                 <tr class="table-info">
                     <td class="tableValueHeader">{{heghtLb}}</td>
@@ -219,7 +219,7 @@
 
             <table class="valuesTable table table-bordered mb-0 bg-light w-100">
                 <tr>
-                    <td class="tableMainHeader text-center" colspan="6">{{ephemerisHdLb}}</td>
+                    <td class="tableMainHeader text-center" colspan="14">{{ephemerisHdLb}}</td>
                 </tr>
                 <tr class="table-info">
                     <td class="tableValueHeader">{{declinationLb}}</td>
@@ -234,7 +234,7 @@
 
             <table class="valuesTable table table-bordered mb-0 bg-light w-100">
                 <tr>
-                    <td class="tableMainHeader text-center" colspan="12">{{sunPosDayHdLb}}
+                    <td class="tableMainHeader text-center" colspan="14">{{sunPosDayHdLb}}
                     </td>
                 </tr>
                 <tr class="table-info">
@@ -255,7 +255,7 @@
 
             <table class="valuesTable table table-bordered mb-0 bg-light w-100">
                 <tr>
-                    <td class="tableMainHeader text-center" colspan="12">{{sunPosYearHdLb}}</td>
+                    <td class="tableMainHeader text-center" colspan="14">{{sunPosYearHdLb}}</td>
                 </tr>
                 <tr class="table-info">
                     <td class="tableValueHeader">{{springEquinoxLb}}</td>
@@ -299,29 +299,45 @@
 
 </div>
 
-<div class="input-group mb-3">
-
-</div>
 
 <div class="canvasContainer hidden" id="graphicContainer">
     <canvas id="myCanvas" data-paper-resize="true"></canvas>
 
-    <button type="button" class="close closeGraphicBtn" onclick=Utils.hideGraphic(); aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-    </button>
-    <button type="button" class="show Graphics2Btn" onclick=Utils.show3Month(); aria-label="show">
-        <span aria-hidden="true">{{month3BtLb}}</span>
-    </button>
-    <button type="button" class="show Graphics1Btn" onclick=Utils.showGraphic(); aria-label="show">
-        <span aria-hidden="true">{{nowBtLb}}</span>
-    </button>
+    <div id="topRightGraphicsButtons" class="graphicsBtnGroup">
 
-    <button type="button" class="show Graphics3Btn" onclick=Utils.show3D(); aria-label="show">
-        <span aria-hidden="true">{{dim3BtLb}}</span>
-    </button>
+        <button class="btn btn-primary btn-sm dropdown-toggle mx-1" type="button" id="dropdownMenu2"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            {{positionDropBtLb}}
+        </button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+            <button class="dropdown-item" type="button" data-action="setGivenPlace">{{givenPlace}}</button>
+            <button class="dropdown-item" type="button" data-action="setHerePlace">{{herePlace}}</button>
+            <button class="dropdown-item" type="button" data-action="setNorthPole">{{northPole}}</button>
 
+            <button class="dropdown-item" type="button" data-action="setNorthCircle">{{northCircle}}</button>
+            <button class="dropdown-item" type="button" data-action="setNorthTropic">{{northTropic}}</button>
+            <button class="dropdown-item" type="button" data-action="setEquator">{{equator}}</button>
+            <button class="dropdown-item" type="button" data-action="setSouthTropic">{{southTropic}}</button>
+            <button class="dropdown-item" type="button" data-action="setSouthCircle">{{southCircle}}</button>
+            <button class="dropdown-item" type="button" data-action="setSouthPole">{{southPole}}</button>
+        </div>
+
+        <button class="btn btn-sm btn-light hiddenButton mx-1" onclick=Utils.show3D(); aria-label="show">
+            <span aria-hidden="true">{{dim3BtLb}}</span>
+        </button>
+        <button class="btn btn-sm btn-light mx-1" onclick=Utils.showGraphic(); aria-label="show">
+            <span aria-hidden="true">{{nowBtLb}}</span>
+        </button>
+        <button type="button" class="btn btn-sm btn-light mx-1" onclick=Utils.show3Month(); aria-label="show">
+            <span aria-hidden="true">{{month3BtLb}}</span>
+        </button>
+        <button class="close mx-1" onclick=Utils.hideGraphic(); aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
 
 </div>
+
 
 <div class="modal" id="exampleModal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
@@ -360,20 +376,21 @@
 </div>
 
 
-<script defer src="js/moment.js"></script>
+<script src="js/moment.js"></script>
 <script src="js/paper-full.min.js"></script>
 
-<script defer src="js/Main.js"></script>
-<script defer src="js/degreesConverter.js"></script>
-<script defer src="js/ReadEphemeris.js"></script>
-<script defer src="js/ReadRefraction.js"></script>
-<script defer src="js/classSolar.js"></script>
+<script src="js/Main.js"></script>
+<script src="js/degreesConverter.js"></script>
+<script src="js/ReadEphemeris.js"></script>
+<script src="js/ReadRefraction.js"></script>
+<script src="js/classSolar.js"></script>
 
 <script src="vendor/jQuery/jquery.min.js"></script>
 <script src="vendor/bootstrap/bootstrap.bundle.min.js"></script>
 <!--Template engine homemade-->
 <script src="js/templateEngine.js"></script>
-<script defer type="text/paperscript" canvas="myCanvas" src="ps/graphic.js"></script>
+<script type="text/paperscript" canvas="myCanvas" src="ps/graphic.js"></script>
+<script src="js/buttonHandler.js"></script>
 
 </body>
 </html>

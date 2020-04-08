@@ -35,7 +35,7 @@ function Solar(options) {
         }
 
         // Get ephemeris
-        let EphArr = ReadDataFromResourceString(sDay, sMonth, sYear, timeUTC, Longitude, dUTCval);
+        let EphArr = Utils.ReadDataFromResourceString(sDay, sMonth, sYear, timeUTC, Longitude, dUTCval);
         Declination = EphArr[11];  Equation = EphArr[12];   SunRadius = EphArr[13];
 
         let Results = new Array(14);
@@ -73,7 +73,7 @@ function Solar(options) {
         //Apply refraction to SunHeight
         let TC=+tempC, Pmm=+pressP;
         if ((TC !== 0) && (Pmm !== 0)) {
-            Res = getRefractionTP(SunHcor, SunRadius, TC, Pmm);
+            Res = Utils.getRefractionTP(SunHcor, SunRadius, TC, Pmm);
             aRef = Res[0];
             SunHcor = SunHcor + aRef;        //Sun height corrected for Refraction
         }
@@ -111,7 +111,7 @@ function Solar(options) {
         let fitD, fitE, SunRadius, culmTime;
         let T1, T2, mSolar, tResult, SunH1, SunH2, aSolution, params;
         // Any time. 12.0, simply to calculate CULMINATION TIME at given Date
-        let EfArr = ReadDataFromResourceString(sDay, sMonth, sYear, 12.0, Longitude, dUTCval);
+        let EfArr = Utils.ReadDataFromResourceString(sDay, sMonth, sYear, 12.0, Longitude, dUTCval);
         culmTime = EfArr[14];           //Время верхней кульминации исправленное за долготу точки наблюдения
         if (isBeforeNoon)   T1 = culmTime-11.9999999;       // Find H before noon
         else                T1 = culmTime+11.9999999;       // Find H after noon
@@ -145,7 +145,7 @@ function Solar(options) {
         while  ( aSolution ) {   // Here we iterate while Time difference 'dTfit' will be less than 0.001 second in Sun's height
             // (or till we understand that solution absent (dTfit < 0.000001)-:(
             //UTC of calculated moment (Tfit)
-            EfArr = ReadDataFromResourceString(sDay, sMonth, sYear, (Tfit), Longitude, dUTCval);
+            EfArr = Utils.ReadDataFromResourceString(sDay, sMonth, sYear, (Tfit), Longitude, dUTCval);
             fitD = EfArr[11];            fitE = EfArr[12];            SunRadius= EfArr[13];
 
             params ={Lat:Latitude, Lon:Longitude, Day:sDay, Month:sMonth, Year:sYear, UTCTime:(Tfit-dUTCval), dUTC:dUTCval, Temp:tempC, Press:pressP};
@@ -190,17 +190,17 @@ function Solar(options) {
         let sMoment, aMoment, nYear, nMonth, nDay ;
 
         // Any time. 12.0, simply to calculate CULMINATION TIME at given Date
-        let EfArr = ReadDataFromResourceString(sDay, sMonth, sYear, 12.0, Longitude, dUTCval);
+        let EfArr = Utils.ReadDataFromResourceString(sDay, sMonth, sYear, 12.0, Longitude, dUTCval);
         culmTime = EfArr[14];           // LOCAL TIME
         // Find time of low culmination
         sMoment = sYear+"-"+ sMonth+"-"+sDay;
         aMoment = moment(sMoment, "").add(1,'day');
         nYear = moment(aMoment).format('YYYY'); nMonth = moment(aMoment).format('MM');  nDay = moment(aMoment).format('DD');
-        EfArr = ReadDataFromResourceString(nDay, nMonth, nYear, 12.0, Longitude, dUTCval);
+        EfArr = Utils.ReadDataFromResourceString(nDay, nMonth, nYear, 12.0, Longitude, dUTCval);
         culmTimeN = EfArr[14];        //CULMINATION TIME at NEXT Day from given    LOCAL TIME
 
         lowculmTime = (culmTimeN + culmTime)/2 - 12;        // LOW CULMINATION TIME AT GIVEN DAY
-        //EfArr = ReadDataFromResourceString(sDay, sMonth, sYear, 12.0, Longitude, dUTCval);
+        //EfArr = Utils.ReadDataFromResourceString(sDay, sMonth, sYear, 12.0, Longitude, dUTCval);
 
         if (givenA <= 180) {        // Find A 0 -180
             T1 = lowculmTime;

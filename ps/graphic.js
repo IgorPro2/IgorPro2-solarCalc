@@ -662,15 +662,19 @@
         var xt1, yt1, xt2, yt2, i, diff, pathY;
         pathY = new Path({strokeColor: "magenta"});
 
-        xt2 = yearArr[1];
+        //xt2 = yearArr[1];
+        xt2 = ox - 180 * s + yearArr[1] * s;
         for (i = 0; i < (yearArr.length - 5); i = i + 2) {
             xt1 = ox - 180 * s + yearArr[i + 1] * s;
             yt1 = oy - yearArr[i] * s;
-            diff = Math.abs(yearArr[i + 1] - xt2);        //Not 2Draw strait line when Azimuth jumps from 360° to 0° !!!!
-            //console.log('diff='+diff.toFixed(1));
-            xt2 = yearArr[i + 1];
-            if (diff < 330) {
-                pathY.add(new Point(xt1, yt1));
+            //diff = Math.abs(yearArr[i + 1] - xt2);        //Not 2Draw strait line when Azimuth jumps from 360° to 0° !!!!
+            diff = Math.abs(xt1 - xt2);        //Not 2Draw strait line when Azimuth jumps from 360° to 0° !!!!
+            console.log('diff='+diff.toFixed(1));
+            //xt2 = yearArr[i + 1];
+            xt2 = xt1;
+            //if (diff < 330) {
+            if (diff < width/2 && diff < height/2) {
+                    pathY.add(new Point(xt1, yt1));
             } else {
                 pathY = new Path({strokeColor: "magenta"});
             }
@@ -813,7 +817,7 @@
         var path = new Path.Ellipse(rectangle);
         path.strokeColor = fontAxisColor;
         // Get ephemeris
-        var EphArr = ReadDataFromResourceString(sDay, sMonth, sYear, (12 - dUTCval), Lon, dUTCval);
+        var EphArr = Utils.ReadDataFromResourceString(sDay, sMonth, sYear, (12 - dUTCval), Lon, dUTCval);
         var Decl = EphArr[3];
         var path2 = path.clone();
         //debugger

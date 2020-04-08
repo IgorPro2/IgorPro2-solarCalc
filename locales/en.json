@@ -17,8 +17,8 @@
   "sunCalcLb": "SunCalculator%©",
   "logoSignLb": "Igor%©",
   "pageTitleLb": "SOLAR CALCULATOR",
-  "rusLb": "RU",
-  "engLb": "EN",
+  "rusLb": "Rus",
+  "engLb": "Eng",
   "hereBtLb": "Here",
   "dateLb": "Date",
   "timeLb": "Time",
@@ -68,5 +68,16 @@
   "nextDaydAz": "NextDay dAz",
   "month3BtLb": "+3 Month",
   "nowBtLb": "Now",
-  "dim3BtLb": "3D"
+  "dim3BtLb": "3D",
+  "positionDropBtLb": "Position",
+  "nightLb": "Night",
+  "givenPlace": "Given place",
+  "northPole": "North pole",
+  "northCircle": "North circle",
+  "northTropic": "North tropic",
+  "equator": "Equator",
+  "southTropic": "South tropic",
+  "southCircle": "South circle",
+  "southPole": "South pole",
+  "herePlace": "Here"
 }

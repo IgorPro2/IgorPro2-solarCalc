@@ -40,7 +40,7 @@
             locale = match ? match : locales[0];
         }
         if (locale === window.currentLocale) return false;
-        if (!window.localeStorage[locale]){
+        if (!window.localeStorage[locale]) {
             getLocaleFromServer(locale, function (localeObject) {
                 window.localeStorage[locale] = localeObject;
                 window.locales = localeObject;
@@ -60,10 +60,10 @@
             xhr.send();
             xhr.onload = function () {
                 if (xhr.status != 200) { // анализируем HTTP-статус ответа, если статус не 200, то произошла ошибка
-                    console.log(`Ошибка ${xhr.status}: ${xhr.statusText}`); // Например, 404: Not Found
+                    console.log('Ошибка ' + xhr.status + ' ' + xhr.statusText); // Например, 404: Not Found
                     callback && callback(false);
                 } else { // если всё прошло гладко, выводим результат
-                    console.log(`Готово, получили ${xhr.response.length} байт`); // response -- это ответ сервера
+                    console.log('Готово, получили ' + xhr.response.length + ' байт'); // response -- это ответ сервера
                     let locale;
                     try {
                         locale = JSON.parse(xhr.response);
