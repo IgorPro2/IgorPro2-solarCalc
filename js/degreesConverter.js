@@ -20,14 +20,17 @@
         return ddGrad;
     }
 
-    function grad_number2text(dmsNum, numSigns = 2, spc = " ", strDel = "°'\"", returnArray) {
+    function grad_number2text(dmsNum, numSigns, strDel,  spc , returnArray) {
         let sign = Math.sign(dmsNum);
-        let delLength = (strDel).length;
         let SignStr = "";
         if (sign < 0) SignStr = "-";
         let module = Math.abs(dmsNum);
         let result = "";
         let g, m, s, allmin, allsec;
+        //default values
+        if (! strDel)   strDel="°'\"";
+        if (! spc)      spc=" ";
+        let delLength = (strDel).length;
 
         switch (delLength) {
             case 1:

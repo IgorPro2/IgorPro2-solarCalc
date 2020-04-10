@@ -82,6 +82,8 @@
     let radioHt = document.getElementById("radio1");
     let radioAz = document.getElementById("radio2");
     let checkPM = document.getElementById("check1");
+    let delmiter = document.getElementById("delimiter");
+    let delm = delmiter.value;
 
     let sunSetTime, sunRiseTime, dayDur, Time2Dawn;
 
@@ -113,7 +115,7 @@
     });
     nDigits.addEventListener('input', function () {
         let inp = this;
-        if (inp.value > 4) inp.value = 4;
+        if (inp.value > 6) inp.value = 6;
         if (inp.value < 0) inp.value = 0;
     });
     eyeHeight.addEventListener('input', function () {
@@ -236,6 +238,7 @@
         let utcTime, dUTCval;
         let curTime, sDay, sMonth, sYear, ht, mt, st;
         let EphArr, ExistYear;
+        delm = delmiter.value;
 
         // Reformat B Lon if case of wrong user input
         g = latGrad.value;  m = latMin.value;  s = latSec.value;
@@ -308,6 +311,7 @@
         let press = pressP.value;
         let ht, mt, st, Ht0, Az0;
         let options, solar;
+        delm = delmiter.value;
 
         calcEquinoxSolstice();
 
@@ -364,15 +368,14 @@
             Ht0 = resArr[1];
             Az0 = resArr[0];
 
-
-            sunHeight.textContent = Utils.grad_number2text(resArr[1], digits);
-            sunAzimuth.textContent = Utils.grad_number2text(resArr[0], digits);
-            refraction.textContent = Utils.grad_number2text(resArr[3], digits);
-            declination.textContent = Utils.grad_number2text(resArr[9], digits);
+            sunHeight.textContent = Utils.grad_number2text(resArr[1], digits, delm);
+            sunAzimuth.textContent = Utils.grad_number2text(resArr[0], digits, delm);
+            refraction.textContent = Utils.grad_number2text(resArr[3], digits, delm);
+            declination.textContent = Utils.grad_number2text(resArr[9], digits, delm);
             timeEquation.textContent = Utils.grad_number2text(resArr[10], digits, " ", "hms") + " (" +
                 Utils.grad_number2text((12 - resArr[10]), digits, " ", "hms") + ")";
-            sunRadius.textContent = Utils.grad_number2text(Radius, digits);
-            rightAscension.textContent = Utils.grad_number2text(rAsc, digits);
+            sunRadius.textContent = Utils.grad_number2text(Radius, digits, delm);
+            rightAscension.textContent = Utils.grad_number2text(rAsc, digits, delm);
 
             calcSunRise();
             calcVelocities();
@@ -393,6 +396,7 @@
         let time_beg, dTime, time_end, EquDay, EquTime, s1, digits = Number(nDigits.value);
         let nDay, nMonth, nYear, nMoment, solstice, SolDay, SolTime, params, solar, resArr;
         let temp = tempC.value, press = pressP.value, eclipticDecl;
+        delm = delmiter.value;
 
         g = latGrad.value;
         m = latMin.value;
@@ -438,7 +442,7 @@
             }
         }
         EquDay = sYear + "-" + sMonth + "-" + sDay;
-        EquTime = Utils.grad_number2text((time_beg + time_end) / 2., digits, "", ":: ");
+        EquTime = Utils.grad_number2text((time_beg + time_end) / 2., digits, ":: ", "");
         s1 = EquDay + " " + EquTime;
         springEquinox.textContent = s1;
 
@@ -476,7 +480,7 @@
             }
         }
         EquDay = sYear + "-" + sMonth + "-" + sDay;
-        EquTime = Utils.grad_number2text((time_beg + time_end) / 2., digits, "", ":: ");
+        EquTime = Utils.grad_number2text((time_beg + time_end) / 2., digits, ":: ", "");
         s1 = EquDay + " " + EquTime;
         autumnEquinox.textContent = s1;
 
@@ -517,7 +521,7 @@
         solstice = myD1 / (myD1 - myD2) * 24;    //Time when Declination's Hour change equals 0
         //SummerSolDay = moment(aMoment).format("YYYY-MM-DD");
         SolDay = sYear + "-" + sMonth + "-" + sDay;
-        SolTime = Utils.grad_number2text(solstice, digits, "", ":: ");
+        SolTime = Utils.grad_number2text(solstice, digits, ":: ", "");
         s1 = SolDay + " " + SolTime;
         summerSolstice.textContent = s1;
         //Define max height
@@ -536,7 +540,7 @@
         };
         solar = new Solar(params);
         resArr = solar._calculate();
-        maxHeight.textContent = Utils.grad_number2text(resArr[1], digits);
+        maxHeight.textContent = Utils.grad_number2text(resArr[1], digits, delm);
 
         // START FROM 0h 21 DECEMBER of given year, and find a moment
         // when Time when Declination's Hour change equals 0                  WINTER SOLSTICE
@@ -577,7 +581,7 @@
         solstice = myD1 / (myD1 - myD2) * 24;    //Time when Declination's Hour change equals 0
         //WINTER SolDay = moment(aMoment).format("YYYY-MM-DD");
         SolDay = sYear + "-" + sMonth + "-" + sDay;
-        SolTime = Utils.grad_number2text(solstice, digits, "", ":: ");
+        SolTime = Utils.grad_number2text(solstice, digits, ":: ","");
         s1 = SolDay + " " + SolTime;
         winterSolstice.textContent = s1;
         //Define min height
@@ -596,7 +600,7 @@
         };
         solar = new Solar(params);
         resArr = solar._calculate();
-        minHeight.textContent = Utils.grad_number2text(resArr[1], digits);
+        minHeight.textContent = Utils.grad_number2text(resArr[1], digits, delm);
         return eclipticDecl;
     }
 
@@ -616,6 +620,7 @@
         let hEye = eyeHeight.value;
         let ht, mt, st;
         let newUtcTime, mRef, aRef, tempH, options, solar, sunH, MaxSunH, culmT, Dhorizon, Ihorizon, tt;
+        delm = delmiter.value;
 
         g = latGrad.value;
         m = latMin.value;
@@ -653,7 +658,7 @@
         sunH = resArr[1];                                              //Height at culmination
         MaxSunH = Utils.grad_number2text(sunH, digits);              //Height at culmination str
         culmHeight.textContent = (MaxSunH);
-        culmTime.textContent = Utils.grad_number2text((culmT), digits, "", ":: ");
+        culmTime.textContent = Utils.grad_number2text((culmT), digits,  ":: ","");
         if (hEye > 0) {
             Dhorizon = 2.0809 * Math.sqrt(hEye) * 1852;         // Range of HORIZON visibility in meters
             tt = hEye / Dhorizon;
@@ -682,7 +687,7 @@
         solar = new Solar(options);
         resArr = solar._timeAtSunPositionH();
         sunRiseTime = resArr[1];
-        sunRise.textContent = (Utils.grad_number2text(sunRiseTime + dUTCval, digits, "", ":: "));
+        sunRise.textContent = (Utils.grad_number2text(sunRiseTime + dUTCval, digits,  ":: ",""));
         //SUNSET TIME
         options = {
             Lat: B,
@@ -699,13 +704,13 @@
         solar = new Solar(options);
         resArr = solar._timeAtSunPositionH();
         sunSetTime = resArr[1];
-        sunSet.textContent = (Utils.grad_number2text(sunSetTime + dUTCval, digits, "", ":: "));
+        sunSet.textContent = (Utils.grad_number2text(sunSetTime + dUTCval, digits,  ":: ",""));
         // DAY DURATION
         dayDur = sunSetTime - sunRiseTime;
         if (dayDur === 0 && sunH > 0) dayDur = 24;    //At Polar Day -:)
-        dayDuration.textContent = (Utils.grad_number2text(dayDur, digits, "", ":: "));     // Day duration from Dusk 2 Dawn;
-        if (dayDur === 24 || dayDur === 0) Time2Dawn = Utils.grad_number2text(0, digits, "", ":: ");      //Time2Dawn At Polar Day -:)
-        else Time2Dawn = Utils.grad_number2text((sunSetTime - utcTime), digits, "", ":: ");      // Time 2 Dawn at common day
+        dayDuration.textContent = (Utils.grad_number2text(dayDur, digits,  ":: ",""));     // Day duration from Dusk 2 Dawn;
+        if (dayDur === 24 || dayDur === 0) Time2Dawn = Utils.grad_number2text(0, digits,  ":: ","");      //Time2Dawn At Polar Day -:)
+        else Time2Dawn = Utils.grad_number2text((sunSetTime - utcTime), digits,  ":: ","");      // Time 2 Dawn at common day
         time2SunSet.textContent = (Time2Dawn);
     }
 
@@ -723,6 +728,7 @@
         let temp, press, hEye;
         let ht, mt, st, newUtcTime, options, solar, sMoment, aMoment, curTime, utcTime;
         let Ht0, Az0, Ht1m, Az1m, Ht1h, Az1h, Ht1d, Az1d, velH1m, velH1h, velA1m, velA1h, shadLen, velHtDay, velAzDay;
+        delm = delmiter.value;
 
         g = latGrad.value;
         m = latMin.value;
@@ -763,14 +769,14 @@
         Ht0 = resArr[1];
         Az0 = resArr[0];
 
-        sunHeight.textContent = Utils.grad_number2text(resArr[1], digits);
-        sunAzimuth.textContent = Utils.grad_number2text(resArr[0], digits);
-        refraction.textContent = Utils.grad_number2text(resArr[3], digits);
-        declination.textContent = Utils.grad_number2text(EphArr[11], digits);
-        rightAscension.textContent = Utils.grad_number2text(EphArr[10], digits);
+        sunHeight.textContent = Utils.grad_number2text(resArr[1], digits, delm);
+        sunAzimuth.textContent = Utils.grad_number2text(resArr[0], digits, delm);
+        refraction.textContent = Utils.grad_number2text(resArr[3], digits, delm);
+        declination.textContent = Utils.grad_number2text(EphArr[11], digits, delm);
+        rightAscension.textContent = Utils.grad_number2text(EphArr[10], digits, delm);
         timeEquation.textContent = Utils.grad_number2text(EphArr[12], digits, " ", "hms") + " (" +
             Utils.grad_number2text((12 - EphArr[12]), digits, " ", "hms") + ")";
-        sunRadius.textContent = Utils.grad_number2text(EphArr[13], digits);
+        sunRadius.textContent = Utils.grad_number2text(EphArr[13], digits, delm);
 
         //SunPosition one minutes later
         ht = timeHour.value;
@@ -849,12 +855,12 @@
         Ht1d = resArr[1];
         Az1d = resArr[0];
         //Calculate Sun velocities
-        velH1m = Utils.grad_number2text(Ht1m - Ht0, digits);
-        velH1h = Utils.grad_number2text(Ht1h - Ht0, digits);
-        velHtDay = Utils.grad_number2text(Ht1d - Ht0, digits);
-        velA1m = Utils.grad_number2text(Az1m - Az0, digits);
-        velA1h = Utils.grad_number2text(Az1h - Az0, digits);
-        velAzDay = Utils.grad_number2text(Az1d - Az0, digits);
+        velH1m = Utils.grad_number2text(Ht1m - Ht0, digits, delm);
+        velH1h = Utils.grad_number2text(Ht1h - Ht0, digits, delm);
+        velHtDay = Utils.grad_number2text(Ht1d - Ht0, digits, delm);
+        velA1m = Utils.grad_number2text(Az1m - Az0, digits, delm);
+        velA1h = Utils.grad_number2text(Az1h - Az0, digits, delm);
+        velAzDay = Utils.grad_number2text(Az1d - Az0, digits, delm);
         shadLen = hEye / Math.tan(Utils.toRadians(Ht0));
         if (shadLen > 0) {
             shadowLength.textContent = shadLen.toFixed(digits);
@@ -874,6 +880,8 @@
         let sDay, sMonth, sYear;
         let digits = Number(nDigits.value);
         let temp, press, isAM = true;
+        delm = delmiter.value;
+
         window.timerIsOn = false;       // to stop showTimer() in function showResultTimer()
         sDay = dateDay.value;
         sMonth = dateMonth.value;
@@ -914,7 +922,7 @@
             };
             solar = new Solar(options);
             resArr = solar._timeAtSunPositionH();
-            aTime = resArr[1] + dUTCval;        //aTime= Utils.grad_number2text((resArr[1]+dUTCval), digits, "", ":: ");
+            aTime = resArr[1] + dUTCval;        //aTime= Utils.grad_number2text((resArr[1]+dUTCval), digits,  ":: ","");
             g = Math.floor(aTime);
             m = Math.floor((aTime - g) * 60);
             s = (3600 * (aTime - g - (m / 60))).toFixed(digits);
@@ -941,7 +949,7 @@
             };
             solar = new Solar(options);
             resArr = solar._timeAtSunPositionA();
-            aTime = resArr[1];        //aTime= Utils.grad_number2text((resArr[1]+dUTCval), digits, "", ":: ");
+            aTime = resArr[1];        //aTime= Utils.grad_number2text((resArr[1]+dUTCval), digits,  ":: ","");
             g = Math.floor(aTime);
             m = Math.floor((aTime - g) * 60);
             s = (3600 * (aTime - g - (m / 60))).toFixed(digits);

@@ -79,5 +79,6 @@
   "southTropic": "South tropic",
   "southCircle": "South circle",
   "southPole": "South pole",
-  "herePlace": "Here"
+  "herePlace": "Here",
+  "delimiter": "°'&#8243"
 }

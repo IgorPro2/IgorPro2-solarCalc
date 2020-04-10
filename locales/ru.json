@@ -79,6 +79,8 @@
   "southTropic": "Южный тропик",
   "southCircle": "Южный полярный круг",
   "southPole": "Южный полюс",
-  "herePlace": "Здесь"
+  "herePlace": "Здесь",
+  "delimiter": "°'\""
+
 
 }
