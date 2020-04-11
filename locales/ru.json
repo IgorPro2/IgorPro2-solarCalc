@@ -80,7 +80,8 @@
   "southCircle": "Южный полярный круг",
   "southPole": "Южный полюс",
   "herePlace": "Здесь",
-  "delimiter": "°'\""
+  "delmGMS": "°'\"",
+  "delmHMS": "чмс"
 
 
 }

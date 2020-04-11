@@ -1,0 +1,20 @@
+
+/////////////////////// BUGS&DEVELOPMENT
+1. Add time of solstice&equinox on graphic page.
+2. Make button on Graph page with Times of solstice&equinox.
+3. Rebuild buttons HERE CURRENT on main page converting them to button-lists.
+4. Add place selection on world map. Add position MAP on button HERE.
+6. Add ephemeris 2021,
+7. Check cases when dUTC = 3.75(not even) and why Analemma not on its place?
+8. Return Russian Help, and how?
+9. Improve announcement of SolarCalc
+
+                                            FUTURE DEVELOPMENT
+1. Day or year Arrays output to Table on separate page.
+2. User Sundials output to SVG file.
+
+
+
+
+////////////////////////////////  DONE /////////////////////////////////////
+5. B,L reprocessing before calculation, in case of incorrect input was

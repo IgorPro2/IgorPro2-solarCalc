@@ -29,7 +29,7 @@
         let g, m, s, allmin, allsec;
         //default values
         if (! strDel)   strDel="°'\"";
-        if (! spc)      spc=" ";
+        if (! spc)      spc="";
         let delLength = (strDel).length;
 
         switch (delLength) {

@@ -82,8 +82,11 @@
     let radioHt = document.getElementById("radio1");
     let radioAz = document.getElementById("radio2");
     let checkPM = document.getElementById("check1");
-    let delmiter = document.getElementById("delimiter");
-    let delm = delmiter.value;
+    //
+    // let delimiter1 = document.getElementById("delmGMS");
+    // let delm = delimiter1.value;
+    // let delimiter2 = document.getElementById("delmHMS");
+    // let delm2 = delimiter2.value;
 
     let sunSetTime, sunRiseTime, dayDur, Time2Dawn;
 
@@ -238,7 +241,10 @@
         let utcTime, dUTCval;
         let curTime, sDay, sMonth, sYear, ht, mt, st;
         let EphArr, ExistYear;
-        delm = delmiter.value;
+        let delimiter1 = document.getElementById("delmGMS");
+        let delm = delimiter1.value;
+        let delimiter2 = document.getElementById("delmHMS");
+        let delm2 = delimiter2.value;
 
         // Reformat B Lon if case of wrong user input
         g = latGrad.value;  m = latMin.value;  s = latSec.value;
@@ -311,7 +317,10 @@
         let press = pressP.value;
         let ht, mt, st, Ht0, Az0;
         let options, solar;
-        delm = delmiter.value;
+        let delimiter1 = document.getElementById("delmGMS");
+        let delm = delimiter1.value;
+        let delimiter2 = document.getElementById("delmHMS");
+        let delm2 = delimiter2.value;
 
         calcEquinoxSolstice();
 
@@ -372,8 +381,8 @@
             sunAzimuth.textContent = Utils.grad_number2text(resArr[0], digits, delm);
             refraction.textContent = Utils.grad_number2text(resArr[3], digits, delm);
             declination.textContent = Utils.grad_number2text(resArr[9], digits, delm);
-            timeEquation.textContent = Utils.grad_number2text(resArr[10], digits, " ", "hms") + " (" +
-                Utils.grad_number2text((12 - resArr[10]), digits, " ", "hms") + ")";
+            timeEquation.textContent = Utils.grad_number2text(resArr[10], digits, delm2) + " (" +
+                Utils.grad_number2text((12 - resArr[10]), digits, delm2) + ")";
             sunRadius.textContent = Utils.grad_number2text(Radius, digits, delm);
             rightAscension.textContent = Utils.grad_number2text(rAsc, digits, delm);
 
@@ -396,7 +405,10 @@
         let time_beg, dTime, time_end, EquDay, EquTime, s1, digits = Number(nDigits.value);
         let nDay, nMonth, nYear, nMoment, solstice, SolDay, SolTime, params, solar, resArr;
         let temp = tempC.value, press = pressP.value, eclipticDecl;
-        delm = delmiter.value;
+        let delimiter1 = document.getElementById("delmGMS");
+        let delm = delimiter1.value;
+        let delimiter2 = document.getElementById("delmHMS");
+        let delm2 = delimiter2.value;
 
         g = latGrad.value;
         m = latMin.value;
@@ -620,7 +632,10 @@
         let hEye = eyeHeight.value;
         let ht, mt, st;
         let newUtcTime, mRef, aRef, tempH, options, solar, sunH, MaxSunH, culmT, Dhorizon, Ihorizon, tt;
-        delm = delmiter.value;
+        let delimiter1 = document.getElementById("delmGMS");
+        let delm = delimiter1.value;
+        let delimiter2 = document.getElementById("delmHMS");
+        let delm2 = delimiter2.value;
 
         g = latGrad.value;
         m = latMin.value;
@@ -728,7 +743,10 @@
         let temp, press, hEye;
         let ht, mt, st, newUtcTime, options, solar, sMoment, aMoment, curTime, utcTime;
         let Ht0, Az0, Ht1m, Az1m, Ht1h, Az1h, Ht1d, Az1d, velH1m, velH1h, velA1m, velA1h, shadLen, velHtDay, velAzDay;
-        delm = delmiter.value;
+        let delimiter1 = document.getElementById("delmGMS");
+        let delm = delimiter1.value;
+        let delimiter2 = document.getElementById("delmHMS");
+        let delm2 = delimiter2.value;
 
         g = latGrad.value;
         m = latMin.value;
@@ -774,8 +792,8 @@
         refraction.textContent = Utils.grad_number2text(resArr[3], digits, delm);
         declination.textContent = Utils.grad_number2text(EphArr[11], digits, delm);
         rightAscension.textContent = Utils.grad_number2text(EphArr[10], digits, delm);
-        timeEquation.textContent = Utils.grad_number2text(EphArr[12], digits, " ", "hms") + " (" +
-            Utils.grad_number2text((12 - EphArr[12]), digits, " ", "hms") + ")";
+        timeEquation.textContent = Utils.grad_number2text(EphArr[12], digits, delm2, "") + " (" +
+            Utils.grad_number2text((12 - EphArr[12]), digits, delm2, "") + ")";
         sunRadius.textContent = Utils.grad_number2text(EphArr[13], digits, delm);
 
         //SunPosition one minutes later
@@ -880,7 +898,10 @@
         let sDay, sMonth, sYear;
         let digits = Number(nDigits.value);
         let temp, press, isAM = true;
-        delm = delmiter.value;
+        let delimiter1 = document.getElementById("delmGMS");
+        let delm = delimiter1.value;
+        let delimiter2 = document.getElementById("delmHMS");
+        let delm2 = delimiter2.value;
 
         window.timerIsOn = false;       // to stop showTimer() in function showResultTimer()
         sDay = dateDay.value;

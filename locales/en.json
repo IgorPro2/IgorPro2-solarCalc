@@ -80,5 +80,7 @@
   "southCircle": "South circle",
   "southPole": "South pole",
   "herePlace": "Here",
-  "delimiter": "°'&#8243"
+  "delmGMS": "°'\"",
+  "delmHMS": "hms"
+
 }
