@@ -10,6 +10,7 @@
     let SouthCircleLat = Utils.grad_number2text((eclipticAngle-90), undefined, undefined, undefined, true);
     let SouthTropicLat = Utils.grad_number2text((eclipticAngle*-1), undefined, undefined, undefined, true);
 
+    let userB= document
     //Button Handler Class
     function ButtonHandler(elem) {
         ////////////////
@@ -59,7 +60,16 @@
 
 
         this.setGivenPlace = function (target) {
-            Utils.show3D();
+            //Utils.show3D();
+            let B,L;
+            B = window.varsValue.B;
+            L = window.varsValue.L;
+            B = Utils.grad_number2text(B, nDigits, undefined, undefined, true);
+            latGrad.value = B[3]+B[0];        latMin.value =  B[1];        latSec.value =  B[2];
+            L = Utils.grad_number2text(L, nDigits, undefined, undefined, true);
+            lonGrad.value = L[3]+L[0];        lonMin.value =  L[1];        lonSec.value =  L[2];
+            Utils.showGraphic();
+
         };
         this.setNorthPole = function (target) {
             latGrad.value = "90";            latMin.value = "00";            latSec.value = "00";

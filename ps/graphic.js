@@ -41,6 +41,10 @@
     var nightFillColor = 'lightgrey';
     var whiteColor = 'white';
 
+    var delimiter1 = document.getElementById("delmGMS");
+    var delm = delimiter1.value;
+    var delimiter2 = document.getElementById("delmHMS");
+    var delm2 = delimiter2.value;
 
     ////////////////////////////////          DEFINE DRAW DIMENSIONS window.Utils.defineDimensions                /////////
     // MAXIMUM DIMENSIONS on Azimuth (X axis) will be 360 pixel. At Height (Y axis) From +90° to -90° = 180° ) Thus Scale will be:
@@ -123,7 +127,7 @@
         var axisLayer = new Layer();
         axisLayer.name = "axisLyr";
         //////////////////////////////////////      SHOW CALCULATION RESULTS BEFORE DRAWING
-        Utils.show_results();
+        //Utils.show_results();                    //if do show_results() we loss B,L values
         //////////////////////////////////////      CLEAR ALL LAYERS BEFORE DRAWING
         var layers = paper.project.layers;
         for (i = 0; i < layers.length - 1; i++) {
@@ -131,6 +135,8 @@
             //console.log("Layer2Clear= "+layers[i].name);
         }
         paper.project._activeLayer.clear();
+
+        Utils.calcSunRise();                        // force max.heigt calculation
 
         ////////////////////////////////          DEFINE DRAW DIMENSIONS
         window.Utils.defineDimensions();
@@ -415,7 +421,7 @@
             diff = Math.abs(tx - tx2);
             tx2 = tx;
             localTime = aTime[i / 2];
-            //console.log("tx=" + tx.toFixed(2) + " ty=" + ty.toFixed(2) + " localTime=" + Utils.grad_number2text(localTime, 0, "", ":::")+" diff= "+ diff.toFixed(0));
+            //console.log("tx=" + tx.toFixed(2) + " ty=" + ty.toFixed(2) + " localTime=" + Utils.grad_number2text(localTime, 0, ":: ")+" diff= "+ diff.toFixed(0));
             // if (diff < 330) {
             if (diff < width/2 && diff < height/2) {
                 pathD.add(new Point(tx, ty));
@@ -581,7 +587,7 @@
             fontFamily: sunFont,
             fontWeight: axisFontWeight,
             fontSize: hFont,
-            point: [20, 80]
+            point: [20, 100]
         });
         var textHDay = new PointText({
             fillColor: fontAxisColor,
@@ -597,6 +603,50 @@
             fontSize: hFont,
             point: [20, 120]
         });
+        /////////////////////  equinox/solstice and Day culmination/duration /////////////
+        var textSpringEquinox = new PointText({
+            fillColor: fontAxisColor,
+            fontFamily: sunFont,
+            fontWeight: axisFontWeight,
+            fontSize: hFont,
+            point: [20, 140]
+        });
+        var textSummerSolstice = new PointText({
+            fillColor: fontAxisColor,
+            fontFamily: sunFont,
+            fontWeight: axisFontWeight,
+            fontSize: hFont,
+            point: [20, 160]
+        });
+        var textAutumnEquinox = new PointText({
+            fillColor: fontAxisColor,
+            fontFamily: sunFont,
+            fontWeight: axisFontWeight,
+            fontSize: hFont,
+            point: [20, 180]
+        });
+        var textWinterSolstice = new PointText({
+            fillColor: fontAxisColor,
+            fontFamily: sunFont,
+            fontWeight: axisFontWeight,
+            fontSize: hFont,
+            point: [20, 200]
+        });
+        var textDayCulminationHeigt = new PointText({
+            fillColor: fontAxisColor,
+            fontFamily: sunFont,
+            fontWeight: axisFontWeight,
+            fontSize: hFont,
+            point: [20, 220]
+        });
+        var textDayCulminationTime = new PointText({
+            fillColor: fontAxisColor,
+            fontFamily: sunFont,
+            fontWeight: axisFontWeight,
+            fontSize: hFont,
+            point: [20, 80]
+        });
+
         //////////////////////////////// MOVING TEXT //////////////////////////
         var textH = new PointText({
             fillColor: fontSunColor,
@@ -637,9 +687,21 @@
             textH.content = "H=" + dayArr[k].toFixed(0) + "°";
             textA.point = new paper.Point(x + tic * 4, y + 14);
             textA.content = "A=" + dayArr[k + 1].toFixed(0) + "°";
-            textHDay.content = window.locales['dayHtLb'] + dayArr[k].toFixed(0) + "°";   //Output at fixed position
-            textADay.content = window.locales['dayAzLb'] + dayArr[k + 1].toFixed(0) + "°";
-            textDayTime.content = window.locales['dayAnimTimeLb'] + Utils.grad_number2text(aTime[k / 2], 0, "", ": ");
+
+            //textHDay.content = window.locales['dayHtLb'] + dayArr[k].toFixed(0) + "°";   //Output at fixed position
+            //textADay.content = window.locales['dayAzLb'] + dayArr[k + 1].toFixed(0) + "°";
+            textDayTime.content = window.locales['dayAnimTimeLb'] + Utils.grad_number2text(aTime[k / 2], 0, delm2)
+             + " " + window.locales['htRadioLb'] + " " +  dayArr[k].toFixed(0) + "°"
+             + " " + window.locales['azRadioLb'] + " " +  dayArr[k + 1].toFixed(0) + "°";
+            textSpringEquinox.content = window.locales['springEquinoxLb']   + " " +  window.varsValue.springEquinox;
+            textSummerSolstice.content = window.locales['summerSolsticeLb'] + " " +  window.varsValue.summerSolstice;
+            textAutumnEquinox.content = window.locales['autumnEquinoxLb']   + " " +   window.varsValue.autumnEquinox;
+            textWinterSolstice.content = window.locales['winterSolsticeLb'] + " " +   window.varsValue.summerSolstice;
+            //textDayCulminationHeigt.content = window.locales['maxHeightLb'] + window.varsValue.dayCulmHeight;
+            textDayCulminationTime.content = window.locales['culmTimeLb'] + window.varsValue.dayCulmTime
+                + " " +   window.locales['dayDurationLb'] + window.varsValue.dayDuration
+                + " " +   window.locales['maxHeightLb'] + " " +   window.varsValue.dayCulmHeight;
+
             k = k + 2;
             if (k > dayArr.length - 1) k = 0;
         };
@@ -707,21 +769,21 @@
             fontFamily: sunFont,
             fontWeight: axisFontWeight,
             fontSize: hFont,
-            point: [20, 140]
+            point: [20, 120]
         });
         var textHYear = new PointText({
             fillColor: fontAxisColor,
             fontFamily: sunFont,
             fontWeight: axisFontWeight,
             fontSize: hFont,
-            point: [20, 160]
+            point: [20, 120]
         });
         var textAYear = new PointText({
             fillColor: fontAxisColor,
             fontFamily: sunFont,
             fontWeight: axisFontWeight,
             fontSize: hFont,
-            point: [20, 180]
+            point: [20, 140]
         });
         i = 0;
         var circle2 = new Shape.Circle({center: curPoint, radius: 6, fillColor: sunColor, strokeColor: fontSunColor});
@@ -736,9 +798,12 @@
                 circle2.fillColor = sunColor; //textH.fillColor = fontSunColor; textA.fillColor = fontSunColor;
             }
             //H A output
-            textHYear.content = window.locales['yearHtLb'] + yearArr[i].toFixed(0) + "°";
-            textAYear.content = window.locales['yearAzLb'] + yearArr[i + 1].toFixed(0) + "°";
-            textYearTime.content = window.locales['yearAnimTimeLb'] + aDate[i / 2];
+            //textHYear.content = window.locales['yearHtLb'] + yearArr[i].toFixed(0) + "°";
+            //textAYear.content = window.locales['yearAzLb'] + yearArr[i + 1].toFixed(0) + "°";
+            textYearTime.content = window.locales['yearAnimTimeLb'] + aDate[i / 2]
+                + " " + window.locales['htRadioLb'] + " " + yearArr[i].toFixed(0) + "°"
+                + " " + window.locales['azRadioLb'] + " " + yearArr[i + 1].toFixed(0) + "°";
+
             i = i + 2;
             //console.log(" i="+ i + " aDate[]="+ aDate[i/2]+" Ht0="+yearArr[i].toFixed(1)+" Az0="+yearArr[i + 1].toFixed(1));
             if (i > yearArr.length - 5) i = 0;
