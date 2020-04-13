@@ -1,8 +1,8 @@
 
 /////////////////////// BUGS & IMPROVEMENT
+1. Read moments from AE in ephemeris text files.
 
-2. Make button on Graph page with Times of solstice&equinox.
-3. Rebuild buttons HERE CURRENT on main page converting them to button-lists.
+
 
 6. Add ephemeris 2021,
 7. Check cases when dUTC = 3.75(not even) and why Analemma not on its place?
@@ -20,3 +20,9 @@
 5. B,L reprocessing before calculation, in case of incorrect input was
 0. Keep user input place in memory.
 1. Add time of solstice&equinox on graphic page.
+2. Make button on Graph page with Times of solstice&equinox.
+
+
+
+////////////////////////////     NOT NEED /////////////////////////////////
+3. Rebuild buttons HERE CURRENT on main page converting them to button-lists.

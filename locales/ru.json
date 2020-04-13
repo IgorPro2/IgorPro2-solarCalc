@@ -81,7 +81,9 @@
   "southPole": "Южный полюс",
   "herePlace": "Здесь",
   "delmGMS": "°'\"",
-  "delmHMS": "чмс"
+  "delmHMS": "чмс",
+  "timeDropBtLb": "Время",
+  "timePlus1month": "Плюс 1 месяц"
 
 
 }

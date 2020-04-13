@@ -201,7 +201,7 @@
         <div class="col-sm-12 col-md-auto text-center text-nowrap">
             <label for="timeHour"></label>
             <input id="givAg" type="number" placeholder="grd" value="0" size="2" max="360" min="0" step="1">
-            <input id="givAm" type="number" placeholder="min" value="3" size="2" max="60" min="0" step="1">
+            <input id="givAm" type="number" placeholder="min" value="0" size="2" max="60" min="0" step="1">
             <input id="givAs" type="number" placeholder='sec' value="0" size="2" max="60" min="0" step="1">
         </div>
         <div class="col-sm-12 col-md-auto text-center text-nowrap">
@@ -314,31 +314,50 @@
 <div class="canvasContainer hidden" id="graphicContainer">
     <canvas id="myCanvas" data-paper-resize="true"></canvas>
 
-    <div id="topRightGraphicsButtons" class="graphicsBtnGroup">
+    <div id="topRightGraphicsButtons" class="graphicsBtnGroup btn-group">
 
-        <button class="btn btn-primary btn-sm dropdown-toggle mx-1" type="button" id="dropdownMenu2"
-                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            {{positionDropBtLb}}
-        </button>
-        <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
-            <button class="dropdown-item" type="button" data-action="setGivenPlace">{{givenPlace}}</button>
-            <button class="dropdown-item" type="button" data-action="setHerePlace">{{herePlace}}</button>
-            <button class="dropdown-item" type="button" data-action="setNorthPole">{{northPole}}</button>
-
-            <button class="dropdown-item" type="button" data-action="setNorthCircle">{{northCircle}}</button>
-            <button class="dropdown-item" type="button" data-action="setNorthTropic">{{northTropic}}</button>
-            <button class="dropdown-item" type="button" data-action="setEquator">{{equator}}</button>
-            <button class="dropdown-item" type="button" data-action="setSouthTropic">{{southTropic}}</button>
-            <button class="dropdown-item" type="button" data-action="setSouthCircle">{{southCircle}}</button>
-            <button class="dropdown-item" type="button" data-action="setSouthPole">{{southPole}}</button>
+        <div class="dropdown">
+            <button class="btn btn-primary btn-sm dropdown-toggle mx-1" type="button" id="dropdownMenuTime"
+                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                {{timeDropBtLb}}
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuTime">
+                <button class="dropdown-item" type="button" data-action="showNow">{{nowBtLb}}</button>
+                <button class="dropdown-item" type="button" data-action="showSpring">{{springEquinoxLb}}</button>
+                <button class="dropdown-item" type="button" data-action="showSummer">{{summerSolsticeLb}}</button>
+                <button class="dropdown-item" type="button" data-action="showAutumn">{{autumnEquinoxLb}}</button>
+                <button class="dropdown-item" type="button" data-action="showWinter">{{winterSolsticeLb}}</button>
+                <button class="dropdown-item" type="button" data-action="plus1month">{{timePlus1month}}</button>
+            </div>
         </div>
 
+        <div class="dropdown">
+            <button class="btn btn-primary btn-sm dropdown-toggle mx-1" type="button" id="dropdownMenuPlace"
+                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                {{positionDropBtLb}}
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuPlace">
+                <button class="dropdown-item" type="button" data-action="setGivenPlace">{{givenPlace}}</button>
+                <button class="dropdown-item" type="button" data-action="setHerePlace">{{herePlace}}</button>
+                <button class="dropdown-item" type="button" data-action="setNorthPole">{{northPole}}</button>
+                <button class="dropdown-item" type="button" data-action="setNorthCircle">{{northCircle}}</button>
+                <button class="dropdown-item" type="button" data-action="setNorthTropic">{{northTropic}}</button>
+                <button class="dropdown-item" type="button" data-action="setEquator">{{equator}}</button>
+                <button class="dropdown-item" type="button" data-action="setSouthTropic">{{southTropic}}</button>
+                <button class="dropdown-item" type="button" data-action="setSouthCircle">{{southCircle}}</button>
+                <button class="dropdown-item" type="button" data-action="setSouthPole">{{southPole}}</button>
+            </div>
+        </div>
+
+        <!--    INVISIBLE BY CSS STYLE hiddenButton  -->
         <button class="btn btn-sm btn-light hiddenButton mx-1" onclick=Utils.show3D(); aria-label="show">
             <span aria-hidden="true">{{dim3BtLb}}</span>
         </button>
-        <button class="btn btn-sm btn-light mx-1" onclick=Utils.showGraphic(); aria-label="show">
+        <button class="btn btn-sm btn-light hiddenButton mx-1" onclick=Utils.showGraphic(); aria-label="show">
             <span aria-hidden="true">{{nowBtLb}}</span>
         </button>
+
+
         <button type="button" class="btn btn-sm btn-light mx-1" onclick=Utils.show3Month(); aria-label="show">
             <span aria-hidden="true">{{month3BtLb}}</span>
         </button>

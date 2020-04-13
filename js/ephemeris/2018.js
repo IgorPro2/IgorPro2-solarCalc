@@ -1,4 +1,4 @@
-if (!window.ephemeris) window.ephemeris = {};   //create new empty objecy
+if (!window.ephemeris) window.ephemeris = {};   //create new empty object
 window.ephemeris[2018] =                       // [2018] is a property
     ("Jan,1,184542.7,-230109,12.046,1617.5,319.589,-1.178,120333.77,1.172," +
     "Jan,2,185007.389,-225606.13,13.192,1617.51,347.712,-1.1644,120401.73,1.157," +

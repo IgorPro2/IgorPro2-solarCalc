@@ -246,6 +246,7 @@
         let delm = delimiter1.value;
         let delimiter2 = document.getElementById("delmHMS");
         let delm2 = delimiter2.value;
+        let digits = Number(nDigits.value);
 
         // Reformat B Lon in case of wrong user input
         g = latGrad.value;  m = latMin.value;  s = latSec.value;
@@ -253,14 +254,14 @@
         window.varsValue.B = B;
         if (B > 90)  B =  90;
         if (B < -90) B = -90;
-        B = Utils.grad_number2text(B, nDigits, undefined, undefined, true);
+        B = Utils.grad_number2text(B, digits, undefined, undefined, true);
         latGrad.value = B[3]+B[0];        latMin.value =  B[1];        latSec.value =  B[2];
         g = lonGrad.value;            m = lonMin.value;            s = lonSec.value;
         L = Utils.grad_textGMS2number(g, m, s);
         window.varsValue.L = L;
         if (L > 180)  L =  180;
         if (L < -180) L = -180;
-        L = Utils.grad_number2text(L, nDigits, undefined, undefined, true);
+        L = Utils.grad_number2text(L, digits, undefined, undefined, true);
         lonGrad.value = L[3]+L[0];        lonMin.value =  L[1];        lonSec.value =  L[2];
 
         ht = timeHour.value;
@@ -329,13 +330,13 @@
         B =   Utils.grad_textGMS2number(g, m, s);
         if (B > 90)  B =  90;
         if (B < -90) B = -90;
-        B = Utils.grad_number2text(B, nDigits, undefined, undefined, true);
+        B = Utils.grad_number2text(B, digits, undefined, undefined, true);
         latGrad.value = B[3]+B[0];        latMin.value =  B[1];        latSec.value =  B[2];
         g = lonGrad.value;            m = lonMin.value;            s = lonSec.value;
         L = Utils.grad_textGMS2number(g, m, s);
         if (L > 180)  L =  180;
         if (L < -180) L = -180;
-        L = Utils.grad_number2text(L, nDigits, undefined, undefined, true);
+        L = Utils.grad_number2text(L, digits, undefined, undefined, true);
         lonGrad.value = L[3]+L[0];        lonMin.value =  L[1];        lonSec.value =  L[2];
         userB = B; userL = L;
 
@@ -449,7 +450,7 @@
             myD2 = EfArr[11];
             if (myD2 < 0) {
                 time_beg = time_end;
-            } else {;
+            } else {
                 dTime = dTime / 2;
             }
         }
@@ -531,7 +532,6 @@
         myD1 = EfArr[4];
         EfArr = Utils.ReadDataFromResourceString(nDay, nMonth, nYear, 0., Lon, dUTCval);
         myD2 = EfArr[4];
-        eclipticDecl = EfArr[3];       // Declination of Ecliptic to SkyEquator
         solstice = myD1 / (myD1 - myD2) * 24;    //Time when Declination's Hour change equals 0
         //SummerSolDay = moment(aMoment).format("YYYY-MM-DD");
         SolDay = sYear + "-" + sMonth + "-" + sDay;
@@ -539,6 +539,8 @@
         s1 = SolDay + " " + SolTime;
         summerSolstice.textContent = s1;
         window.varsValue.summerSolstice =s1;
+        EfArr = Utils.ReadDataFromResourceString(nDay, nMonth, nYear, SolTime, Lon, dUTCval);
+        eclipticDecl = EfArr[3];                  // Declination of Ecliptic to SkyEquator this year
 
         //Define max height
         EfArr = Utils.ReadDataFromResourceString(sDay, sMonth, sYear, (solstice - dUTCval), Lon, dUTCval);
@@ -623,6 +625,7 @@
         s1=Utils.grad_number2text(resArr[1], digits, delm);
         minHeight.textContent = s1;
         window.varsValue.winterMaxHeight =s1;
+        //window.varsValue.eclipticDeclination = eclipticDecl;
         return eclipticDecl;
     }
 
@@ -1235,5 +1238,6 @@
     window.Utils.dataDeliveryDay = dataDeliveryDay;
     window.Utils.dataDeliveryYear = dataDeliveryYear;
     window.Utils.calcSunRise = calcSunRise;
+    window.Utils.getNow = getNow;
 
 })();       // close...  Trick for isolation  local variables names from access from other functions

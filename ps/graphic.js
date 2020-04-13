@@ -126,6 +126,7 @@
         window.currentAction = "graphic";
         var axisLayer = new Layer();
         axisLayer.name = "axisLyr";
+
         //////////////////////////////////////      SHOW CALCULATION RESULTS BEFORE DRAWING
         //Utils.show_results();                    //if do show_results() we loss B,L values
         //////////////////////////////////////      CLEAR ALL LAYERS BEFORE DRAWING
@@ -551,11 +552,20 @@
         var res = Utils.dataDeliveryDay(params);    //Array of 3 Arrays of Results
         var dayArr = res[0];    //Array of 1440 pairs of Ht,Az;Every 2 minute during a day. Starts from given time.
         var aTime = res[2];    //Array  of Time 2 for pairs of Ht,Az
+        var nDigits = document.getElementById("nDigits");
+        var digits = Number(nDigits.value);
 
         /////////////////////////////////////////////    DAY ANIMATION ADN  TEXT   //////////////////////////////
-
-        var lat = latGrad.value + "° " + latMin.value + "' " + latSec.value + '"';
-        var lon = lonGrad.value + "° " + lonMin.value + "' " + lonSec.value + '"';
+        var grd,min,sec,nLat,lat,nLon,lon;
+        grd = latGrad.value;        min = latMin.value;        sec = latSec.value;
+        nLat = Utils.grad_textGMS2number(grd, min, sec);
+        lat = Utils.grad_number2text(nLat, digits, delm);
+        grd = lonGrad.value;        min = lonMin.value;        sec = lonSec.value;
+        nLon = Utils.grad_textGMS2number(grd, min, sec);
+        lon = Utils.grad_number2text(nLon, digits, delm);
+        // debugger
+        // lat = latGrad.value + "° " + latMin.value + "' " + latSec.value + '"';
+        // lon = lonGrad.value + "° " + lonMin.value + "' " + lonSec.value + '"';
 
         var textLat = new PointText({
             fillColor: fontAxisColor,

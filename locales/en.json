@@ -81,6 +81,8 @@
   "southPole": "South pole",
   "herePlace": "Here",
   "delmGMS": "°'\"",
-  "delmHMS": "hms"
+  "delmHMS": "hms",
+  "timeDropBtLb": "Time",
+  "timePlus1month": "Plus 1 month"
 
 }
