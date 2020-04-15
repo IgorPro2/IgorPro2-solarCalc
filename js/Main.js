@@ -2,7 +2,7 @@
     window.Utils = {};  // something like global variables
 
     window.currentAction = "calc";
-    window.varsValue = {};
+    //window.varsValue is object defined in ephemeris file 2020.js
 
 //document.body.style.background = 'green'; // сделать фон красным
 //setTimeout(() => document.body.style.background = '', 3000); // вернуть назад    alert (ddGrad);
@@ -90,108 +90,106 @@
     // let delm2 = delimiter2.value;
 
     let sunSetTime, sunRiseTime, dayDur, Time2Dawn;
-
-    dateYear.addEventListener('input', function () {
-        let inp = this;
-        if (inp.value > 2120) inp.value = 2120;
-        if (inp.value < 2018) inp.value = 2018;
-    });
-    dateMonth.addEventListener('input', function () {
-        let inp = this;
-        if (inp.value > 12) inp.value = 12;
-        if (inp.value < 1) inp.value = 1;
-    });
-    dateDay.addEventListener('input', function () {
-        let inp = this;
-        if (inp.value > 31) inp.value = 31;
-        if (inp.value < 1) inp.value = 1;
-    });
-
-    latGrad.addEventListener('input', function () {
-        let inp = this;
-        if (inp.value > 90) inp.value = 90;
-        if (inp.value < -90) inp.value = -90;
-    });
-    lonGrad.addEventListener('input', function () {
-        let inp = this;
-        if (inp.value > 180) inp.value = 180;
-        if (inp.value < -180) inp.value = -180;
-    });
-    nDigits.addEventListener('input', function () {
-        let inp = this;
-        if (inp.value > 6) inp.value = 6;
-        if (inp.value < 0) inp.value = 0;
-    });
-    eyeHeight.addEventListener('input', function () {
-        let inp = this;
-        //tx = inp.value;  // Define upper
-        document.getElementById("shadowLabel").innerText = tx + (inp.value).trim() + ':';
-    });
-    givAg.addEventListener('input', function () {
-        radioAz.checked = true;
-        let inp = this;
-        if (inp.value > 360) inp.value = 360;
-        if (inp.value < 0) inp.value = 0;
-    });
-    givAm.addEventListener('input', function () {
-        radioAz.checked = true;
-        let inp = this;
-        if (inp.value > 59) inp.value = 59;
-        if (inp.value < 0) inp.value = 0;
-    });
-    givAs.addEventListener('input', function () {
-        radioAz.checked = true;
-        let inp = this;
-        if (inp.value > 60) inp.value = 60;
-        if (inp.value < 0) inp.value = 0;
-    });
-    givHg.addEventListener('input', function () {
-        radioHt.checked = true;
-        let inp = this;
-        if (inp.value > 90) inp.value = 90;
-        if (inp.value < -90) inp.value = -90;
-    });
-    givHm.addEventListener('input', function () {
-        radioHt.checked = true;
-        let inp = this;
-        if (inp.value > 59) inp.value = 59;
-        if (inp.value < 0) inp.value = 0;
-    });
-    givHs.addEventListener('input', function () {
-        radioHt.checked = true;
-        let inp = this;
-        if (inp.value > 60) inp.value = 60;
-        if (inp.value < 0) inp.value = 0;
-    });
-
-    timeHour.addEventListener('input', function () {
-        timeHour.classList.remove("calcVal");
-        timeMin.classList.remove("calcVal");
-        timeSec.classList.remove("calcVal");
-        window.timerIsOn = false;       // to stop showTimer() in function showResultTimer()
-        let inp = this;
-        if (inp.value > 24) inp.value = 24;
-        if (inp.value < 0) inp.value = 0;
-    });
-    timeMin.addEventListener('input', function () {
-        timeHour.classList.remove("calcVal");
-        timeMin.classList.remove("calcVal");
-        timeSec.classList.remove("calcVal");
-        window.timerIsOn = false;       // to stop showTimer() in function showResultTimer()
-        let inp = this;
-        if (inp.value > 59) inp.value = 59;
-        if (inp.value < 0) inp.value = 0;
-    });
-    timeSec.addEventListener('input', function () {
-        timeHour.classList.remove("calcVal");
-        timeMin.classList.remove("calcVal");
-        timeSec.classList.remove("calcVal");
-        window.timerIsOn = false;       // to stop showTimer() in function showResultTimer()
-        let inp = this;
-        if (inp.value > 60) inp.value = 60;
-        if (inp.value < 0) inp.value = 0;
-    });
-    
+    {
+        dateYear.addEventListener('input', function () {
+            let inp = this;
+            if (inp.value > 2120) inp.value = 2120;
+            if (inp.value < 2018) inp.value = 2018;
+        });
+        dateMonth.addEventListener('input', function () {
+            let inp = this;
+            if (inp.value > 12) inp.value = 12;
+            if (inp.value < 1) inp.value = 1;
+        });
+        dateDay.addEventListener('input', function () {
+            let inp = this;
+            if (inp.value > 31) inp.value = 31;
+            if (inp.value < 1) inp.value = 1;
+        });
+        latGrad.addEventListener('input', function () {
+            let inp = this;
+            if (inp.value > 90) inp.value = 90;
+            if (inp.value < -90) inp.value = -90;
+        });
+        lonGrad.addEventListener('input', function () {
+            let inp = this;
+            if (inp.value > 180) inp.value = 180;
+            if (inp.value < -180) inp.value = -180;
+        });
+        nDigits.addEventListener('input', function () {
+            let inp = this;
+            if (inp.value > 6) inp.value = 6;
+            if (inp.value < 0) inp.value = 0;
+        });
+        eyeHeight.addEventListener('input', function () {
+            let inp = this;
+            //tx = inp.value;  // Define upper
+            document.getElementById("shadowLabel").innerText = tx + (inp.value).trim() + ':';
+        });
+        givAg.addEventListener('input', function () {
+            radioAz.checked = true;
+            let inp = this;
+            if (inp.value > 360) inp.value = 360;
+            if (inp.value < 0) inp.value = 0;
+        });
+        givAm.addEventListener('input', function () {
+            radioAz.checked = true;
+            let inp = this;
+            if (inp.value > 59) inp.value = 59;
+            if (inp.value < 0) inp.value = 0;
+        });
+        givAs.addEventListener('input', function () {
+            radioAz.checked = true;
+            let inp = this;
+            if (inp.value > 60) inp.value = 60;
+            if (inp.value < 0) inp.value = 0;
+        });
+        givHg.addEventListener('input', function () {
+            radioHt.checked = true;
+            let inp = this;
+            if (inp.value > 90) inp.value = 90;
+            if (inp.value < -90) inp.value = -90;
+        });
+        givHm.addEventListener('input', function () {
+            radioHt.checked = true;
+            let inp = this;
+            if (inp.value > 59) inp.value = 59;
+            if (inp.value < 0) inp.value = 0;
+        });
+        givHs.addEventListener('input', function () {
+            radioHt.checked = true;
+            let inp = this;
+            if (inp.value > 60) inp.value = 60;
+            if (inp.value < 0) inp.value = 0;
+        });
+        timeHour.addEventListener('input', function () {
+            timeHour.classList.remove("calcVal");
+            timeMin.classList.remove("calcVal");
+            timeSec.classList.remove("calcVal");
+            window.timerIsOn = false;       // to stop showTimer() in function showResultTimer()
+            let inp = this;
+            if (inp.value > 24) inp.value = 24;
+            if (inp.value < 0) inp.value = 0;
+        });
+        timeMin.addEventListener('input', function () {
+            timeHour.classList.remove("calcVal");
+            timeMin.classList.remove("calcVal");
+            timeSec.classList.remove("calcVal");
+            window.timerIsOn = false;       // to stop showTimer() in function showResultTimer()
+            let inp = this;
+            if (inp.value > 59) inp.value = 59;
+            if (inp.value < 0) inp.value = 0;
+        });
+        timeSec.addEventListener('input', function () {
+            timeHour.classList.remove("calcVal");
+            timeMin.classList.remove("calcVal");
+            timeSec.classList.remove("calcVal");
+            window.timerIsOn = false;       // to stop showTimer() in function showResultTimer()
+            let inp = this;
+            if (inp.value > 60) inp.value = 60;
+            if (inp.value < 0) inp.value = 0;
+        });
+    }
     let buttonCalculate = document.getElementById("buttonCalc");
     buttonCalculate.addEventListener("click", show_results);
     let x;
@@ -207,9 +205,6 @@
             callback && callback("Geolocation is not supported by this browser");
         }
     }
-
-    // let buttonNow = document.getElementById("buttonNow");
-    // buttonNow.addEventListener("click", getNow);
 
     function getNow() {
         let x = new Date();
@@ -401,7 +396,26 @@
         })(aDuration)
     }
 
+
+    function takeEquinoxSolsticeAE() {
+        // window.varsValue.eclipticDeclination = 23 + 26/60 + 11.85/3600; //Mean obliquity of ecliptic (eps) at J2020.5:
+        // window.varsValue.springEquinox = "2020-03-20 03:50:41.4";        //spring: Mar 20   3h50.69m
+        // window.varsValue.summerSolstice= "2020-06-20 21:44:48.6";        //summer: Jun 20  21h44.81m
+        // window.varsValue.autumnEquinox = "2020-09-22 13:31:51.0";        //autumn: Sep 22  13h31.85m
+        // window.varsValue.winterSolstice= "2020-12-21 10:03:25.2";        //winter: Dec 21  10h 3.42m
+        springEquinox.textContent = window.varsValue.springEquinox;
+        summerSolstice.textContent = window.varsValue.summerSolstice;
+        autumnEquinox.textContent = window.varsValue.autumnEquinox;
+        winterSolstice.textContent = window.varsValue.winterSolstice;
+
+    }
+
     function calcEquinoxSolstice() {
+        if(window.varsValue )    {
+            takeEquinoxSolsticeAE() ;
+            return
+        }
+
         let g, m, s, Lat, Lon, dUTCval, sDay, sMonth, sYear, sMoment, aMoment, sgn1, sgn2, EfArr, myD1, myD2;
         let time_beg, dTime, time_end, EquDay, EquTime, s1, digits = Number(nDigits.value);
         let nDay, nMonth, nYear, nMoment, solstice, SolDay, SolTime, params, solar, resArr;
@@ -458,7 +472,7 @@
         EquTime = Utils.grad_number2text((time_beg + time_end) / 2., digits, delm2);
         s1 = EquDay + " " + EquTime;
         springEquinox.textContent = s1;
-        window.varsValue.springEquinox =s1;
+        if(!window.varsValue.springEquinox )        window.varsValue.springEquinox =s1;
 
         // START FROM 0h 22 SEPTEMBER of given year          AUTUMN EQUINOX
         sMoment = sYear + "-09-22";                           //22 SEPTEMBER of given Year
@@ -497,7 +511,7 @@
         EquTime = Utils.grad_number2text((time_beg + time_end) / 2., digits, delm2);
         s1 = EquDay + " " + EquTime;
         autumnEquinox.textContent = s1;
-        window.varsValue.autumnEquinox =s1;
+        if(!window.varsValue.autumnEquinox)    window.varsValue.autumnEquinox =s1;
 
         sMoment = sYear + "-06-20";                           //20 JUNE of given year
         aMoment = moment(sMoment, "");
@@ -538,7 +552,7 @@
         SolTime = Utils.grad_number2text(solstice, digits, delm2);
         s1 = SolDay + " " + SolTime;
         summerSolstice.textContent = s1;
-        window.varsValue.summerSolstice =s1;
+        if(!window.varsValue.summerSolstice)  window.varsValue.summerSolstice =s1;
         EfArr = Utils.ReadDataFromResourceString(nDay, nMonth, nYear, SolTime, Lon, dUTCval);
         eclipticDecl = EfArr[3];                  // Declination of Ecliptic to SkyEquator this year
 
@@ -604,7 +618,7 @@
         SolTime = Utils.grad_number2text(solstice, digits, delm2);
         s1 = SolDay + " " + SolTime;
         winterSolstice.textContent = s1;
-        window.varsValue.winterSolstice =s1;
+        if(!window.varsValue.winterSolstice)   window.varsValue.winterSolstice =s1;
 
         //Define min height
         EfArr = Utils.ReadDataFromResourceString(sDay, sMonth, sYear, (solstice - dUTCval), Lon, dUTCval);

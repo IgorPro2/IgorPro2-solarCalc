@@ -1,7 +1,6 @@
 
 /////////////////////// BUGS & IMPROVEMENT
-1. Read moments from AE in ephemeris text files.
-
+1. Make new calcEquinoxSolsticeAE() where values read from AE
 
 
 6. Add ephemeris 2021,
@@ -21,8 +20,35 @@
 0. Keep user input place in memory.
 1. Add time of solstice&equinox on graphic page.
 2. Make button on Graph page with Times of solstice&equinox.
-
+1. Read moments from AE in ephemeris text files.
 
 
 ////////////////////////////     NOT NEED /////////////////////////////////
 3. Rebuild buttons HERE CURRENT on main page converting them to button-lists.
+/////////////////////////////////////////////////////////////////////////////////////////////////
+Epoch T = J2019.5 = date 2019 Jul 2.875 (JD2458667.375) = besselian epoch B2019.50169
+
+Beginning of spring: Mar 20  21h59.67m
+             summer: Jun 21  15h55.44m
+             autumn: Sep 23   7h51.38m
+             winter: Dec 22   4h20.65m
+
+Earth in perihelion: Jan 03   5.35h
+         aphelion  : Jul 04  22.20h
+
+Mean obliquity of ecliptic (eps) at J2019.5:
+                        23.436755o = 23o26'12.32"
+/////////////////////////////////////////////////////////////////////////////////////////////////
+Epoch T = J2018.5 = date 2018 Jul 2.625 (JD2458302.125) = besselian epoch B2018.50167
+
+Beginning of spring: Mar 20  16h16.40m
+             summer: Jun 21  10h 8.38m
+             autumn: Sep 23   1h55.26m
+             winter: Dec 21  22h23.86m
+
+Earth in perihelion: Jan 03   5.60h
+         aphelion  : Jul 06  16.80h
+
+Mean obliquity of ecliptic (eps) at J2018.5:
+                        23.436885o = 23o26'12.79"
+/////////////////////////////////////////////////////////////////////////////////////////////////

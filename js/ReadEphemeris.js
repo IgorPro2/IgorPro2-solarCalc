@@ -1,21 +1,34 @@
 ;(function () {
     Object.defineProperty(window.ephemeris, 'getEphemerisArray', {
         value: function (year) {
-            let years = Object.keys(this);  //get array of keys in object
-            let lastYearGiven = [years[years.length - 1], this[years[years.length - 1]]];
-            let firstYearGiven = [years[0], this[years[0]]];
+
+            //Get array of keys(years) in object {window.ephemeris}
+            let years = Object.keys(this);
+            //                                                      KEY          STRING ARRAY          OBJECT
+            // window.ephemeris object consist    window.ephemeris[2020] = { eph: 'year data', mom: {year moments}}
+            // Declare Array with values from FIRST given (2018.js) file
+            let lastYearGiven = [years[years.length - 1], this[years[years.length - 1]].eph, this[years[years.length - 1]].mom];
+
+            // Declare Array with values from LAST given (2020.js) file[year, year data, year moments]
+            let firstYearGiven = [years[0], this[years[0]].eph, this[years[0]].mom];
+
+            // if this function was called without argument-year we return Array'lastYearGiven'
             if (!year) return lastYearGiven;
+
             //CHECK IF USER GAVE US VALID YEAR
-            if (!String(year).match(/^[0-9]{4}$/)) return lastYearGiven;
-            //RETURN DATA IF WE HAVE THAT YEAR, NULL OTHERWISE
-            if (this[+year]) return [year, this[+year]];
-            years.push(year);
-            years.sort(function (a, b) {
+            if (!String(year).match(/^[0-9]{4}$/)) return lastYearGiven;  //user give us invalid year, we return Array'lastYearGiven'
+
+            //RETURN DATA IF WE HAVE THAT YEAR,
+            if (this[+year]) return [year, this[+year].eph, this[+year].mom];
+
+            // user give us valid year but we have not appropriate *.js ephemeris file
+            years.push(year);                                       // insert given year in Array'years'
+            years.sort(function (a, b) {     // sort Array'years' in ascending order
                 return a - b;
             });
-            let ind = years.indexOf(year);
-            if (!ind) return firstYearGiven;
-            return lastYearGiven; //return last property of object
+            let ind = years.indexOf(year);    // get index of inserted (user)year in sorted Array'years'
+            if (!ind) return firstYearGiven;  // index=0 (this year is first, !0 = false), we return Array'firstYearGiven'
+            return lastYearGiven;             // index=years.len (this year is last in sorted Array'years') we return Array'lastYearGiven'
         },
     });
 // http://space.univ.kiev.ua/eph/17a/Su1.html
@@ -47,10 +60,18 @@
         let DayNum = moment(aDate).dayOfYear();
         let TimeUTC = utcTime;
 
+        // WE GET ARRAY ['yearOut'YEAR, 'words'EPHEMERIS(ARRAY), 'yearMoments'(OBJECT KEY:VALUE)] FOR GIVEN aYear
         let wordsArray = window.ephemeris.getEphemerisArray(aYear);
         let yearOut = wordsArray[0];//get a year value of ephemeris
-        //if (yearInput && (+aYear !== +yearOut)) yearInput.value = yearOut;//if desired year was replaced by nearest change input value
         let words = wordsArray[1];
+        let yearMoments = wordsArray[2];
+        //console.log(words);
+        //console.log(yearMoments);
+        window.varsValue.eclipticDeclination = yearMoments.eclipticDeclination;
+        window.varsValue.springEquinox = yearMoments.springEquinox;
+        window.varsValue.summerSolstice = yearMoments.summerSolstice;
+        window.varsValue.autumnEquinox = yearMoments.autumnEquinox;
+        window.varsValue.winterSolstice = yearMoments.winterSolstice;
 
         let i = (DayNum * 10) - 10;          //1-st index of Day (10 values) in array words[] (one day - one string in file)
         let Results = new Array(16);
