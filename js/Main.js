@@ -1,8 +1,8 @@
 ;(function () { // Trick for isolation local variables/functions names from access from outer functions
     window.Utils = {};  // something like global variables
-
     window.currentAction = "calc";
-    //window.varsValue is object defined in ephemeris file 2020.js
+    //window.varsValue is object for storing globals like  window.varsValue.springEquinox = "2020-03-20 03:50:41.4";
+    if (!window.varsValue) window.varsValue = {};
 
 //document.body.style.background = 'green'; // сделать фон красным
 //setTimeout(() => document.body.style.background = '', 3000); // вернуть назад    alert (ddGrad);
@@ -93,8 +93,17 @@
     {
         dateYear.addEventListener('input', function () {
             let inp = this;
-            if (inp.value > 2120) inp.value = 2120;
-            if (inp.value < 2018) inp.value = 2018;
+            let EphArr, ExistYear, thisYear = inp.value ;
+            // if (inp.value > 2120) inp.value = 2120;
+            // if (inp.value < 2018) inp.value = 2018;
+            // Refresh globals in window.varsValue according to given year
+            EphArr = Utils.ReadDataFromResourceString("01", "01",  thisYear, 0, 0, 0);
+            ExistYear = EphArr[15];
+            // Desired year replaced by nearest we have ephemeris. &change input value
+            if ((+thisYear !== +ExistYear)) dateYear.value = ExistYear;
+            if(window.varsValue.eclipticDeclination )         takeEquinoxSolsticeAE() ;
+            else                                              calcEquinoxSolstice();
+
         });
         dateMonth.addEventListener('input', function () {
             let inp = this;
@@ -233,7 +242,7 @@
 ///////////////////////////////////////////////////   SHOW RESULTS     /////////////////////////////////////////////////
     function show_results() {
         window.timerIsOn = false;       // to stop showTimer() in function showResultTimer()
-        let g, m, s, B, L;
+        let g, m, s, B, L, Barr, Larr;
         let utcTime, dUTCval;
         let curTime, sDay, sMonth, sYear, ht, mt, st;
         let EphArr, ExistYear;
@@ -249,15 +258,15 @@
         window.varsValue.B = B;
         if (B > 90)  B =  90;
         if (B < -90) B = -90;
-        B = Utils.grad_number2text(B, digits, undefined, undefined, true);
-        latGrad.value = B[3]+B[0];        latMin.value =  B[1];        latSec.value =  B[2];
+        Barr = Utils.grad_number2text(B, digits, undefined, undefined, true);
+        latGrad.value = Barr[3]+Barr[0];        latMin.value =  Barr[1];        latSec.value =  Barr[2];
         g = lonGrad.value;            m = lonMin.value;            s = lonSec.value;
         L = Utils.grad_textGMS2number(g, m, s);
         window.varsValue.L = L;
         if (L > 180)  L =  180;
         if (L < -180) L = -180;
-        L = Utils.grad_number2text(L, digits, undefined, undefined, true);
-        lonGrad.value = L[3]+L[0];        lonMin.value =  L[1];        lonSec.value =  L[2];
+        Larr = Utils.grad_number2text(L, digits, undefined, undefined, true);
+        lonGrad.value = Larr[3]+Larr[0];        lonMin.value =  Larr[1];        lonSec.value =  Larr[2];
 
         ht = timeHour.value;
         mt = timeMin.value;
@@ -279,7 +288,8 @@
 
         calcVelocities();
         calcSunRise();
-        calcEquinoxSolstice();
+        if(window.varsValue.eclipticDeclination )        takeEquinoxSolsticeAE() ;
+        else                                             calcEquinoxSolstice();
         timeHour.classList.remove("calcVal");
         timeMin.classList.remove("calcVal");
         timeSec.classList.remove("calcVal");
@@ -299,7 +309,7 @@
         timeHour.classList.remove("calcVal");
         timeMin.classList.remove("calcVal");
         timeSec.classList.remove("calcVal");
-        let g, m, s, B, L, D, E, utcTime, Radius, resArr, dUTCval, rAsc;
+        let g, m, s, B, L, D, E, utcTime, Radius, resArr, dUTCval, rAsc, Barr, Larr;
         let sDay, sMonth, sYear;
         let digits = Number(nDigits.value);
         let counter = 0;
@@ -323,19 +333,21 @@
         // Reformat B Lon in case of wrong user input
         g = latGrad.value;  m = latMin.value;  s = latSec.value;
         B =   Utils.grad_textGMS2number(g, m, s);
+        window.varsValue.B = B;
         if (B > 90)  B =  90;
         if (B < -90) B = -90;
-        B = Utils.grad_number2text(B, digits, undefined, undefined, true);
-        latGrad.value = B[3]+B[0];        latMin.value =  B[1];        latSec.value =  B[2];
+        Barr = Utils.grad_number2text(B, digits, undefined, undefined, true);
+        latGrad.value = Barr[3]+Barr[0];        latMin.value =  Barr[1];        latSec.value =  Barr[2];
         g = lonGrad.value;            m = lonMin.value;            s = lonSec.value;
         L = Utils.grad_textGMS2number(g, m, s);
+        window.varsValue.L = L;
         if (L > 180)  L =  180;
         if (L < -180) L = -180;
-        L = Utils.grad_number2text(L, digits, undefined, undefined, true);
-        lonGrad.value = L[3]+L[0];        lonMin.value =  L[1];        lonSec.value =  L[2];
-        userB = B; userL = L;
+        Larr = Utils.grad_number2text(L, digits, undefined, undefined, true);
+        lonGrad.value = Larr[3]+Larr[0];        lonMin.value =  Larr[1];        lonSec.value =  Larr[2];
 
-        calcEquinoxSolstice();
+        if(window.varsValue.eclipticDeclination )        takeEquinoxSolsticeAE() ;
+        else                                             calcEquinoxSolstice();
 
         (function delay(duration) {
             if (!window.timerIsOn) return false;
@@ -398,23 +410,87 @@
 
 
     function takeEquinoxSolsticeAE() {
-        // window.varsValue.eclipticDeclination = 23 + 26/60 + 11.85/3600; //Mean obliquity of ecliptic (eps) at J2020.5:
-        // window.varsValue.springEquinox = "2020-03-20 03:50:41.4";        //spring: Mar 20   3h50.69m
-        // window.varsValue.summerSolstice= "2020-06-20 21:44:48.6";        //summer: Jun 20  21h44.81m
-        // window.varsValue.autumnEquinox = "2020-09-22 13:31:51.0";        //autumn: Sep 22  13h31.85m
-        // window.varsValue.winterSolstice= "2020-12-21 10:03:25.2";        //winter: Dec 21  10h 3.42m
         springEquinox.textContent = window.varsValue.springEquinox;
         summerSolstice.textContent = window.varsValue.summerSolstice;
         autumnEquinox.textContent = window.varsValue.autumnEquinox;
         winterSolstice.textContent = window.varsValue.winterSolstice;
+        let g, m, s, Lat, Lon, dUTCval, sDay, sMonth, sYear, sMoment, aMoment, sgn1, sgn2, EfArr, myD1, myD2;
+        let ht, mt, st, solar, resArr, s1;
+        let delimiter1 = document.getElementById("delmGMS"),  digits = Number(nDigits.value);
+        let delm = delimiter1.value;
+        let delimiter2 = document.getElementById("delmHMS");
+        let delm2 = delimiter2.value;
+        let temp = tempC.value, press = pressP.value, eclipticDecl;
+        g = latGrad.value;
+        m = latMin.value;
+        s = latSec.value;
+        Lat = Utils.grad_textGMS2number(g, m, s);
+        g = lonGrad.value;
+        m = lonMin.value;
+        s = lonSec.value;
+        Lon = Utils.grad_textGMS2number(g, m, s);
+        dUTCval = +dUTC.value;
+        sYear = dateYear.value;
+
+        //Define summer max height
+        aMoment = moment(window.varsValue.summerSolstice , "");
+        sYear = moment(aMoment).format('YYYY');
+        sMonth = moment(aMoment).format('MM');
+        sDay = moment(aMoment).format('DD');
+        ht = moment(aMoment).format('HH');
+        mt = moment(aMoment).format('mm');
+        st = moment(aMoment).format('ss');
+        sMoment = Utils.grad_textGMS2number(ht, mt, st);
+        EfArr = Utils.ReadDataFromResourceString(sDay, sMonth, sYear, (sMoment - dUTCval), Lon, dUTCval);
+        s1 = EfArr[14];            //Time of upper culmination at LocalTime corrected at given Longitude
+        params = {
+            Lat: Lat,
+            Lon: Lon,
+            Day: sDay,
+            Month: sMonth,
+            Year: sYear,
+            UTCTime: (s1 - dUTCval),
+            dUTC: dUTCval,
+            Temp: temp,
+            Press: press
+        };
+        solar = new Solar(params);
+        resArr = solar._calculate();
+        s1= Utils.grad_number2text(resArr[1], digits, delm);
+        maxHeight.textContent = s1;
+        window.varsValue.summerMaxHeight =s1;
+
+        //Define winter max height
+        aMoment = moment(window.varsValue.winterSolstice, "");
+        sYear = moment(aMoment).format('YYYY');
+        sMonth = moment(aMoment).format('MM');
+        sDay = moment(aMoment).format('DD');
+        ht = moment(aMoment).format('HH');
+        mt = moment(aMoment).format('mm');
+        st = moment(aMoment).format('ss');
+        sMoment = Utils.grad_textGMS2number(ht, mt, st);
+        EfArr = Utils.ReadDataFromResourceString(sDay, sMonth, sYear, (sMoment - dUTCval), Lon, dUTCval);
+        s1 = EfArr[14];            //Time of upper culmination at LocalTime corrected at given Longitude
+        params = {
+            Lat: Lat,
+            Lon: Lon,
+            Day: sDay,
+            Month: sMonth,
+            Year: sYear,
+            UTCTime: (s1 - dUTCval),
+            dUTC: dUTCval,
+            Temp: temp,
+            Press: press
+        };
+        solar = new Solar(params);
+        resArr = solar._calculate();
+        s1= Utils.grad_number2text(resArr[1], digits, delm);
+        minHeight.textContent = s1;
+        window.varsValue.winterMaxHeight =s1;
 
     }
 
     function calcEquinoxSolstice() {
-        if(window.varsValue )    {
-            takeEquinoxSolsticeAE() ;
-            return
-        }
 
         let g, m, s, Lat, Lon, dUTCval, sDay, sMonth, sYear, sMoment, aMoment, sgn1, sgn2, EfArr, myD1, myD2;
         let time_beg, dTime, time_end, EquDay, EquTime, s1, digits = Number(nDigits.value);
@@ -1249,6 +1325,7 @@
     window.Utils.calcTimeAtGivenHA = calcTimeAtGivenHA;
     window.Utils.getHere = getHere;
     window.Utils.calcEquinoxSolstice = calcEquinoxSolstice;
+    window.Utils.takeEquinoxSolsticeAE =  takeEquinoxSolsticeAE;
     window.Utils.dataDeliveryDay = dataDeliveryDay;
     window.Utils.dataDeliveryYear = dataDeliveryYear;
     window.Utils.calcSunRise = calcSunRise;

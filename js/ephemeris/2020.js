@@ -372,7 +372,6 @@ window.ephemeris[2020] = {
 }
 
 
-if (!window.varsValue) window.varsValue = {};
 //window.varsValue.eclipticDeclination = 23 + 26 / 60 + 11.85 / 3600; //Mean obliquity of ecliptic (eps) at J2020.5:  23.436625
 // window.varsValue.springEquinox = "2020-03-20 03:50:41.4";        //spring: Mar 20   3h50.69m
 // window.varsValue.summerSolstice = "2020-06-20 21:44:48.6";        //summer: Jun 20  21h44.81m

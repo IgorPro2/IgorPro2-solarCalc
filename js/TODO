@@ -1,8 +1,4 @@
-
 /////////////////////// BUGS & IMPROVEMENT
-1. Make new calcEquinoxSolsticeAE() where values read from AE
-
-
 6. Add ephemeris 2021,
 7. Check cases when dUTC = 3.75(not even) and why Analemma not on its place?
 8. Return Russian Help, and how?
@@ -21,7 +17,7 @@
 1. Add time of solstice&equinox on graphic page.
 2. Make button on Graph page with Times of solstice&equinox.
 1. Read moments from AE in ephemeris text files.
-
+1. Make new calcEquinoxSolsticeAE() where values read from AE
 
 ////////////////////////////     NOT NEED /////////////////////////////////
 3. Rebuild buttons HERE CURRENT on main page converting them to button-lists.

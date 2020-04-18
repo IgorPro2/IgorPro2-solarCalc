@@ -13,8 +13,10 @@
     var digits = Number(nDigits.value);
 
     let eclipticAngle;
-    if (!window.varsValue.eclipticDeclination) {eclipticAngle = Utils.calcEquinoxSolstice();}
-    else {eclipticAngle = window.varsValue.eclipticDeclination}
+    // if (!window.varsValue.eclipticDeclination) {eclipticAngle = Utils.calcEquinoxSolstice();}
+    // else {eclipticAngle = window.varsValue.eclipticDeclination}
+    Utils.takeEquinoxSolsticeAE();
+    eclipticAngle = window.varsValue.eclipticDeclination;
 
     let NorthCircleLat = Utils.grad_number2text((90-eclipticAngle), 2, undefined, undefined, true);
     let NorthTropicLat = Utils.grad_number2text(eclipticAngle, 2, undefined, undefined, true);

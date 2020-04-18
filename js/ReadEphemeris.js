@@ -67,11 +67,13 @@
         let yearMoments = wordsArray[2];
         //console.log(words);
         //console.log(yearMoments);
-        window.varsValue.eclipticDeclination = yearMoments.eclipticDeclination;
-        window.varsValue.springEquinox = yearMoments.springEquinox;
-        window.varsValue.summerSolstice = yearMoments.summerSolstice;
-        window.varsValue.autumnEquinox = yearMoments.autumnEquinox;
-        window.varsValue.winterSolstice = yearMoments.winterSolstice;
+        if ( yearMoments) {
+            window.varsValue.eclipticDeclination = yearMoments.eclipticDeclination;
+            window.varsValue.springEquinox = yearMoments.springEquinox;
+            window.varsValue.summerSolstice = yearMoments.summerSolstice;
+            window.varsValue.autumnEquinox = yearMoments.autumnEquinox;
+            window.varsValue.winterSolstice = yearMoments.winterSolstice;
+        }
 
         let i = (DayNum * 10) - 10;          //1-st index of Day (10 values) in array words[] (one day - one string in file)
         let Results = new Array(16);

@@ -1,6 +1,6 @@
 function Solar(options) {
     //options ={Lat:B, Lon:L, Day:sDay, Month:sMonth, Year:sYear, dUTC:dUTCval, Temp:temp, Press:press, isAM: isAM, sunHeight: givenHt, sunAzimuth:givenAz};
-    let Latitude = options.Lat;
+    let Latitude = options.Lat;                    //Decimal degrees
     let Longitude = options.Lon;                   //Decimal degrees
     let sDay = options.Day ;                       //String
     let sMonth = options.Month ;                   //String
