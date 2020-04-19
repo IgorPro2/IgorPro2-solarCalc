@@ -83,11 +83,6 @@
     let radioHt = document.getElementById("radio1");
     let radioAz = document.getElementById("radio2");
     let checkPM = document.getElementById("check1");
-    //
-    // let delimiter1 = document.getElementById("delmGMS");
-    // let delm = delimiter1.value;
-    // let delimiter2 = document.getElementById("delmHMS");
-    // let delm2 = delimiter2.value;
 
     let sunSetTime, sunRiseTime, dayDur, Time2Dawn;
     {
@@ -457,7 +452,7 @@
         solar = new Solar(params);
         resArr = solar._calculate();
         s1= Utils.grad_number2text(resArr[1], digits, delm);
-        maxHeight.textContent = s1;
+        //maxHeight.textContent = s1;
         window.varsValue.summerMaxHeight =s1;
 
         //Define winter max height
@@ -485,7 +480,7 @@
         solar = new Solar(params);
         resArr = solar._calculate();
         s1= Utils.grad_number2text(resArr[1], digits, delm);
-        minHeight.textContent = s1;
+        //minHeight.textContent = s1;
         window.varsValue.winterMaxHeight =s1;
 
     }
@@ -649,7 +644,7 @@
         solar = new Solar(params);
         resArr = solar._calculate();
         s1= Utils.grad_number2text(resArr[1], digits, delm);
-        maxHeight.textContent = s1;
+        //maxHeight.textContent = s1;
         window.varsValue.summerMaxHeight =s1;
 
         // START FROM 0h 21 DECEMBER of given year, and find a moment
@@ -713,9 +708,9 @@
         solar = new Solar(params);
         resArr = solar._calculate();
         s1=Utils.grad_number2text(resArr[1], digits, delm);
-        minHeight.textContent = s1;
+        //minHeight.textContent = s1;
         window.varsValue.winterMaxHeight =s1;
-        //window.varsValue.eclipticDeclination = eclipticDecl;
+        window.varsValue.eclipticDeclination = eclipticDecl;
         return eclipticDecl;
     }
 
@@ -1324,7 +1319,7 @@
     window.Utils.show_results = show_results;
     window.Utils.calcTimeAtGivenHA = calcTimeAtGivenHA;
     window.Utils.getHere = getHere;
-    window.Utils.calcEquinoxSolstice = calcEquinoxSolstice;
+    //window.Utils.calcEquinoxSolstice = calcEquinoxSolstice;       //instead this use takeEquinoxSolsticeAE()
     window.Utils.takeEquinoxSolsticeAE =  takeEquinoxSolsticeAE;
     window.Utils.dataDeliveryDay = dataDeliveryDay;
     window.Utils.dataDeliveryYear = dataDeliveryYear;
