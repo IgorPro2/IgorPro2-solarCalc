@@ -38,8 +38,11 @@
     var axisFontWeight = 'normal';
     var sunFont = 'Arial';
     var sunFontWeight = 'normal';
-    var nightFillColor = 'lightgrey';
     var whiteColor = 'white';
+    var nightFillColor = new Color(0.9);
+    var civilTwilightColor = new Color(0.8);
+    var nauticalTwilightColor = new Color(0.7);
+    var astronomicTwilightColor = new Color(0.6);
 
     var delimiter1 = document.getElementById("delmGMS");
     var delm = delimiter1.value;
@@ -48,8 +51,8 @@
 
     ////////////////////////////////          DEFINE DRAW DIMENSIONS window.Utils.defineDimensions                /////////
     // MAXIMUM DIMENSIONS on Azimuth (X axis) will be 360 pixel. At Height (Y axis) From +90° to -90° = 180° ) Thus Scale will be:
-    var tic, ox, oy, tx, ty, s, lx, ly, less, xt1, yt1;
-    var from, to, axisX, axisY, boundRect;
+    var tic, ox, oy, tx, ty, s, lx, ly, less, xt1, yt1, text;
+    var from, to, axisX, axisY, boundRect, civilTwilight, nauticalTwilight, astronomicTwilight ;
     var width, height, hFont, SunRadius, TicRadius;
     var gap = 4;                        //Pixels from screen edge to sketch
     var dx = 360;                       //range on axis  X-azimuth
@@ -127,8 +130,6 @@
         var axisLayer = new Layer();
         axisLayer.name = "axisLyr";
 
-        //////////////////////////////////////      SHOW CALCULATION RESULTS BEFORE DRAWING
-        //Utils.show_results();                    //if do show_results() we loss B,L values
         //////////////////////////////////////      CLEAR ALL LAYERS BEFORE DRAWING
         var layers = paper.project.layers;
         for (i = 0; i < layers.length - 1; i++) {
@@ -232,161 +233,223 @@
         boundRect.strokeColor = whiteColor;
         //boundRect.strokeColor = 'magenta';
 
-        from = new Point(ox - lx, oy);  // NIGHT RECTANGLE FILLED
-        to = new Point(ox + lx, height - gap);
-        boundRect = new Path.Rectangle(from, to);
-        boundRect.strokeColor = whiteColor;
-        boundRect.fillColor = nightFillColor;
+        //////////////////////////////////   NIGHT RECTANGLE FILLED   //////////////////////////////////////
+        {
+            from = new Point(ox - lx, oy);
+            to = new Point(ox + lx, height - gap);
+            boundRect = new Path.Rectangle(from, to);
+            boundRect.strokeColor = whiteColor;
+            boundRect.fillColor = nightFillColor;
+
+            from = new Point(ox - lx, oy + 6 * s);
+            to = new Point(ox + lx, height - gap);
+            boundRect = new Path.Rectangle(from, to);
+            boundRect.fillColor = civilTwilightColor;
+
+            from = new Point(ox - lx, oy + 12 * s);
+            to = new Point(ox + lx, height - gap);
+            boundRect = new Path.Rectangle(from, to);
+            boundRect.fillColor = nauticalTwilightColor;
+
+            from = new Point(ox - lx, oy + 18 * s);
+            to = new Point(ox + lx, height - gap);
+            boundRect = new Path.Rectangle(from, to);
+            boundRect.fillColor = astronomicTwilightColor;
+        }
 
         ////////////////////////////////////////////////   AXIS X   ////////////////////////////////////////////////
-        axisX = new Path({strokeColor: axisColor, strokeWidth: 1});
-        axisX.add(new Point(ox - lx, oy), new Point(ox + lx, oy));         // axis X
-        text = new PointText({
-            point: [ox - lx, oy - tic * 1.5],
-            content: window.locales['northLb'],
-            fillColor: fontAxisColor,
-            fontFamily: axisFont,
-            fontWeight: axisFontWeight,
-            fontSize: hFont
-        });
-        axisY = new Path({strokeColor: axisColor, strokeWidth: 1});
-        axisY.add(new Point(ox, oy - ly), new Point(ox, oy + ly));        // axis Y
+        {
+            axisX = new Path({strokeColor: axisColor, strokeWidth: 1});
+            axisX.add(new Point(ox - lx, oy), new Point(ox + lx, oy));         // axis X
+            text = new PointText({
+                point: [ox - lx, oy - tic * 1.5],
+                content: window.locales['northLb'],
+                fillColor: fontAxisColor,
+                fontFamily: axisFont,
+                fontWeight: axisFontWeight,
+                fontSize: hFont
+            });
+            axisY = new Path({strokeColor: axisColor, strokeWidth: 1});
+            axisY.add(new Point(ox, oy - ly), new Point(ox, oy + ly));        // axis Y
 
-        //Tics on X axis every 10 degrees
-        for (i = 0; i < 36; i++) {
+            //Tics on X axis every 10 degrees
+            for (i = 0; i < 36; i++) {
+                axisX = new Path({strokeColor: axisColor});
+                axisX.add(new Point((ox + 180 * s) - (10 * i * s), oy - tic / 2));                     //North 0
+                axisX.add(new Point((ox + 180 * s) - (10 * i * s), oy + tic / 2));
+            }
+
             axisX = new Path({strokeColor: axisColor});
-            axisX.add(new Point((ox + 180 * s) - (10 * i * s), oy - tic / 2));                     //North 0
-            axisX.add(new Point((ox + 180 * s) - (10 * i * s), oy + tic / 2));
+            axisX.add(new Point(ox - 180 * s, oy - tic));                     //North 0
+            axisX.add(new Point(ox - 180 * s, oy + tic));
+            text = new PointText({
+                point: [ox - lx, oy + tic * 3],
+                content: '0°',
+                fillColor: fontAxisColor,
+                fontFamily: axisFont,
+                fontWeight: axisFontWeight,
+                fontSize: hFont
+            });
+
+            axisX = new Path({strokeColor: axisColor});
+            axisX.add(new Point(ox - 90 * s, oy - tic));                      //East 90
+            axisX.add(new Point(ox - 90 * s, oy + tic));
+            text = new PointText({
+                point: [ox - 90 * s, oy - tic * 1.5],
+                content: window.locales['eastLb'],
+                fillColor: fontAxisColor,
+                fontFamily: axisFont,
+                fontWeight: axisFontWeight,
+                fontSize: hFont,
+                justification: 'center'
+            });
+            text = new PointText({
+                point: [ox, oy - tic * 1.5],
+                content: window.locales['southLb'],
+                fillColor: fontAxisColor,
+                fontFamily: axisFont,
+                fontWeight: axisFontWeight,
+                fontSize: hFont,
+                justification: 'center'
+            });
+
+            axisX = new Path({strokeColor: axisColor});
+            axisX.add(new Point(ox + 90 * s, oy - tic));                     //West 270
+            axisX.add(new Point(ox + 90 * s, oy + tic));
+            text = new PointText({
+                point: [ox + 90 * s, oy - tic * 1.5],
+                content: window.locales['westLb'],
+                fillColor: fontAxisColor,
+                fontFamily: axisFont,
+                fontWeight: axisFontWeight,
+                fontSize: hFont,
+                justification: 'center'
+            });
+
+            axisX = new Path({strokeColor: axisColor});
+            axisX.add(new Point(ox + 180 * s, oy - tic));                    //North 360
+            axisX.add(new Point(ox + 180 * s, oy + tic));
+            text = new PointText({
+                point: [ox + 180 * s, oy - tic * 1.5],
+                content: window.locales['northLb'],
+                fillColor: fontAxisColor,
+                fontFamily: axisFont,
+                fontWeight: axisFontWeight,
+                fontSize: hFont,
+                justification: 'right'
+            });
+            text = new PointText({
+                point: [ox + 180 * s, oy + tic * 3],
+                content: '360°',
+                fillColor: fontAxisColor,
+                fontFamily: axisFont,
+                fontWeight: axisFontWeight,
+                fontSize: hFont,
+                justification: 'right'
+            });
+            //Arrow on X axis
+            axisX = new Path({strokeColor: axisColor});
+            axisX.add(new Point(ox + 180 * s, oy));                          //move 2 arrow
+            axisX.add(new Point(ox + 180 * s - tic * 2, oy - tic));          //arrow X up
+            axisX.add(new Point(ox + 180 * s - tic * 2, oy + tic));          //arrow X down
+            axisX.add(new Point(ox + 180 * s, oy));                          //arrow X low
         }
 
-        axisX = new Path({strokeColor: axisColor});
-        axisX.add(new Point(ox - 180 * s, oy - tic));                     //North 0
-        axisX.add(new Point(ox - 180 * s, oy + tic));
-        text = new PointText({
-            point: [ox - lx, oy + tic * 3],
-            content: '0°',
-            fillColor: fontAxisColor,
-            fontFamily: axisFont,
-            fontWeight: axisFontWeight,
-            fontSize: hFont
-        });
+        ////////////////////////////////// TWILIGHT LINES AND TEXT //////////////////////////////////////////
+        {
+            // var from = new Point(ox - lx, oy+6*s), to = new Point(ox + lx, oy+6*s)
+            // civilTwilight = new Path.Line(from, to);
+            // civilTwilight.strokeColor=axisColor; civilTwilight.strokeWidth= 0.6;
+            // civilTwilight.dashArray=[16,4];
+            text = new PointText({
+                point: [ox + tic, oy + 6 * s - tic],
+                content: window.locales['civilLb'],
+                fillColor: fontAxisColor,
+                fontFamily: axisFont,
+                fontWeight: axisFontWeight,
+                fontSize: hFont
+            });
 
-        axisX = new Path({strokeColor: axisColor});
-        axisX.add(new Point(ox - 90 * s, oy - tic));                      //East 90
-        axisX.add(new Point(ox - 90 * s, oy + tic));
-        text = new PointText({
-            point: [ox - 90 * s, oy - tic * 1.5],
-            content: window.locales['eastLb'],
-            fillColor: fontAxisColor,
-            fontFamily: axisFont,
-            fontWeight: axisFontWeight,
-            fontSize: hFont,
-            justification: 'center'
-        });
-        text = new PointText({
-            point: [ox, oy - tic * 1.5],
-            content: window.locales['southLb'],
-            fillColor: fontAxisColor,
-            fontFamily: axisFont,
-            fontWeight: axisFontWeight,
-            fontSize: hFont,
-            justification: 'center'
-        });
+            // nauticalTwilight = new Path({strokeColor: axisColor, strokeWidth: 0.4});
+            // nauticalTwilight.add(new Point(ox - lx, oy+12*s), new Point(ox + lx, oy+12*s));
+            // nauticalTwilight.dashArray=[4,4];
+            text = new PointText({
+                point: [ox + tic, oy + 12 * s - tic],
+                content: window.locales['nauticalLb'],
+                fillColor: fontAxisColor,
+                fontFamily: axisFont,
+                fontWeight: axisFontWeight,
+                fontSize: hFont
+            });
+            // astronomicTwilight = new Path({strokeColor: axisColor, strokeWidth: 0.2});
+            // astronomicTwilight.add(new Point(ox - lx, oy+18*s), new Point(ox + lx, oy+18*s));
+            // astronomicTwilight.dashArray=[2,2];
+            text = new PointText({
+                point: [ox + tic, oy + 18 * s - tic],
+                content: window.locales['astronomicLb'],
+                fillColor: fontAxisColor,
+                fontFamily: axisFont,
+                fontWeight: axisFontWeight,
+                fontSize: hFont
+            });
 
-        axisX = new Path({strokeColor: axisColor});
-        axisX.add(new Point(ox + 90 * s, oy - tic));                     //West 270
-        axisX.add(new Point(ox + 90 * s, oy + tic));
-        text = new PointText({
-            point: [ox + 90 * s, oy - tic * 1.5],
-            content: window.locales['westLb'],
-            fillColor: fontAxisColor,
-            fontFamily: axisFont,
-            fontWeight: axisFontWeight,
-            fontSize: hFont,
-            justification: 'center'
-        });
-
-        axisX = new Path({strokeColor: axisColor});
-        axisX.add(new Point(ox + 180 * s, oy - tic));                    //North 360
-        axisX.add(new Point(ox + 180 * s, oy + tic));
-        text = new PointText({
-            point: [ox + 180 * s, oy - tic * 1.5],
-            content: window.locales['northLb'],
-            fillColor: fontAxisColor,
-            fontFamily: axisFont,
-            fontWeight: axisFontWeight,
-            fontSize: hFont,
-            justification: 'right'
-        });
-        text = new PointText({
-            point: [ox + 180 * s, oy + tic * 3],
-            content: '360°',
-            fillColor: fontAxisColor,
-            fontFamily: axisFont,
-            fontWeight: axisFontWeight,
-            fontSize: hFont,
-            justification: 'right'
-        });
-        //Arrow on X axis
-        axisX = new Path({strokeColor: axisColor});
-        axisX.add(new Point(ox + 180 * s, oy));                          //move 2 arrow
-        axisX.add(new Point(ox + 180 * s - tic * 2, oy - tic));          //arrow X up
-        axisX.add(new Point(ox + 180 * s - tic * 2, oy + tic));          //arrow X down
-        axisX.add(new Point(ox + 180 * s, oy));                          //arrow X low
+        }
 
         ////////////////////////////////////////////////   AXIS Y ////////////////////////////////////////////////
-        //Tics on Y axis every 10 degrees
-        for (i = 0; i < 18; i++) {
+        {
+            //Tics on Y axis every 10 degrees
+            for (i = 0; i < 18; i++) {
+                axisY = new Path({strokeColor: axisColor});
+                axisY.add(new Point(ox - tic / 2, (oy - 90 * s) + i * 10 * s));                     //North 0
+                axisY.add(new Point(ox + tic / 2, (oy - 90 * s) + i * 10 * s));
+            }
             axisY = new Path({strokeColor: axisColor});
-            axisY.add(new Point(ox - tic / 2, (oy - 90 * s) + i * 10 * s));                     //North 0
-            axisY.add(new Point(ox + tic / 2, (oy - 90 * s) + i * 10 * s));
+            axisY.add(new Point(ox - tic, oy - 90 * s));
+            axisY.add(new Point(ox + tic, oy - 90 * s));                     //zenith tic
+            text = new PointText({
+                point: [ox - tic * 8, oy - 90 * s + tic * 2],
+                content: '+90°',
+                fillColor: fontAxisColor,
+                fontFamily: axisFont,
+                fontWeight: axisFontWeight,
+                fontSize: hFont
+            });
+            text = new PointText({
+                point: [ox + tic * 3, oy - 90 * s + tic * 2],
+                content: window.locales['zenithLb'],
+                fillColor: fontAxisColor,
+                fontFamily: axisFont,
+                fontWeight: axisFontWeight,
+                fontSize: hFont
+            });
+
+            axisY = new Path({strokeColor: axisColor});
+            axisY.add(new Point(ox - tic, oy + 90 * s));
+            axisY.add(new Point(ox + tic, oy + 90 * s));                     // nadir tic
+            text = new PointText({
+                point: [ox - tic * 8, oy + 90 * s - tic],
+                content: '-90°',
+                fillColor: fontAxisColor,
+                fontFamily: axisFont,
+                fontWeight: axisFontWeight,
+                fontSize: hFont
+            });
+            text = new PointText({
+                point: [ox + tic * 3, oy + 90 * s - tic],
+                content: window.locales['nadirLb'],
+                fillColor: fontAxisColor,
+                fontFamily: axisFont,
+                fontWeight: axisFontWeight,
+                fontSize: hFont
+            });
+
+            //Arrow on Y axis
+            axisY = new Path({strokeColor: axisColor});
+            axisY.add(new Point(ox, oy - 90 * s));
+            axisY.add(new Point(ox + tic, oy - 90 * s + tic * 2));           //arrow Y right
+            axisY.add(new Point(ox - tic, oy - 90 * s + tic * 2));           //arrow Y left
+            axisY.add(new Point(ox, oy - 90 * s));                     //arrow Y up
         }
-        axisY = new Path({strokeColor: axisColor});
-        axisY.add(new Point(ox - tic, oy - 90 * s));
-        axisY.add(new Point(ox + tic, oy - 90 * s));                     //zenith tic
-        text = new PointText({
-            point: [ox - tic * 8, oy - 90 * s + tic * 2],
-            content: '+90°',
-            fillColor: fontAxisColor,
-            fontFamily: axisFont,
-            fontWeight: axisFontWeight,
-            fontSize: hFont
-        });
-        text = new PointText({
-            point: [ox + tic * 3, oy - 90 * s + tic * 2],
-            content: window.locales['zenithLb'],
-            fillColor: fontAxisColor,
-            fontFamily: axisFont,
-            fontWeight: axisFontWeight,
-            fontSize: hFont
-        });
-
-        axisY = new Path({strokeColor: axisColor});
-        axisY.add(new Point(ox - tic, oy + 90 * s));
-        axisY.add(new Point(ox + tic, oy + 90 * s));                     // nadir tic
-        text = new PointText({
-            point: [ox - tic * 8, oy + 90 * s - tic],
-            content: '-90°',
-            fillColor: fontAxisColor,
-            fontFamily: axisFont,
-            fontWeight: axisFontWeight,
-            fontSize: hFont
-        });
-        text = new PointText({
-            point: [ox + tic * 3, oy + 90 * s - tic],
-            content: window.locales['nadirLb'],
-            fillColor: fontAxisColor,
-            fontFamily: axisFont,
-            fontWeight: axisFontWeight,
-            fontSize: hFont
-        });
-
-        //Arrow on Y axis
-        axisY = new Path({strokeColor: axisColor});
-        axisY.add(new Point(ox, oy - 90 * s));
-        axisY.add(new Point(ox + tic, oy - 90 * s + tic * 2));           //arrow Y right
-        axisY.add(new Point(ox - tic, oy - 90 * s + tic * 2));           //arrow Y left
-        axisY.add(new Point(ox, oy - 90 * s));                     //arrow Y up
     };
 
     window.Utils.dayPath = function (options) {

@@ -83,6 +83,8 @@
   "delmGMS": "°'\"",
   "delmHMS": "hms",
   "timeDropBtLb": "Time",
-  "timePlus1month": "Plus 1 month"
-
+  "timePlus1month": "Plus 1 month",
+  "civilLb": "Civil Twilight",
+  "nauticalLb": "Nautical Twilight",
+  "astronomicLb": "Astronomic Twilight"
 }

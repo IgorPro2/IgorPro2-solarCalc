@@ -2,7 +2,7 @@
   "zenithLb": "Зенит",
   "nadirLb": "Надир",
   "northLb": "Север",
-  "southLb": "Юг 180°",
+  "southLb": "Юг  180°",
   "eastLb": "Восток 90°",
   "westLb": "Запад 270°",
   "latLb": "Широта:",
@@ -83,7 +83,10 @@
   "delmGMS": "°'\"",
   "delmHMS": "чмс",
   "timeDropBtLb": "Время",
-  "timePlus1month": "Плюс 1 месяц"
+  "timePlus1month": "Плюс 1 месяц",
+  "civilLb": "Гражданские сумерки",
+  "nauticalLb": "Навигационные сумерки",
+  "astronomicLb": "Астрономические сумерки"
 
 
 }

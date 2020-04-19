@@ -1227,6 +1227,7 @@
         let mt = params.aMinute;
         let st = params.aSecond;
         let dUTCval = params.dUTC;
+        dUTCval = +dUTC.value;    //Must take it from user input!! not from parameters. Because valuse need recalculation.
         let curYear = sYear;
         let g, m, s, B, L, resArr, options, solar;
         let utcTime, Az0, Ht0, i;
