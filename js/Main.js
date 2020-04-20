@@ -279,12 +279,11 @@
         ExistYear = EphArr[15];
         if ((+sYear !== +ExistYear)) dateYear.value = ExistYear;   // Desired year replaced by nearest we have ephemeris. &change input value
 
-        //let ResArr=Utils.dataDelivery();
 
         calcVelocities();
         calcSunRise();
-        if(window.varsValue.eclipticDeclination )        takeEquinoxSolsticeAE() ;
-        else                                             calcEquinoxSolstice();
+        takeEquinoxSolsticeAE();
+
         timeHour.classList.remove("calcVal");
         timeMin.classList.remove("calcVal");
         timeSec.classList.remove("calcVal");
@@ -341,8 +340,14 @@
         Larr = Utils.grad_number2text(L, digits, undefined, undefined, true);
         lonGrad.value = Larr[3]+Larr[0];        lonMin.value =  Larr[1];        lonSec.value =  Larr[2];
 
-        if(window.varsValue.eclipticDeclination )        takeEquinoxSolsticeAE() ;
-        else                                             calcEquinoxSolstice();
+        takeEquinoxSolsticeAE();
+        calcSunRise();
+        givHg.classList.remove("invalidVal");
+        givHm.classList.remove("invalidVal");
+        givHs.classList.remove("invalidVal");
+        givAg.classList.remove("invalidVal");
+        givAm.classList.remove("invalidVal");
+        givAs.classList.remove("invalidVal");
 
         (function delay(duration) {
             if (!window.timerIsOn) return false;
@@ -389,14 +394,8 @@
             sunRadius.textContent = Utils.grad_number2text(Radius, digits, delm);
             rightAscension.textContent = Utils.grad_number2text(rAsc, digits, delm);
 
-            calcSunRise();
             calcVelocities();
-            givHg.classList.remove("invalidVal");
-            givHm.classList.remove("invalidVal");
-            givHs.classList.remove("invalidVal");
-            givAg.classList.remove("invalidVal");
-            givAm.classList.remove("invalidVal");
-            givAs.classList.remove("invalidVal");
+            showDayDuration();
 
             if (++counter <= 200 && window.timerIsOn) setTimeout(delay, duration, duration);
 
@@ -405,10 +404,14 @@
 
 
     function takeEquinoxSolsticeAE() {
+
         springEquinox.textContent = window.varsValue.springEquinox;
         summerSolstice.textContent = window.varsValue.summerSolstice;
         autumnEquinox.textContent = window.varsValue.autumnEquinox;
         winterSolstice.textContent = window.varsValue.winterSolstice;
+        minHeight.textContent = window.varsValue.winterMaxHeight;
+        maxHeight.textContent = window.varsValue.summerMaxHeight;
+
         let g, m, s, Lat, Lon, dUTCval, sDay, sMonth, sYear, sMoment, aMoment, sgn1, sgn2, EfArr, myD1, myD2;
         let ht, mt, st, solar, resArr, s1;
         let delimiter1 = document.getElementById("delmGMS"),  digits = Number(nDigits.value);
@@ -452,7 +455,6 @@
         solar = new Solar(params);
         resArr = solar._calculate();
         s1= Utils.grad_number2text(resArr[1], digits, delm);
-        //maxHeight.textContent = s1;
         window.varsValue.summerMaxHeight =s1;
 
         //Define winter max height
@@ -480,238 +482,12 @@
         solar = new Solar(params);
         resArr = solar._calculate();
         s1= Utils.grad_number2text(resArr[1], digits, delm);
-        //minHeight.textContent = s1;
         window.varsValue.winterMaxHeight =s1;
 
-    }
+        // minHeight.textContent = window.varsValue.winterMaxHeight;
+        // maxHeight.textContent = window.varsValue.summerMaxHeight;
 
-    function calcEquinoxSolstice() {
 
-        let g, m, s, Lat, Lon, dUTCval, sDay, sMonth, sYear, sMoment, aMoment, sgn1, sgn2, EfArr, myD1, myD2;
-        let time_beg, dTime, time_end, EquDay, EquTime, s1, digits = Number(nDigits.value);
-        let nDay, nMonth, nYear, nMoment, solstice, SolDay, SolTime, params, solar, resArr;
-        let temp = tempC.value, press = pressP.value, eclipticDecl;
-        let delimiter1 = document.getElementById("delmGMS");
-        let delm = delimiter1.value;
-        let delimiter2 = document.getElementById("delmHMS");
-        let delm2 = delimiter2.value;
-
-        g = latGrad.value;
-        m = latMin.value;
-        s = latSec.value;
-        Lat = Utils.grad_textGMS2number(g, m, s);
-        g = lonGrad.value;
-        m = lonMin.value;
-        s = lonSec.value;
-        Lon = Utils.grad_textGMS2number(g, m, s);
-        dUTCval = +dUTC.value;
-        sYear = dateYear.value;
-
-        sMoment = sYear + "-03-19";                           //19 March of given Year
-        aMoment = moment(sMoment, "");
-        sYear = moment(aMoment).format('YYYY');
-        sMonth = moment(aMoment).format('MM');
-        sDay = moment(aMoment).format('DD');
-        sgn1 = 1;
-        sgn2 = 1;
-        while (sgn1 === sgn2) {
-            EfArr = Utils.ReadDataFromResourceString(sDay, sMonth, sYear, 0, Lon, dUTCval);
-            myD1 = EfArr[11];
-            sgn1 = Math.sign(myD1);
-            EfArr = Utils.ReadDataFromResourceString(sDay, sMonth, sYear, 24, Lon, dUTCval);
-            myD2 = EfArr[11];
-            sgn2 = Math.sign(myD2);
-            if (sgn1 === sgn2) {                                // Equinox possibly HAPPENS at next day
-                aMoment = moment(sMoment, "").add(1, 'day');     //Next day
-                sMonth = moment(aMoment).format('MM');
-                sDay = moment(aMoment).format('DD')
-            }
-        }
-        time_beg = 0.;
-        dTime = 12.;
-        while (dTime > 1. / 3600.) {
-            time_end = time_beg + dTime;
-            EfArr = Utils.ReadDataFromResourceString(sDay, sMonth, sYear, time_end, Lon, dUTCval);
-            myD2 = EfArr[11];
-            if (myD2 < 0) {
-                time_beg = time_end;
-            } else {
-                dTime = dTime / 2;
-            }
-        }
-        EquDay = sYear + "-" + sMonth + "-" + sDay;
-        EquTime = Utils.grad_number2text((time_beg + time_end) / 2., digits, delm2);
-        s1 = EquDay + " " + EquTime;
-        springEquinox.textContent = s1;
-        if(!window.varsValue.springEquinox )        window.varsValue.springEquinox =s1;
-
-        // START FROM 0h 22 SEPTEMBER of given year          AUTUMN EQUINOX
-        sMoment = sYear + "-09-22";                           //22 SEPTEMBER of given Year
-        aMoment = moment(sMoment, "");
-        sYear = moment(aMoment).format('YYYY');
-        sMonth = moment(aMoment).format('MM');
-        sDay = moment(aMoment).format('DD');
-        sgn1 = 1;
-        sgn2 = 1;
-        while (sgn1 === sgn2) {
-            EfArr = Utils.ReadDataFromResourceString(sDay, sMonth, sYear, 0, Lon, dUTCval);
-            myD1 = EfArr[11];
-            sgn1 = Math.sign(myD1);
-            EfArr = Utils.ReadDataFromResourceString(sDay, sMonth, sYear, 24, Lon, dUTCval);
-            myD2 = EfArr[11];
-            sgn2 = Math.sign(myD2);
-            if (sgn1 === sgn2) {                                // Equinox possibly HAPPENS at next day
-                aMoment = moment(sMoment, "").add(1, 'day');     //Next day
-                sMonth = moment(aMoment).format('MM');
-                sDay = moment(aMoment).format('DD')
-            }
-        }
-        time_beg = 0.;
-        dTime = 12.;
-        while (dTime > 1. / 3600.) {
-            time_end = time_beg + dTime;
-            EfArr = Utils.ReadDataFromResourceString(sDay, sMonth, sYear, time_end, Lon, dUTCval);
-            myD2 = EfArr[11];
-            if (myD2 > 0) {
-                time_beg = time_end;
-            } else {
-                dTime = dTime / 2;
-            }
-        }
-        EquDay = sYear + "-" + sMonth + "-" + sDay;
-        EquTime = Utils.grad_number2text((time_beg + time_end) / 2., digits, delm2);
-        s1 = EquDay + " " + EquTime;
-        autumnEquinox.textContent = s1;
-        if(!window.varsValue.autumnEquinox)    window.varsValue.autumnEquinox =s1;
-
-        sMoment = sYear + "-06-20";                           //20 JUNE of given year
-        aMoment = moment(sMoment, "");
-        sYear = moment(aMoment).format('YYYY');
-        sMonth = moment(aMoment).format('MM');
-        sDay = moment(aMoment).format('DD');
-        nMoment = aMoment.add(1, 'day');     //Next day
-        nYear = moment(nMoment).format('YYYY');
-        nMonth = moment(nMoment).format('MM');
-        nDay = moment(nMoment).format('DD');
-        sgn1 = 1;
-        sgn2 = 1;
-        while (sgn1 === sgn2) {          //compare signs of Declination's Hour change!!!
-            EfArr = Utils.ReadDataFromResourceString(sDay, sMonth, sYear, 0., Lon, dUTCval);
-            myD1 = EfArr[4];
-            sgn1 = Math.sign(myD1);
-            EfArr = Utils.ReadDataFromResourceString(nDay, nMonth, nYear, 0., Lon, dUTCval);
-            myD2 = EfArr[4];
-            sgn2 = Math.sign(myD2);
-            if (sgn1 === sgn2) {                                     // SOLSTICE possibly HAPPENS at next day
-                aMoment = nMoment;
-                sYear = moment(aMoment).format('YYYY');
-                sMonth = moment(aMoment).format('MM');
-                sDay = moment(aMoment).format('DD');
-                nMoment = aMoment.add(1, 'day');     //Next day
-                nYear = moment(nMoment).format('YYYY');
-                nMonth = moment(nMoment).format('MM');
-                nDay = moment(nMoment).format('DD');
-            }
-        }
-        EfArr = Utils.ReadDataFromResourceString(sDay, sMonth, sYear, 0., Lon, dUTCval);
-        myD1 = EfArr[4];
-        EfArr = Utils.ReadDataFromResourceString(nDay, nMonth, nYear, 0., Lon, dUTCval);
-        myD2 = EfArr[4];
-        solstice = myD1 / (myD1 - myD2) * 24;    //Time when Declination's Hour change equals 0
-        //SummerSolDay = moment(aMoment).format("YYYY-MM-DD");
-        SolDay = sYear + "-" + sMonth + "-" + sDay;
-        SolTime = Utils.grad_number2text(solstice, digits, delm2);
-        s1 = SolDay + " " + SolTime;
-        summerSolstice.textContent = s1;
-        if(!window.varsValue.summerSolstice)  window.varsValue.summerSolstice =s1;
-        EfArr = Utils.ReadDataFromResourceString(nDay, nMonth, nYear, SolTime, Lon, dUTCval);
-        eclipticDecl = EfArr[3];                  // Declination of Ecliptic to SkyEquator this year
-
-        //Define max height
-        EfArr = Utils.ReadDataFromResourceString(sDay, sMonth, sYear, (solstice - dUTCval), Lon, dUTCval);
-        s1 = EfArr[14];            //Time of upper culmination at LocalTime corrected at given Longitude
-        params = {
-            Lat: Lat,
-            Lon: Lon,
-            Day: sDay,
-            Month: sMonth,
-            Year: sYear,
-            UTCTime: (s1 - dUTCval),
-            dUTC: dUTCval,
-            Temp: temp,
-            Press: press
-        };
-        solar = new Solar(params);
-        resArr = solar._calculate();
-        s1= Utils.grad_number2text(resArr[1], digits, delm);
-        //maxHeight.textContent = s1;
-        window.varsValue.summerMaxHeight =s1;
-
-        // START FROM 0h 21 DECEMBER of given year, and find a moment
-        // when Time when Declination's Hour change equals 0                  WINTER SOLSTICE
-        sMoment = sYear + "-12-21";
-        aMoment = moment(sMoment, "");
-        sYear = moment(aMoment).format('YYYY');
-        sMonth = moment(aMoment).format('MM');
-        sDay = moment(aMoment).format('DD');
-        nMoment = aMoment.add(1, 'day');     //Next day
-        nYear = moment(nMoment).format('YYYY');
-        nMonth = moment(nMoment).format('MM');
-        nDay = moment(nMoment).format('DD');
-
-        sgn1 = 1;
-        sgn2 = 1;
-        while (sgn1 === sgn2) {          //compare signs of Declination's Hour change!!!
-            EfArr = Utils.ReadDataFromResourceString(sDay, sMonth, sYear, 0., Lon, dUTCval);
-            myD1 = EfArr[4];
-            sgn1 = Math.sign(myD1);
-            EfArr = Utils.ReadDataFromResourceString(nDay, nMonth, nYear, 0., Lon, dUTCval);
-            myD2 = EfArr[4];
-            sgn2 = Math.sign(myD2);
-            if (sgn1 === sgn2) {                                     // SOLSTICE possibly HAPPENS at next day
-                aMoment = nMoment;
-                sYear = moment(aMoment).format('YYYY');
-                sMonth = moment(aMoment).format('MM');
-                sDay = moment(aMoment).format('DD');
-                nMoment = aMoment.add(1, 'day');     //Next day
-                nYear = moment(nMoment).format('YYYY');
-                nMonth = moment(nMoment).format('MM');
-                nDay = moment(nMoment).format('DD');
-            }
-        }
-        EfArr = Utils.ReadDataFromResourceString(sDay, sMonth, sYear, 0., Lon, dUTCval);
-        myD1 = EfArr[4];
-        EfArr = Utils.ReadDataFromResourceString(nDay, nMonth, nYear, 0., Lon, dUTCval);
-        myD2 = EfArr[4];
-        solstice = myD1 / (myD1 - myD2) * 24;    //Time when Declination's Hour change equals 0
-        //WINTER SolDay = moment(aMoment).format("YYYY-MM-DD");
-        SolDay = sYear + "-" + sMonth + "-" + sDay;
-        SolTime = Utils.grad_number2text(solstice, digits, delm2);
-        s1 = SolDay + " " + SolTime;
-        winterSolstice.textContent = s1;
-        if(!window.varsValue.winterSolstice)   window.varsValue.winterSolstice =s1;
-
-        //Define min height
-        EfArr = Utils.ReadDataFromResourceString(sDay, sMonth, sYear, (solstice - dUTCval), Lon, dUTCval);
-        s1 = EfArr[14];            //Time of upper culmination at LocalTime corrected at given Longitude
-        params = {
-            Lat: Lat,
-            Lon: Lon,
-            Day: sDay,
-            Month: sMonth,
-            Year: sYear,
-            UTCTime: (s1 - dUTCval),
-            dUTC: dUTCval,
-            Temp: temp,
-            Press: press
-        };
-        solar = new Solar(params);
-        resArr = solar._calculate();
-        s1=Utils.grad_number2text(resArr[1], digits, delm);
-        //minHeight.textContent = s1;
-        window.varsValue.winterMaxHeight =s1;
-        window.varsValue.eclipticDeclination = eclipticDecl;
-        return eclipticDecl;
     }
 
     function calcSunRise() {
@@ -730,8 +506,8 @@
         let hEye = eyeHeight.value;
         let ht, mt, st;
         let newUtcTime, mRef, aRef, tempH, options, solar, sunH, MaxSunH, culmT, Dhorizon, Ihorizon, tt;
-        let delimiter1 = document.getElementById("delmGMS");
-        let delm = delimiter1.value;
+        // let delimiter1 = document.getElementById("delmGMS");
+        // let delm = delimiter1.value;
         let delimiter2 = document.getElementById("delmHMS");
         let delm2 = delimiter2.value;
 
@@ -774,6 +550,7 @@
         s1= Utils.grad_number2text((culmT), digits,  delm2);
         culmTime.textContent = s1;
         window.varsValue.dayCulmHeight =MaxSunH;
+        window.varsValue.dayCulmHeightNum =sunH;
         window.varsValue.dayCulmTime =s1;
 
         if (hEye > 0) {
@@ -804,7 +581,9 @@
         solar = new Solar(options);
         resArr = solar._timeAtSunPositionH();
         sunRiseTime = resArr[1];
+        let localSunRiseTime = sunRiseTime + dUTCval;
         sunRise.textContent = (Utils.grad_number2text(sunRiseTime + dUTCval, digits,  delm2));
+        window.varsValue.sunRiseTime = localSunRiseTime;
         //SUNSET TIME
         options = {
             Lat: B,
@@ -821,7 +600,10 @@
         solar = new Solar(options);
         resArr = solar._timeAtSunPositionH();
         sunSetTime = resArr[1];
+        let localSunSetTime = sunSetTime + dUTCval;
         sunSet.textContent = (Utils.grad_number2text(sunSetTime + dUTCval, digits,  delm2));
+        window.varsValue.sunSetTime = localSunSetTime;
+
         // DAY DURATION
         dayDur = sunSetTime - sunRiseTime;
         if (dayDur === 0 && sunH > 0) dayDur = 24;    //At Polar Day -:)
@@ -829,8 +611,24 @@
         dayDuration.textContent = s1;     // Day duration from Dusk 2 Dawn;
         window.varsValue.dayDuration = s1;
         if (dayDur === 24 || dayDur === 0) Time2Dawn = Utils.grad_number2text(0, digits,  delm2);      //Time2Dawn At Polar Day -:)
-        else Time2Dawn = Utils.grad_number2text((sunSetTime - utcTime), digits,  delm2);      // Time 2 Dawn at common day
+        else Time2Dawn = Utils.grad_number2text((sunSetTime - utcTime), digits,  delm2);                       // Time 2 Dawn at common day
         time2SunSet.textContent = (Time2Dawn);
+    }
+
+    function showDayDuration() {
+        // DAY DURATION
+        let dayDur, sunSetTime = window.varsValue.sunSetTime, sunRiseTime = window.varsValue.sunRiseTime;
+        let sunH = window.varsValue.dayCulmHeightNum;
+        let ht = timeHour.value, mt = timeMin.value, st = timeSec.value;
+        let localTime = Utils.grad_textGMS2number(ht, mt, st);
+        let digits = Number(nDigits.value);
+        let delm2 = document.getElementById("delmHMS").value;
+        dayDur = sunSetTime - sunRiseTime;
+        if (dayDur === 0 && sunH > 0) dayDur = 24;                                                              //At Polar Day -:)
+        if (dayDur === 24 || dayDur === 0) Time2Dawn = Utils.grad_number2text(0, digits,  delm2);      //Time2Dawn At Polar Day -:)
+        else Time2Dawn = Utils.grad_number2text((sunSetTime - localTime), digits,  delm2);                      // Time 2 Dawn at common day
+        time2SunSet.textContent = (Time2Dawn);
+
     }
 
     function calcVelocities() {
@@ -1320,7 +1118,6 @@
     window.Utils.show_results = show_results;
     window.Utils.calcTimeAtGivenHA = calcTimeAtGivenHA;
     window.Utils.getHere = getHere;
-    //window.Utils.calcEquinoxSolstice = calcEquinoxSolstice;       //instead this use takeEquinoxSolsticeAE()
     window.Utils.takeEquinoxSolsticeAE =  takeEquinoxSolsticeAE;
     window.Utils.dataDeliveryDay = dataDeliveryDay;
     window.Utils.dataDeliveryYear = dataDeliveryYear;
@@ -1328,3 +1125,236 @@
     window.Utils.getNow = getNow;
 
 })();       // close...  Trick for isolation  local variables names from access from other functions
+
+///////////////////////////      function calcEquinoxSolstice()     DEPRECATED
+{
+    // function calcEquinoxSolstice() {
+    //
+    //     let g, m, s, Lat, Lon, dUTCval, sDay, sMonth, sYear, sMoment, aMoment, sgn1, sgn2, EfArr, myD1, myD2;
+    //     let time_beg, dTime, time_end, EquDay, EquTime, s1, digits = Number(nDigits.value);
+    //     let nDay, nMonth, nYear, nMoment, solstice, SolDay, SolTime, params, solar, resArr;
+    //     let temp = tempC.value, press = pressP.value, eclipticDecl;
+    //     let delimiter1 = document.getElementById("delmGMS");
+    //     let delm = delimiter1.value;
+    //     let delimiter2 = document.getElementById("delmHMS");
+    //     let delm2 = delimiter2.value;
+    //
+    //     g = latGrad.value;
+    //     m = latMin.value;
+    //     s = latSec.value;
+    //     Lat = Utils.grad_textGMS2number(g, m, s);
+    //     g = lonGrad.value;
+    //     m = lonMin.value;
+    //     s = lonSec.value;
+    //     Lon = Utils.grad_textGMS2number(g, m, s);
+    //     dUTCval = +dUTC.value;
+    //     sYear = dateYear.value;
+    //
+    //     sMoment = sYear + "-03-19";                           //19 March of given Year
+    //     aMoment = moment(sMoment, "");
+    //     sYear = moment(aMoment).format('YYYY');
+    //     sMonth = moment(aMoment).format('MM');
+    //     sDay = moment(aMoment).format('DD');
+    //     sgn1 = 1;
+    //     sgn2 = 1;
+    //     while (sgn1 === sgn2) {
+    //         EfArr = Utils.ReadDataFromResourceString(sDay, sMonth, sYear, 0, Lon, dUTCval);
+    //         myD1 = EfArr[11];
+    //         sgn1 = Math.sign(myD1);
+    //         EfArr = Utils.ReadDataFromResourceString(sDay, sMonth, sYear, 24, Lon, dUTCval);
+    //         myD2 = EfArr[11];
+    //         sgn2 = Math.sign(myD2);
+    //         if (sgn1 === sgn2) {                                // Equinox possibly HAPPENS at next day
+    //             aMoment = moment(sMoment, "").add(1, 'day');     //Next day
+    //             sMonth = moment(aMoment).format('MM');
+    //             sDay = moment(aMoment).format('DD')
+    //         }
+    //     }
+    //     time_beg = 0.;
+    //     dTime = 12.;
+    //     while (dTime > 1. / 3600.) {
+    //         time_end = time_beg + dTime;
+    //         EfArr = Utils.ReadDataFromResourceString(sDay, sMonth, sYear, time_end, Lon, dUTCval);
+    //         myD2 = EfArr[11];
+    //         if (myD2 < 0) {
+    //             time_beg = time_end;
+    //         } else {
+    //             dTime = dTime / 2;
+    //         }
+    //     }
+    //     EquDay = sYear + "-" + sMonth + "-" + sDay;
+    //     EquTime = Utils.grad_number2text((time_beg + time_end) / 2., digits, delm2);
+    //     s1 = EquDay + " " + EquTime;
+    //     springEquinox.textContent = s1;
+    //     if(!window.varsValue.springEquinox )        window.varsValue.springEquinox =s1;
+    //
+    //     // START FROM 0h 22 SEPTEMBER of given year          AUTUMN EQUINOX
+    //     sMoment = sYear + "-09-22";                           //22 SEPTEMBER of given Year
+    //     aMoment = moment(sMoment, "");
+    //     sYear = moment(aMoment).format('YYYY');
+    //     sMonth = moment(aMoment).format('MM');
+    //     sDay = moment(aMoment).format('DD');
+    //     sgn1 = 1;
+    //     sgn2 = 1;
+    //     while (sgn1 === sgn2) {
+    //         EfArr = Utils.ReadDataFromResourceString(sDay, sMonth, sYear, 0, Lon, dUTCval);
+    //         myD1 = EfArr[11];
+    //         sgn1 = Math.sign(myD1);
+    //         EfArr = Utils.ReadDataFromResourceString(sDay, sMonth, sYear, 24, Lon, dUTCval);
+    //         myD2 = EfArr[11];
+    //         sgn2 = Math.sign(myD2);
+    //         if (sgn1 === sgn2) {                                // Equinox possibly HAPPENS at next day
+    //             aMoment = moment(sMoment, "").add(1, 'day');     //Next day
+    //             sMonth = moment(aMoment).format('MM');
+    //             sDay = moment(aMoment).format('DD')
+    //         }
+    //     }
+    //     time_beg = 0.;
+    //     dTime = 12.;
+    //     while (dTime > 1. / 3600.) {
+    //         time_end = time_beg + dTime;
+    //         EfArr = Utils.ReadDataFromResourceString(sDay, sMonth, sYear, time_end, Lon, dUTCval);
+    //         myD2 = EfArr[11];
+    //         if (myD2 > 0) {
+    //             time_beg = time_end;
+    //         } else {
+    //             dTime = dTime / 2;
+    //         }
+    //     }
+    //     EquDay = sYear + "-" + sMonth + "-" + sDay;
+    //     EquTime = Utils.grad_number2text((time_beg + time_end) / 2., digits, delm2);
+    //     s1 = EquDay + " " + EquTime;
+    //     autumnEquinox.textContent = s1;
+    //     if(!window.varsValue.autumnEquinox)    window.varsValue.autumnEquinox =s1;
+    //
+    //     sMoment = sYear + "-06-20";                           //20 JUNE of given year
+    //     aMoment = moment(sMoment, "");
+    //     sYear = moment(aMoment).format('YYYY');
+    //     sMonth = moment(aMoment).format('MM');
+    //     sDay = moment(aMoment).format('DD');
+    //     nMoment = aMoment.add(1, 'day');     //Next day
+    //     nYear = moment(nMoment).format('YYYY');
+    //     nMonth = moment(nMoment).format('MM');
+    //     nDay = moment(nMoment).format('DD');
+    //     sgn1 = 1;
+    //     sgn2 = 1;
+    //     while (sgn1 === sgn2) {          //compare signs of Declination's Hour change!!!
+    //         EfArr = Utils.ReadDataFromResourceString(sDay, sMonth, sYear, 0., Lon, dUTCval);
+    //         myD1 = EfArr[4];
+    //         sgn1 = Math.sign(myD1);
+    //         EfArr = Utils.ReadDataFromResourceString(nDay, nMonth, nYear, 0., Lon, dUTCval);
+    //         myD2 = EfArr[4];
+    //         sgn2 = Math.sign(myD2);
+    //         if (sgn1 === sgn2) {                                     // SOLSTICE possibly HAPPENS at next day
+    //             aMoment = nMoment;
+    //             sYear = moment(aMoment).format('YYYY');
+    //             sMonth = moment(aMoment).format('MM');
+    //             sDay = moment(aMoment).format('DD');
+    //             nMoment = aMoment.add(1, 'day');     //Next day
+    //             nYear = moment(nMoment).format('YYYY');
+    //             nMonth = moment(nMoment).format('MM');
+    //             nDay = moment(nMoment).format('DD');
+    //         }
+    //     }
+    //     EfArr = Utils.ReadDataFromResourceString(sDay, sMonth, sYear, 0., Lon, dUTCval);
+    //     myD1 = EfArr[4];
+    //     EfArr = Utils.ReadDataFromResourceString(nDay, nMonth, nYear, 0., Lon, dUTCval);
+    //     myD2 = EfArr[4];
+    //     solstice = myD1 / (myD1 - myD2) * 24;    //Time when Declination's Hour change equals 0
+    //     //SummerSolDay = moment(aMoment).format("YYYY-MM-DD");
+    //     SolDay = sYear + "-" + sMonth + "-" + sDay;
+    //     SolTime = Utils.grad_number2text(solstice, digits, delm2);
+    //     s1 = SolDay + " " + SolTime;
+    //     summerSolstice.textContent = s1;
+    //     if(!window.varsValue.summerSolstice)  window.varsValue.summerSolstice =s1;
+    //     EfArr = Utils.ReadDataFromResourceString(nDay, nMonth, nYear, SolTime, Lon, dUTCval);
+    //     eclipticDecl = EfArr[3];                  // Declination of Ecliptic to SkyEquator this year
+    //
+    //     //Define max height
+    //     EfArr = Utils.ReadDataFromResourceString(sDay, sMonth, sYear, (solstice - dUTCval), Lon, dUTCval);
+    //     s1 = EfArr[14];            //Time of upper culmination at LocalTime corrected at given Longitude
+    //     params = {
+    //         Lat: Lat,
+    //         Lon: Lon,
+    //         Day: sDay,
+    //         Month: sMonth,
+    //         Year: sYear,
+    //         UTCTime: (s1 - dUTCval),
+    //         dUTC: dUTCval,
+    //         Temp: temp,
+    //         Press: press
+    //     };
+    //     solar = new Solar(params);
+    //     resArr = solar._calculate();
+    //     s1= Utils.grad_number2text(resArr[1], digits, delm);
+    //     //maxHeight.textContent = s1;
+    //     window.varsValue.summerMaxHeight =s1;
+    //
+    //     // START FROM 0h 21 DECEMBER of given year, and find a moment
+    //     // when Time when Declination's Hour change equals 0                  WINTER SOLSTICE
+    //     sMoment = sYear + "-12-21";
+    //     aMoment = moment(sMoment, "");
+    //     sYear = moment(aMoment).format('YYYY');
+    //     sMonth = moment(aMoment).format('MM');
+    //     sDay = moment(aMoment).format('DD');
+    //     nMoment = aMoment.add(1, 'day');     //Next day
+    //     nYear = moment(nMoment).format('YYYY');
+    //     nMonth = moment(nMoment).format('MM');
+    //     nDay = moment(nMoment).format('DD');
+    //
+    //     sgn1 = 1;
+    //     sgn2 = 1;
+    //     while (sgn1 === sgn2) {          //compare signs of Declination's Hour change!!!
+    //         EfArr = Utils.ReadDataFromResourceString(sDay, sMonth, sYear, 0., Lon, dUTCval);
+    //         myD1 = EfArr[4];
+    //         sgn1 = Math.sign(myD1);
+    //         EfArr = Utils.ReadDataFromResourceString(nDay, nMonth, nYear, 0., Lon, dUTCval);
+    //         myD2 = EfArr[4];
+    //         sgn2 = Math.sign(myD2);
+    //         if (sgn1 === sgn2) {                                     // SOLSTICE possibly HAPPENS at next day
+    //             aMoment = nMoment;
+    //             sYear = moment(aMoment).format('YYYY');
+    //             sMonth = moment(aMoment).format('MM');
+    //             sDay = moment(aMoment).format('DD');
+    //             nMoment = aMoment.add(1, 'day');     //Next day
+    //             nYear = moment(nMoment).format('YYYY');
+    //             nMonth = moment(nMoment).format('MM');
+    //             nDay = moment(nMoment).format('DD');
+    //         }
+    //     }
+    //     EfArr = Utils.ReadDataFromResourceString(sDay, sMonth, sYear, 0., Lon, dUTCval);
+    //     myD1 = EfArr[4];
+    //     EfArr = Utils.ReadDataFromResourceString(nDay, nMonth, nYear, 0., Lon, dUTCval);
+    //     myD2 = EfArr[4];
+    //     solstice = myD1 / (myD1 - myD2) * 24;    //Time when Declination's Hour change equals 0
+    //     //WINTER SolDay = moment(aMoment).format("YYYY-MM-DD");
+    //     SolDay = sYear + "-" + sMonth + "-" + sDay;
+    //     SolTime = Utils.grad_number2text(solstice, digits, delm2);
+    //     s1 = SolDay + " " + SolTime;
+    //     winterSolstice.textContent = s1;
+    //     if(!window.varsValue.winterSolstice)   window.varsValue.winterSolstice =s1;
+    //
+    //     //Define min height
+    //     EfArr = Utils.ReadDataFromResourceString(sDay, sMonth, sYear, (solstice - dUTCval), Lon, dUTCval);
+    //     s1 = EfArr[14];            //Time of upper culmination at LocalTime corrected at given Longitude
+    //     params = {
+    //         Lat: Lat,
+    //         Lon: Lon,
+    //         Day: sDay,
+    //         Month: sMonth,
+    //         Year: sYear,
+    //         UTCTime: (s1 - dUTCval),
+    //         dUTC: dUTCval,
+    //         Temp: temp,
+    //         Press: press
+    //     };
+    //     solar = new Solar(params);
+    //     resArr = solar._calculate();
+    //     s1=Utils.grad_number2text(resArr[1], digits, delm);
+    //     //minHeight.textContent = s1;
+    //     window.varsValue.winterMaxHeight =s1;
+    //     window.varsValue.eclipticDeclination = eclipticDecl;
+    //     return eclipticDecl;
+    // }
+
+}

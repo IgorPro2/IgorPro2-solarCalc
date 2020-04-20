@@ -29,20 +29,25 @@
     var dUTCval = +dUTC.value;
     var curTime = Utils.grad_textGMS2number(ht, mt, st);
     var utcTime = curTime - Utils.grad_textGMS2number(dUTCval, "0", "0");
-    var axisColor = 'grey';
+    var axisColor = new Color(0.6);
     var fontSunColor = 'red';
     var sunColor = 'yellow';
     var sunColorDark = 'blue';
     var axisFont = 'Courier New';
-    var fontAxisColor = 'grey';
+    var fontAxisColor = new Color(0.6);
     var axisFontWeight = 'normal';
     var sunFont = 'Arial';
     var sunFontWeight = 'normal';
     var whiteColor = 'white';
+    var blackColor =  new Color(0.4);
     var nightFillColor = new Color(0.9);
     var civilTwilightColor = new Color(0.8);
-    var nauticalTwilightColor = new Color(0.7);
-    var astronomicTwilightColor = new Color(0.6);
+    var nauticalTwilightColor = new Color(0.6);
+    var astronomicTwilightColor = new Color(0.5);
+    var skyColor = new Color(0, 0, 1, 0.3);
+    skyColor = 'white';
+    var yearPathColor = new Color(1, 0, 0, 0.5);
+    yearPathColor ='magenta';
 
     var delimiter1 = document.getElementById("delmGMS");
     var delm = delimiter1.value;
@@ -57,28 +62,6 @@
     var gap = 4;                        //Pixels from screen edge to sketch
     var dx = 360;                       //range on axis  X-azimuth
     var dy = 180;                       //range on axis  Y-height
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //RUSSIAN
-    // var zenithLb ='Зенит', nadirLb ='Надир', northLb='Север', southLb='Юг 180°', eastLb='Восток 90°', westLb='Запад 270°';
-    // var latLb='Широта= ', lonLb='Долгота= ', momentLb='Заданный момент= ';
-    // var dayAnimTimeLb='Местное время дневного положения= ', dayHtLb='Высота (день)=', dayAzLb='Азимут (день)=';
-    // var yearAnimTimeLb='Дата годового положения= ', yearHtLb='Высота (год)= ', yearAzLb='Азимут (год)= ';
-    // ENGLISH
-    // var zenithLb ='Zenith', nadirLb ='Nadir', northLb='North 0°', southLb='South 180°', eastLb='East 90°', westLb='West 270°';
-    // var latLb='Latitude= ', lonLb='Longitude= ', momentLb='Given Moment= ';
-    // var dayAnimTimeLb='Local time of day position= ', dayHtLb='Height (day)=', dayAzLb='Aziuth (day)=';
-    // var yearAnimTimeLb='Date of year position= ', yearHtLb='Height (year)= ', yearAzLb='Azimuth (year)= ';
-
-    // LABELS FOR GRAPHICS PAGE DEFINED IN ENGLISH.JS
-
-    // var zenithLb = window.locales['zenithLb'], nadirLb = window.locales['nadirLb'], northLb = window.locales['northLb'];
-    // var southLb = window.locales['southLb'], eastLb = window.locales['eastLb'], westLb = window.locales['westLb'];
-    // var latLb = window.locales['latLb'], lonLb = window.locales['lonLb'], momentLb = window.locales['momentLb'];
-    // var dayAnimTimeLb = window.locales['dayAnimTimeLb'], dayHtLb = window.locales['dayHtLb'],
-    //     dayAzLb = window.locales['dayAzLb'];
-    // var yearAnimTimeLb = window.locales['yearAnimTimeLb'], yearHtLb = window.locales['yearHtLb'],
-    //     yearAzLb = window.locales['yearAzLb'];
 
     window.Utils.defineDimensions = function () {
         /////////////////////////////////////////////////      DEFINE DRAW DIMENSIONS          /////////////////////////////////
@@ -138,7 +121,8 @@
         }
         paper.project._activeLayer.clear();
 
-        Utils.calcSunRise();                        // force max.heigt calculation
+        Utils.calcSunRise();                      // force max.heigt calculation
+        Utils.show_results();                     // fill main page after .this return
 
         ////////////////////////////////          DEFINE DRAW DIMENSIONS
         window.Utils.defineDimensions();
@@ -230,8 +214,9 @@
         from = new Point(gap, gap);   // BOUNDARY RECT EMPTY
         to = new Point(width - gap, height - gap);
         boundRect = new Path.Rectangle(from, to);
-        boundRect.strokeColor = whiteColor;
-        //boundRect.strokeColor = 'magenta';
+        //boundRect.strokeColor = whiteColor;
+        //boundRect.fillColor = skyColor;
+
 
         //////////////////////////////////   NIGHT RECTANGLE FILLED   //////////////////////////////////////
         {
@@ -355,14 +340,10 @@
             axisX.add(new Point(ox + 180 * s, oy));                          //arrow X low
         }
 
-        ////////////////////////////////// TWILIGHT LINES AND TEXT //////////////////////////////////////////
+        ////////////////////////////////// TWILIGHT  TEXT //////////////////////////////////////////
         {
-            // var from = new Point(ox - lx, oy+6*s), to = new Point(ox + lx, oy+6*s)
-            // civilTwilight = new Path.Line(from, to);
-            // civilTwilight.strokeColor=axisColor; civilTwilight.strokeWidth= 0.6;
-            // civilTwilight.dashArray=[16,4];
             text = new PointText({
-                point: [ox + tic, oy + 6 * s - tic],
+                point: [ox + tic, oy + 6 * s - 1.5*tic],
                 content: window.locales['civilLb'],
                 fillColor: fontAxisColor,
                 fontFamily: axisFont,
@@ -370,24 +351,18 @@
                 fontSize: hFont
             });
 
-            // nauticalTwilight = new Path({strokeColor: axisColor, strokeWidth: 0.4});
-            // nauticalTwilight.add(new Point(ox - lx, oy+12*s), new Point(ox + lx, oy+12*s));
-            // nauticalTwilight.dashArray=[4,4];
             text = new PointText({
-                point: [ox + tic, oy + 12 * s - tic],
+                point: [ox + tic, oy + 12 * s - 1.5*tic],
                 content: window.locales['nauticalLb'],
                 fillColor: fontAxisColor,
                 fontFamily: axisFont,
                 fontWeight: axisFontWeight,
                 fontSize: hFont
             });
-            // astronomicTwilight = new Path({strokeColor: axisColor, strokeWidth: 0.2});
-            // astronomicTwilight.add(new Point(ox - lx, oy+18*s), new Point(ox + lx, oy+18*s));
-            // astronomicTwilight.dashArray=[2,2];
             text = new PointText({
-                point: [ox + tic, oy + 18 * s - tic],
+                point: [ox + tic, oy + 18 * s - 1.5*tic],
                 content: window.locales['astronomicLb'],
-                fillColor: fontAxisColor,
+                fillColor: blackColor,
                 fontFamily: axisFont,
                 fontWeight: axisFontWeight,
                 fontSize: hFont
@@ -429,7 +404,7 @@
             text = new PointText({
                 point: [ox - tic * 8, oy + 90 * s - tic],
                 content: '-90°',
-                fillColor: fontAxisColor,
+                fillColor: nightFillColor,
                 fontFamily: axisFont,
                 fontWeight: axisFontWeight,
                 fontSize: hFont
@@ -437,7 +412,7 @@
             text = new PointText({
                 point: [ox + tic * 3, oy + 90 * s - tic],
                 content: window.locales['nadirLb'],
-                fillColor: fontAxisColor,
+                fillColor: nightFillColor,
                 fontFamily: axisFont,
                 fontWeight: axisFontWeight,
                 fontSize: hFont
@@ -799,7 +774,7 @@
         var yearArr = res1[0];    //Array of 365 pairs of Ht,Az; At this Time every Day in Year; Last 2pairs are: minH,minA,maxH,maxA
         var aDate = res1[1];    //Array  of Time  for each pairs of Ht,Az in res1[0] array
         var xt1, yt1, xt2, yt2, i, diff, pathY;
-        pathY = new Path({strokeColor: "magenta"});
+        pathY = new Path({strokeColor: yearPathColor});
 
         xt2 = ox - 180 * s + yearArr[1] * s;
         for (i = 0; i < (yearArr.length - 5); i = i + 2) {
@@ -811,7 +786,7 @@
             if (diff < width/2 && diff < height/2) {
                     pathY.add(new Point(xt1, yt1));
             } else {
-                pathY = new Path({strokeColor: "magenta"});
+                pathY = new Path({strokeColor: yearPathColor});
             }
             //console.log(" i="+ i + " aDate[]="+ aDate[i/2]+" Ht0="+yearArr[i].toFixed(1)+" Az0="+yearArr[i + 1].toFixed(1)+'diff='+diff.toFixed(1));
         }
