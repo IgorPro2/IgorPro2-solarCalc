@@ -40,12 +40,19 @@
     var sunFontWeight = 'normal';
     var whiteColor = 'white';
     var blackColor =  new Color(0.4);
-    var nightFillColor = new Color(0.9);
+    // var nightFillColor = new Color(0.9);
     var civilTwilightColor = new Color(0.8);
     var nauticalTwilightColor = new Color(0.6);
-    var astronomicTwilightColor = new Color(0.5);
+    var astronomicTwilightColor = new Color(0.1);
+
+    var nightFillColor = new Color(0, 0, 1, 0.1);
+    // var civilTwilightColor = new Color(0, 0, 1, 0.3);
+    // var nauticalTwilightColor = new Color(0, 0, 1, 0.7);
+    // var astronomicTwilightColor = new Color(0, 0, 1, 1);
+
+
     var skyColor = new Color(0, 0, 1, 0.3);
-    skyColor = 'white';
+    //skyColor = 'white';
     var yearPathColor = new Color(1, 0, 0, 0.5);
     yearPathColor ='magenta';
 
@@ -62,6 +69,7 @@
     var gap = 4;                        //Pixels from screen edge to sketch
     var dx = 360;                       //range on axis  X-azimuth
     var dy = 180;                       //range on axis  Y-height
+
 
     window.Utils.defineDimensions = function () {
         /////////////////////////////////////////////////      DEFINE DRAW DIMENSIONS          /////////////////////////////////
@@ -106,6 +114,9 @@
 ///////////   SHOW GRAPHIC   SHOW GRAPhIC   SHOW GRAPHIC   SHOW GRAPhIC SHOW GRAPHIC   SHOW GRAPhIC   SHOW GRAPHIC  ////
 /////////////////////////////////////////////        SUN PATH AT GIVEN DAY          ////////////////////////////////////
     window.Utils.showGraphic = function (redraw) {
+        debugger;
+        window.Utils.calcSunRise();           // to calculate polarDay for gradient
+        window.Utils.showDayDuration();       // to calculate polarDay for gradient
         window.timerIsOn = false;       // to stop showTimer() in function showResultTimer()
         graphicContainer.classList.contains("hidden") && graphicContainer.classList.toggle("hidden");
         !calcContainer.classList.contains("hidden") && calcContainer.classList.toggle("hidden");
@@ -218,28 +229,36 @@
         //boundRect.fillColor = skyColor;
 
 
-        //////////////////////////////////   NIGHT RECTANGLE FILLED   //////////////////////////////////////
+        //////////////////////////////////   NIGHT RECTANGLES FILLING   //////////////////////////////////////
         {
             from = new Point(ox - lx, oy);
             to = new Point(ox + lx, height - gap);
             boundRect = new Path.Rectangle(from, to);
             boundRect.strokeColor = whiteColor;
-            boundRect.fillColor = nightFillColor;
+            boundRect.fillColor = 'black';
 
-            from = new Point(ox - lx, oy + 6 * s);
-            to = new Point(ox + lx, height - gap);
-            boundRect = new Path.Rectangle(from, to);
-            boundRect.fillColor = civilTwilightColor;
+            from = new Point(ox - lx, oy);
+            to =   new Point(ox + lx, oy + 18 * s);
+            var gradTop = new Point(ox , oy);
+            var gradBottom = new Point(ox , oy + 18 * s);
 
-            from = new Point(ox - lx, oy + 12 * s);
-            to = new Point(ox + lx, height - gap);
-            boundRect = new Path.Rectangle(from, to);
-            boundRect.fillColor = nauticalTwilightColor;
+            if (window.varsValue.commonDay) {
+                var path = new Path.Rectangle({
+                    topLeft: from,
+                    bottomRight: to,
+                    // Fill the path with a gradient of 4 color stops, that runs between the two points we defined earlier:
+                    fillColor: {
+                        gradient: {
+                            stops: ['yellow', 'red', 'blue', 'black']
+                        },
+                        origin: gradTop,
+                        destination: gradBottom
+                    }
+                });
+            }
+            else {
 
-            from = new Point(ox - lx, oy + 18 * s);
-            to = new Point(ox + lx, height - gap);
-            boundRect = new Path.Rectangle(from, to);
-            boundRect.fillColor = astronomicTwilightColor;
+            }
         }
 
         ////////////////////////////////////////////////   AXIS X   ////////////////////////////////////////////////
@@ -345,7 +364,7 @@
             text = new PointText({
                 point: [ox + tic, oy + 6 * s - 1.5*tic],
                 content: window.locales['civilLb'],
-                fillColor: fontAxisColor,
+                fillColor: 'yellow',
                 fontFamily: axisFont,
                 fontWeight: axisFontWeight,
                 fontSize: hFont
@@ -354,7 +373,7 @@
             text = new PointText({
                 point: [ox + tic, oy + 12 * s - 1.5*tic],
                 content: window.locales['nauticalLb'],
-                fillColor: fontAxisColor,
+                fillColor: civilTwilightColor,
                 fontFamily: axisFont,
                 fontWeight: axisFontWeight,
                 fontSize: hFont
@@ -362,7 +381,7 @@
             text = new PointText({
                 point: [ox + tic, oy + 18 * s - 1.5*tic],
                 content: window.locales['astronomicLb'],
-                fillColor: blackColor,
+                fillColor: 'white',
                 fontFamily: axisFont,
                 fontWeight: axisFontWeight,
                 fontSize: hFont
@@ -412,7 +431,7 @@
             text = new PointText({
                 point: [ox + tic * 3, oy + 90 * s - tic],
                 content: window.locales['nadirLb'],
-                fillColor: nightFillColor,
+                fillColor: 'lightgrey',
                 fontFamily: axisFont,
                 fontWeight: axisFontWeight,
                 fontSize: hFont
@@ -593,7 +612,7 @@
         var nDigits = document.getElementById("nDigits");
         var digits = Number(nDigits.value);
 
-        /////////////////////////////////////////////    DAY ANIMATION ADN  TEXT   //////////////////////////////
+        /////////////////////////////////////////////    DAY ANIMATION AND TEXT   //////////////////////////////
         var grd,min,sec,nLat,lat,nLon,lon;
         grd = latGrad.value;        min = latMin.value;        sec = latSec.value;
         nLat = Utils.grad_textGMS2number(grd, min, sec);
@@ -630,69 +649,61 @@
             content: window.locales['momentLb'] + aTime[1440]
         });
 
+        var textSunRiseSunSet = new PointText({
+            fillColor: fontAxisColor,
+            fontFamily: sunFont,
+            fontWeight: axisFontWeight,
+            fontSize: hFont,
+            point: [20, 80],
+            content: window.locales['sunRiseLb'] + Utils.grad_number2text(window.varsValue.sunRiseTime,digits,delm2) +
+                " " + window.locales['sunSetLb'] + Utils.grad_number2text(window.varsValue.sunSetTime,digits,delm2)
+        });
+
+
+        var textDayCulminationTime = new PointText({
+            fillColor: fontAxisColor,
+            fontFamily: sunFont,
+            fontWeight: axisFontWeight,
+            fontSize: hFont,
+            point: [20, 100]
+        });
+
         var textDayTime = new PointText({
-            fillColor: fontAxisColor,
-            fontFamily: sunFont,
-            fontWeight: axisFontWeight,
-            fontSize: hFont,
-            point: [20, 100]
-        });
-        var textHDay = new PointText({
-            fillColor: fontAxisColor,
-            fontFamily: sunFont,
-            fontWeight: axisFontWeight,
-            fontSize: hFont,
-            point: [20, 100]
-        });
-        var textADay = new PointText({
             fillColor: fontAxisColor,
             fontFamily: sunFont,
             fontWeight: axisFontWeight,
             fontSize: hFont,
             point: [20, 120]
         });
+
         /////////////////////  equinox/solstice and Day culmination/duration /////////////
         var textSpringEquinox = new PointText({
             fillColor: fontAxisColor,
             fontFamily: sunFont,
             fontWeight: axisFontWeight,
             fontSize: hFont,
-            point: [20, 140]
+            point: [20, 160]
         });
         var textSummerSolstice = new PointText({
             fillColor: fontAxisColor,
             fontFamily: sunFont,
             fontWeight: axisFontWeight,
             fontSize: hFont,
-            point: [20, 160]
+            point: [20, 180]
         });
         var textAutumnEquinox = new PointText({
             fillColor: fontAxisColor,
             fontFamily: sunFont,
             fontWeight: axisFontWeight,
             fontSize: hFont,
-            point: [20, 180]
+            point: [20, 200]
         });
         var textWinterSolstice = new PointText({
             fillColor: fontAxisColor,
             fontFamily: sunFont,
             fontWeight: axisFontWeight,
             fontSize: hFont,
-            point: [20, 200]
-        });
-        var textDayCulminationHeigt = new PointText({
-            fillColor: fontAxisColor,
-            fontFamily: sunFont,
-            fontWeight: axisFontWeight,
-            fontSize: hFont,
             point: [20, 220]
-        });
-        var textDayCulminationTime = new PointText({
-            fillColor: fontAxisColor,
-            fontFamily: sunFont,
-            fontWeight: axisFontWeight,
-            fontSize: hFont,
-            point: [20, 80]
         });
 
         //////////////////////////////// MOVING TEXT //////////////////////////
@@ -715,6 +726,7 @@
         var curPoint = new Point(curPointX, curPointY);
         var k = 0;
         var circle1 = new Shape.Circle({center: curPoint, radius: 10, fillColor: sunColor, strokeColor: fontSunColor});
+        var sunSetTime = window.varsValue.sunSetTime, sunRiseTime = window.varsValue.sunRiseTime;
 
         circle1.onFrame = function (event) {
             x = ox - 180 * s + dayArr[k + 1] * s;
@@ -739,7 +751,7 @@
             //textHDay.content = window.locales['dayHtLb'] + dayArr[k].toFixed(0) + "°";   //Output at fixed position
             //textADay.content = window.locales['dayAzLb'] + dayArr[k + 1].toFixed(0) + "°";
             textDayTime.content = window.locales['dayAnimTimeLb'] + Utils.grad_number2text(aTime[k / 2], 0, delm2)
-             + " " + window.locales['htRadioLb'] + " " +  dayArr[k].toFixed(0) + "°"
+             + " " + window.locales['htRadioLb'] + " " +  dayArr[k].toFixed(1) + "°"
              + " " + window.locales['azRadioLb'] + " " +  dayArr[k + 1].toFixed(0) + "°";
             textSpringEquinox.content = window.locales['springEquinoxLb']   + " " +  window.varsValue.springEquinox;
             textSummerSolstice.content = window.locales['summerSolsticeLb'] + " " +  window.varsValue.summerSolstice;
@@ -817,22 +829,9 @@
             fontFamily: sunFont,
             fontWeight: axisFontWeight,
             fontSize: hFont,
-            point: [20, 120]
-        });
-        var textHYear = new PointText({
-            fillColor: fontAxisColor,
-            fontFamily: sunFont,
-            fontWeight: axisFontWeight,
-            fontSize: hFont,
-            point: [20, 120]
-        });
-        var textAYear = new PointText({
-            fillColor: fontAxisColor,
-            fontFamily: sunFont,
-            fontWeight: axisFontWeight,
-            fontSize: hFont,
             point: [20, 140]
         });
+
         i = 0;
         var circle2 = new Shape.Circle({center: curPoint, radius: 6, fillColor: sunColor, strokeColor: fontSunColor});
         circle2.onFrame = function (event) {

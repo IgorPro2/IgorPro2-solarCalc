@@ -341,6 +341,7 @@
         lonGrad.value = Larr[3]+Larr[0];        lonMin.value =  Larr[1];        lonSec.value =  Larr[2];
 
         takeEquinoxSolsticeAE();
+        getNow();
         calcSunRise();
         givHg.classList.remove("invalidVal");
         givHm.classList.remove("invalidVal");
@@ -623,12 +624,27 @@
         let localTime = Utils.grad_textGMS2number(ht, mt, st);
         let digits = Number(nDigits.value);
         let delm2 = document.getElementById("delmHMS").value;
-        dayDur = sunSetTime - sunRiseTime;
-        if (dayDur === 0 && sunH > 0) dayDur = 24;                                                              //At Polar Day -:)
-        if (dayDur === 24 || dayDur === 0) Time2Dawn = Utils.grad_number2text(0, digits,  delm2);      //Time2Dawn At Polar Day -:)
-        else Time2Dawn = Utils.grad_number2text((sunSetTime - localTime), digits,  delm2);                      // Time 2 Dawn at common day
-        time2SunSet.textContent = (Time2Dawn);
+        dayDur =  window.varsValue.dayDuration.substring(0,1); // Extremum may be "24:00:00" or "0:00:00"
+        window.varsValue.commonDay = true;
+        window.varsValue.polarDay = false;
+        window.varsValue.polarDay = false;
+        if (+dayDur > 1 && sunH > 1) {         //At Polar Day "24:00:00" -> 2
+            window.varsValue.polarDay = true;
+            window.varsValue.commonDay = false;
 
+        }
+        if (+dayDur < 1 && sunH < 1) {         //At Polar Night "0:00:00" -> 0
+            window.varsValue.polarNight = true;
+            window.varsValue.commonDay = false;
+        }
+
+        if (dayDur === 24 || dayDur === 0) {
+            Time2Dawn = Utils.grad_number2text(0, digits, delm2);  //Time2Dawn At Polar Day or Night -:)
+        }
+        else {
+            Time2Dawn = Utils.grad_number2text((sunSetTime - localTime), digits,  delm2); // Time 2 Dawn at common day
+        }
+        time2SunSet.textContent = (Time2Dawn);
     }
 
     function calcVelocities() {
@@ -1123,6 +1139,8 @@
     window.Utils.dataDeliveryYear = dataDeliveryYear;
     window.Utils.calcSunRise = calcSunRise;
     window.Utils.getNow = getNow;
+    window.Utils.showDayDuration = showDayDuration;
+
 
 })();       // close...  Trick for isolation  local variables names from access from other functions
 
