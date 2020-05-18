@@ -49,7 +49,7 @@
   "culmTimeLb": "Time of upper culmination",
   "maxHeightLb": "Maximal day height",
   "sunSetLb": "Sunset time:",
-  "dayDurationLb": "Day duration",
+  "dayDurationLb": "Day duration:",
   "timeToSunsetLb": "Time to sunset",
   "sunPosYearHdLb": "SUN POSITION THIS YEAR (UTC time):",
   "springEquinoxLb": "Spring equinox",
@@ -86,5 +86,11 @@
   "timePlus1month": "Plus 1 month",
   "civilLb": "Civil Twilight -6°",
   "nauticalLb": "Nautical Twilight -12°",
-  "astronomicLb": "Astronomic Twilight -18°"
+  "astronomicLb": "Astronomic Twilight -18°",
+  "outputDropBtLb": "Output to file",
+  "thisDayTable": "This day every 2 minutes",
+  "thisYearTable": "This time every day of this year",
+  "sunDial": "Sun Dial",
+  "helpText": "  Input your: Latitude/Longitude and TimeZone difference from UTC.<br> Input your: Date/Time and Temperature/Pressure (for correction SunHeight on vertical\nrefraction).\nBUTTONS ARE:\nCALCULATE- Calculate apparent suns position at given Place Date and Time.\nCURRENT - Calculate SunPosition each second at system clock Time.\n GRAPH - Draw and animate SunPathes: Year(analemma) and Day moves.\nGivenHtAz- Calculate local Time moment when Suns Center is at your specified Height or Azimuth.\nThe Altitude/Azimuth values you need, are set in the line below the BUTTONS.\nTo calculate the Time when the Sun is at a given height in the afternoon, check the box in this line.\n If Suns Height or Azimuth impossible at the specified Place/Date, their values are given in red."
+
 }

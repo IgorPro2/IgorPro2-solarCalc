@@ -17,6 +17,7 @@
     var timeHour = document.getElementById("timeHour");
     var timeMin = document.getElementById("timeMin");
     var timeSec = document.getElementById("timeSec");
+    var dUTC = document.getElementById("dUTC");
     var sDay = dateDay.value;
     var sMonth = dateMonth.value;
     var sYear = dateYear.value;
@@ -114,7 +115,6 @@
 ///////////   SHOW GRAPHIC   SHOW GRAPhIC   SHOW GRAPHIC   SHOW GRAPhIC SHOW GRAPHIC   SHOW GRAPhIC   SHOW GRAPHIC  ////
 /////////////////////////////////////////////        SUN PATH AT GIVEN DAY          ////////////////////////////////////
     window.Utils.showGraphic = function (redraw) {
-        debugger;
         window.Utils.calcSunRise();           // to calculate polarDay for gradient
         window.Utils.showDayDuration();       // to calculate polarDay for gradient
         window.timerIsOn = false;       // to stop showTimer() in function showResultTimer()
@@ -656,7 +656,8 @@
             fontSize: hFont,
             point: [20, 80],
             content: window.locales['sunRiseLb'] + Utils.grad_number2text(window.varsValue.sunRiseTime,digits,delm2) +
-                " " + window.locales['sunSetLb'] + Utils.grad_number2text(window.varsValue.sunSetTime,digits,delm2)
+                " " + window.locales['sunSetLb'] + Utils.grad_number2text(window.varsValue.sunSetTime,digits,delm2) +
+                " " +   window.locales['dayDurationLb'] + window.varsValue.dayDuration
         });
 
 
@@ -665,7 +666,9 @@
             fontFamily: sunFont,
             fontWeight: axisFontWeight,
             fontSize: hFont,
-            point: [20, 100]
+            point: [20, 100],
+            content: window.locales['culmTimeLb'] + window.varsValue.dayCulmTime
+                + " " +   window.locales['maxHeightLb'] + " " +   window.varsValue.dayCulmHeight
         });
 
         var textDayTime = new PointText({
@@ -682,28 +685,32 @@
             fontFamily: sunFont,
             fontWeight: axisFontWeight,
             fontSize: hFont,
-            point: [20, 160]
+            point: [20, 160],
+            content:window.locales['springEquinoxLb']   + " " +  window.varsValue.springEquinox
         });
         var textSummerSolstice = new PointText({
             fillColor: fontAxisColor,
             fontFamily: sunFont,
             fontWeight: axisFontWeight,
             fontSize: hFont,
-            point: [20, 180]
+            point: [20, 180],
+            content:window.locales['summerSolsticeLb'] + " " +  window.varsValue.summerSolstice
         });
         var textAutumnEquinox = new PointText({
             fillColor: fontAxisColor,
             fontFamily: sunFont,
             fontWeight: axisFontWeight,
             fontSize: hFont,
-            point: [20, 200]
+            point: [20, 200],
+            content: window.locales['autumnEquinoxLb']   + " " +   window.varsValue.autumnEquinox
         });
         var textWinterSolstice = new PointText({
             fillColor: fontAxisColor,
             fontFamily: sunFont,
             fontWeight: axisFontWeight,
             fontSize: hFont,
-            point: [20, 220]
+            point: [20, 220],
+            content: window.locales['winterSolsticeLb'] + " " +   window.varsValue.summerSolstice
         });
 
         //////////////////////////////// MOVING TEXT //////////////////////////
@@ -748,19 +755,9 @@
             textA.point = new paper.Point(x + tic * 4, y + 14);
             textA.content = "A=" + dayArr[k + 1].toFixed(0) + "°";
 
-            //textHDay.content = window.locales['dayHtLb'] + dayArr[k].toFixed(0) + "°";   //Output at fixed position
-            //textADay.content = window.locales['dayAzLb'] + dayArr[k + 1].toFixed(0) + "°";
             textDayTime.content = window.locales['dayAnimTimeLb'] + Utils.grad_number2text(aTime[k / 2], 0, delm2)
-             + " " + window.locales['htRadioLb'] + " " +  dayArr[k].toFixed(1) + "°"
-             + " " + window.locales['azRadioLb'] + " " +  dayArr[k + 1].toFixed(0) + "°";
-            textSpringEquinox.content = window.locales['springEquinoxLb']   + " " +  window.varsValue.springEquinox;
-            textSummerSolstice.content = window.locales['summerSolsticeLb'] + " " +  window.varsValue.summerSolstice;
-            textAutumnEquinox.content = window.locales['autumnEquinoxLb']   + " " +   window.varsValue.autumnEquinox;
-            textWinterSolstice.content = window.locales['winterSolsticeLb'] + " " +   window.varsValue.summerSolstice;
-            //textDayCulminationHeigt.content = window.locales['maxHeightLb'] + window.varsValue.dayCulmHeight;
-            textDayCulminationTime.content = window.locales['culmTimeLb'] + window.varsValue.dayCulmTime
-                + " " +   window.locales['dayDurationLb'] + window.varsValue.dayDuration
-                + " " +   window.locales['maxHeightLb'] + " " +   window.varsValue.dayCulmHeight;
+                + " " + window.locales['htRadioLb'] + " " +  dayArr[k].toFixed(1) + "°"
+                + " " + window.locales['azRadioLb'] + " " +  dayArr[k + 1].toFixed(0) + "°";
 
             k = k + 2;
             if (k > dayArr.length - 1) k = 0;

@@ -43,6 +43,7 @@
         <div><img src="https://mc.yandex.ru/watch/61645264" style="position:absolute; left:-9999px;" alt=""/></div>
     </noscript>
     <!-- /Yandex.Metrika counter -->
+
 </head>
 <body>
 
@@ -317,6 +318,19 @@
     <div id="topRightGraphicsButtons" class="graphicsBtnGroup btn-group">
 
         <div class="dropdown">
+            <button class="btn btn-primary btn-sm dropdown-toggle mx-1" type="button" id="dropdownMenuOutput"
+                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                {{outputDropBtLb}}
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuTime">
+                <button class="dropdown-item" type="button" data-action="dayTable">{{thisDayTable}}</button>
+                <button class="dropdown-item" type="button" data-action="yearTable">{{thisYearTable}}</button>
+                <button class="dropdown-item" type="button" data-action="sunDail">{{sunDial}}</button>
+            </div>
+        </div>
+
+
+        <div class="dropdown">
             <button class="btn btn-primary btn-sm dropdown-toggle mx-1" type="button" id="dropdownMenuTime"
                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 {{timeDropBtLb}}
@@ -379,24 +393,7 @@
                 </button>
             </div>
             <div class="modal-body text-left">
-                <ol>
-                    <li>Input your: Latitude/Longitude and TimeZone difference from UTC.</li>
-                    <li>Input your: Date/Time and Temperature/Pressure (for correction SunHeight on vertical
-                        refraction).
-                        BUTTONS ARE:
-                    </li>
-                    <li>"CALCULATE"- Calculate apparent sun's position at given Place Date and Time.</li>
-                    <li>"CURRENT" - Calculate SunPosition each second at system clock Time.</li>
-                    <li>"GRAPH" - Draw and animate SunPathes: Year(analemma) and Day moves.</li>
-                    <li>"GivenHtAz"- Calculate local Time moment when Sun's Center is at your specified Height or
-                        Azimuth.
-                        The Altitude/Azimuth values you need, are set in the line below the BUTTONS.
-                        To calculate the Time when the Sun is at a given height in the afternoon, check the box in this
-                        line.
-                        If Sun's Height or Azimuth impossible at the specified Place/Date, their values are given in
-                        red.
-                    </li>
-                </ol>
+                {{helpText}}
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -408,12 +405,13 @@
 
 <script src="js/moment.js"></script>
 <script src="js/paper-full.min.js"></script>
-
+<script lang="javascript" src="js/xlsx.full.min.js"></script>
 <script src="js/Main.js"></script>
 <script src="js/degreesConverter.js"></script>
 <script src="js/ReadEphemeris.js"></script>
 <script src="js/ReadRefraction.js"></script>
 <script src="js/classSolar.js"></script>
+<script src="js/dataDelivery.js"></script>
 
 <script src="vendor/jQuery/jquery.min.js"></script>
 <script src="vendor/bootstrap/bootstrap.bundle.min.js"></script>
@@ -422,9 +420,7 @@
 <script type="text/paperscript" canvas="myCanvas" src="ps/graphic.js"></script>
 <script src="js/buttonHandler.js"></script>
 
-<script>
-   //window.Utils.show_results();
-</script>
+
 
 </body>
 </html>

@@ -1,3 +1,4 @@
+// THIS MODULE HANDLES ACTIONS CALLED BY DROPDOWN BUTTONS ON GRAPHIC PAGE
 ;(function () {
     'use strict';
     let latGrad = document.getElementById("latGrad");
@@ -9,8 +10,15 @@
     let timeHour = document.getElementById("timeHour");
     let timeMin = document.getElementById("timeMin");
     let timeSec = document.getElementById("timeSec");
-    var nDigits = document.getElementById("nDigits");
-    var digits = Number(nDigits.value);
+    let nDigits = document.getElementById("nDigits");
+    let dUTC = document.getElementById("dUTC");
+    let sDay = dateDay.value;
+    let sMonth = dateMonth.value;
+    let sYear = dateYear.value;
+    let ht = timeHour.value;
+    let mt = timeMin.value;
+    let st = timeSec.value;
+    let dUTCval = +dUTC.value;
 
     let eclipticAngle;
     // if (!window.varsValue.eclipticDeclination) {eclipticAngle = Utils.calcEquinoxSolstice();}
@@ -28,7 +36,7 @@
     let autumnTime = window.varsValue.autumnEquinox;
     let winterTime = window.varsValue.winterSolstice;
 
-    let sMoment, aMoment, sYear, sMonth, sDay, ht, mt, st, curTime;
+    let sMoment, aMoment, curTime;
 
 
     //Button Handler Class
@@ -199,7 +207,38 @@
             timeMin.value = mt;
             timeSec.value = st;
         }
-    }
+
+        this.dayTable = function (target) {
+            let params = {Day: sDay, Month: sMonth, Year: sYear};
+            let dayArr = Utils.dataDeliveryDay2AoA(params);    //Return Array of  Arrays of results
+
+            var ws = XLSX.utils.aoa_to_sheet(
+                // [
+                //     ['#', 'Name', 'Age'],
+                //     [1, 'John', 32],
+                //     [2, 'Phil', 43]
+                // ]
+                dayArr
+            );
+            var wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'testName');
+
+            //create and downloading workbook
+            XLSX.writeFile(wb, 'my_test.xlsx');
+
+
+        };
+        this.yearTable = function (target) {
+            let params = {Day: sDay, Month: sMonth, Year: sYear, aHour: ht, aMinute: mt, aSecond: st, dUTC: dUTCval};
+            let res1 = Utils.dataDeliveryYear(params);   //Array of 2 Arrays of Results
+            let yearArr = res1[0];                       //Array of 365 pairs of Ht,Az; At this Time every Day in Year; Last 2pairs are: minH,minA,maxH,maxA
+            let aDate =   res1[1];                       //Array  of Time  for each pairs of Ht,Az in res1[0] array
+
+        };
+        this.sunDial = function (target) {
+        };
+
+        }
 
     let graphicsButtons = document.getElementById('topRightGraphicsButtons');
     let mainPageButtons = document.getElementById('mainPageButtons');
