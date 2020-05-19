@@ -1,4 +1,7 @@
 /////////////////////// BUGS & IMPROVEMENT
+1. grad_number2text() not 123° 23' 60" but 123° 24' 00"
+precise_round check!!! in console
+
 
 8. Return Russian Help, and how? - variable like buttuns name!
 9. Improve announcement of SolarCalc text file

@@ -143,8 +143,11 @@ function dataDeliveryDay2AoA(params) {
     let timeSec = document.getElementById("timeSec");
     let dUTC = document.getElementById("dUTC");
     let nDigits = document.getElementById("nDigits");
-    let delimiter2 = document.getElementById("delmHMS");
-    let delm2 = delimiter2.value;
+    let delim2 = document.getElementById("delmHMS");
+    let delim1 = document.getElementById("delmGMS");
+    let delm2=delim2.value;
+    let delm1=delim1.value;
+    let nDig = nDigits.value;
 
     let sYear = params.Year;
     let sMonth = params.Month;
@@ -189,11 +192,14 @@ function dataDeliveryDay2AoA(params) {
         solar = new Solar(options);
         resArr = solar._calculate();
 
-        rowArray = new Array(4);
+        rowArray = new Array(6);
         rowArray[0] = utcTime;
         rowArray[1] = resArr[1];
         rowArray[2] = resArr[0];
-        rowArray[3] = aDay + Utils.grad_number2text(utcTime, +nDigits, delm2);
+        rowArray[3] = aDay + Utils.grad_number2text(utcTime, 0, delm2);
+        rowArray[4] = Utils.grad_number2text(resArr[1], nDig, delm1, " ");
+        rowArray[5] = Utils.grad_number2text(resArr[0], nDig, delm1, " ");
+
         tableAoA[i] = rowArray;
         console.log(rowArray);
 

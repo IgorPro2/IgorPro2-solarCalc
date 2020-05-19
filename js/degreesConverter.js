@@ -31,26 +31,30 @@
         if (! strDel)   strDel="°'\"";
         if (! spc)      spc="";
         let delLength = (strDel).length;
+        let nSign = +numSigns;
 
         switch (delLength) {
             case 1:
-                g = dmsNum.toFixed(numSigns);
+                g = precise_round(module, nSign);
+                if ( module < 10 ) g="0"+g;
                 result = SignStr + g + strDel.charAt(0);
                 break;
             case 2:
                 g = Math.floor(module);
+                if ( Math.abs(g) < 10 ) g="0"+g;
                 allmin = (module - g) * 60;
-                m = allmin.toFixed(numSigns);
+                m = precise_round(allmin, nSign);
                 if ( Math.abs(allmin) < 10 ) m="0"+m;
                 result = SignStr + g.toString() + strDel.charAt(0) + spc + m + strDel.charAt(1);
                 break;
             case 3:
                 g = Math.floor(module);
-                allmin = (module - g) * 60;
-                m = Math.floor(allmin);
-                if ( Math.abs(allmin) < 10 ) m="0"+m;
-                allsec = (allmin - m) * 60;
-                s = allsec.toFixed(numSigns);
+                if ( Math.abs(g) < 10 ) g="0"+g;
+                allmin = precise_round((module - g) * 60, 8);
+                m = Math.floor(+allmin );
+                if ( Math.abs(+allmin) < 10 ) m="0"+m;
+                allsec = (+allmin - m) * 60;
+                s = precise_round(allsec, nSign);
                 if ( Math.abs(allsec) < 10 ) s="0"+s;
                 result = SignStr + g.toString() + strDel.charAt(0) + spc + m.toString() + strDel.charAt(1) + spc + s + strDel.charAt(2);
                 break;
@@ -59,6 +63,12 @@
         return result
     }
 
+    function precise_round(num, dec){
+        if ((typeof num !== 'number') || (typeof dec !== 'number'))
+            return false;
+        var num_sign = num >= 0 ? 1 : -1;
+        return (Math.round((num*Math.pow(10,dec))+(num_sign*0.0001))/Math.pow(10,dec)).toFixed(dec);
+    }
 
     function toDegrees(p) {
         return p * 180 / Math.PI;
