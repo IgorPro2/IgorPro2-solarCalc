@@ -209,8 +209,7 @@
         }
 
         this.dayTable = function (target) {
-            let params = {Day: sDay, Month: sMonth, Year: sYear};
-            let dayArr = Utils.dataDeliveryDay2AoA(params);    //Return Array of  Arrays of results
+            let dayArr = Utils.dataDeliveryDay2AoA();    //Return Array of  Arrays of results
 
             var ws = XLSX.utils.aoa_to_sheet(
                 // [
@@ -221,21 +220,32 @@
                 dayArr
             );
             var wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'testName');
+            XLSX.utils.book_append_sheet(wb, ws, 'SunDayValues');
 
             //create and downloading workbook
-            XLSX.writeFile(wb, 'my_test.xlsx');
+            XLSX.writeFile(wb, 'DaysValue.xlsx');
 
 
         };
         this.yearTable = function (target) {
-            let params = {Day: sDay, Month: sMonth, Year: sYear, aHour: ht, aMinute: mt, aSecond: st, dUTC: dUTCval};
-            let res1 = Utils.dataDeliveryYear(params);   //Array of 2 Arrays of Results
-            let yearArr = res1[0];                       //Array of 365 pairs of Ht,Az; At this Time every Day in Year; Last 2pairs are: minH,minA,maxH,maxA
-            let aDate =   res1[1];                       //Array  of Time  for each pairs of Ht,Az in res1[0] array
+            let yearArr = Utils.dataDeliveryYear2AoA();   //Return Array of  Arrays of results
+            var ws = XLSX.utils.aoa_to_sheet(yearArr);
+            var wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'SunYearValues');
+
+            //create and downloading workbook
+            XLSX.writeFile(wb, 'YearsValue.xlsx');
 
         };
         this.sunDial = function (target) {
+            let arr = Utils.sunDials2AoA();     //Return Array of  Arrays of results
+            var ws = XLSX.utils.aoa_to_sheet(arr[0]);
+            var wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'SunDialValues');
+
+            //create and downloading workbook
+            XLSX.writeFile(wb, 'SunDial.xlsx');
+
         };
 
         }
