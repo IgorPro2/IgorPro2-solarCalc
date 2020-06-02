@@ -20,58 +20,52 @@
         return ddGrad;
     }
 
-    function grad_number2text(dmsNum, numSigns, strDel,  spc , returnArray) {
+    function grad_number2text(dmsNum, numSigns = 2, strDel = "°'\"",  spc = " ", returnArray) {
         let sign = Math.sign(dmsNum);
+        let delLength = (strDel).length;
         let SignStr = "";
         if (sign < 0) SignStr = "-";
         let module = Math.abs(dmsNum);
-        //module = precise_roundNum(module, 12);    // 0.999999999999 = 1.000000000000
         let result = "";
-        let g, m, s, allmin, allsec, gt, mt, st;
-        //default values
-        if (! spc)      spc="";
-        if (! strDel)   strDel="°'\"";
-        strDel = strDel.substring(0,3);
-        let delLength = (strDel).length;
-        let nSign = +numSigns;
-        let digRound = 10;
+        let g, m, s, allmin, allsec, smod, nDig = numSigns;
 
         switch (delLength) {
             case 1:
-                module = precise_round( (precise_roundNum(+module, nSign)) , digRound);
-                gt = precise_round(+module, nSign);
-                if ( module < 10 ) gt="0"+gt;
-                result = SignStr + gt + strDel.charAt(0);
+                smod = module.toFixed(nDig);
+                module = +smod;
+                g = module.toFixed(nDig);
+                if ( +g < 10 ) g="0"+g;
+                result = SignStr + g + strDel.charAt(0);
                 break;
             case 2:
-                module = precise_round( (precise_roundNum(module*60, nSign)) /60, digRound);
-                g = Math.floor(+module);
-                gt = g.toString();
-                if ( Math.abs(g) < 10 ) gt="0"+gt;
-                allmin = (module - g) * 60;
-                mt = precise_round(allmin, nSign);
-                if ( Math.abs(allmin) < 10 ) mt="0"+mt;
-                result = SignStr + gt + strDel.charAt(0) + spc + mt + strDel.charAt(1);
+                smod = (module*60).toFixed(nDig);
+                module = +smod/60;
+                g = Math.floor(module);
+                if ( +g < 10 ) g="0"+g;
+                allmin = Math.abs(module - g) * 60;
+                m = allmin.toFixed(nDig);
+                if ( +m < 10 ) m="0"+m;
+                result = SignStr + g.toString() + strDel.charAt(0) + spc + m + strDel.charAt(1);
                 break;
             case 3:
-                module = precise_round((precise_roundNum(module*3600, nSign)) /3600, digRound);
-                g = Math.floor(+module);
-                gt = g.toString();
-                if ( Math.abs(g) < 10 ) gt="0"+gt;
+                smod = (module*3600).toFixed(nDig);
+                module = +smod/3600;
+                g = Math.floor(module);
+                if ( +g < 10 ) g="0"+g;
                 allmin = (module - g) * 60;
-                m = Math.floor(precise_roundNum(allmin, digRound));
-                mt = m.toString();
-                if ( Math.abs(allmin) < 10 ) mt="0"+mt;
-                allsec = (allmin - m) * 60;
-                st = precise_round(allsec, nSign);
-                if ( Math.abs(allsec) < 10 ) st="0"+st;
-                result = SignStr + gt + strDel.charAt(0) + spc + mt + strDel.charAt(1) + spc + st + strDel.charAt(2);
+                smod = (allmin*60).toFixed(nDig);
+                smod = +smod/60;
+                m = Math.floor(smod);
+                if ( +m < 10 ) m="0"+m;
+                allsec = Math.abs(allmin - m) * 60;
+                s = allsec.toFixed(nDig);
+                if ( +s < 10 ) s="0"+s;
+                result = SignStr + g.toString() + strDel.charAt(0) + spc + m.toString() + strDel.charAt(1) + spc + s + strDel.charAt(2);
                 break;
         }
-        if (returnArray) return [gt || 0, mt || 0, st || 0, SignStr ];
+        if (returnArray) return [g || 0, m || 0, s || 0, SignStr ];
         return result
     }
-
     function precise_round(num, dec){
         if ((typeof num !== 'number') || (typeof dec !== 'number'))
             return false;

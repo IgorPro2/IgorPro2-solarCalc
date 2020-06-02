@@ -1,4 +1,10 @@
 ;(function () {
+
+
+function Cow(props){
+    this.legs = props.legs;
+}
+
     window.translateVariables = translateVariables;
     window.setLocale();
 

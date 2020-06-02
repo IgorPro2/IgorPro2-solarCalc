@@ -1,9 +1,8 @@
 /////////////////////// BUGS & IMPROVEMENT
-1. grad_number2text() not 123° 23' 60" but 123° 24' 00"
-precise_round check!!! in console
+1. Make HEADERS in output Day&Year tables
 
+8. Return Russian Help, and how? - variable like buttuons name!
 
-8. Return Russian Help, and how? - variable like buttuns name!
 9. Improve announcement of SolarCalc text file
 6. Add ephemeris 2021,
  //////////////////////////////////  FUTURE DEVELOPMENT
@@ -23,6 +22,8 @@ precise_round check!!! in console
 10. Add in drawAxis line below horizon with name Dusk
 7. Check cases when dUTC = 3.75(not even) and why Analemma not on its place?
 1. Make gray gradients on twilight
+1. grad_number2text() not 123° 23' 60" but 123° 24' 00"
+precise_round check!!! in console
 
 ////////////////////////////     NOT NEED /////////////////////////////////
 3. Rebuild buttons HERE CURRENT on main page converting them to button-lists.

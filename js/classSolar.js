@@ -6,7 +6,7 @@ function Solar(options) {
     let sMonth = options.Month ;                   //String
     let sYear = options.Year ;                     //String
     let timeUTC = options.UTCTime;                 //Decimal hours    Time for position calculation. MUST BE IN UTC!!!
-    let dUTCval = options.dUTC;                    //Decimal hours
+    let dUTCval = options.dUTC;                    //Decimal hours =  (LocalTime - UTCTime)
     let tempC = options.Temp;                      //Ambient temperature in Celsius degrees
     let pressP = options.Press;                    //Ambient pressure in Hmm
     let isBeforeNoon = options.isAM;               //Boolean true to find Time is BeforeNoon
@@ -79,7 +79,7 @@ function Solar(options) {
         }
 
         ///////////////Return values ALL in DECIMAL DEGREES at given UTCTime //////////////////////
-        Results[0] = SunA;                  // Sun Azimuth in
+        Results[0] = SunA;                  // Sun Azimuth from North counted clockwise
         Results[1] = SunHcor;               // Corrected for refraction height of  sun's center
         Results[2] = Utils.toDegrees(tT);   // Hour Angle of Sun
         Results[3] = aRef;                  // Refraction corrected for meteoParameters
