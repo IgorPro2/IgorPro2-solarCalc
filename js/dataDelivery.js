@@ -1,7 +1,6 @@
 
 function dataDeliveryDay(params) {
     //params = {Day: sDay, Month: sMonth, Year: sYear};
-    // 2020-05-18 adding AoA for output to xlx
     let sYear = params.Year;
     let sMonth = params.Month;
     let sDay = params.Day;
@@ -191,7 +190,7 @@ function dataDeliveryDay2AoA() {
         EphArr = Utils.ReadDataFromResourceString(sDay, sMonth, sYear, utcTime, L, dUTCval);
         D = EphArr[11];
         E = EphArr[12];
-        R = EphArr[5];
+        R = EphArr[13];
         options = {
             Lat: B,
             Lon: L,
@@ -392,7 +391,7 @@ function dataDeliveryYear2AoA() {
         EphArr = Utils.ReadDataFromResourceString(sDay, sMonth, sYear, utcTime, L, dUTCval);
         D = EphArr[11];
         E = EphArr[12];
-        R = EphArr[5];
+        R = EphArr[13];
         options = {
             Lat: B,
             Lon: L,
@@ -435,10 +434,10 @@ function sunDials2AoA(){
 //Calculate coordinates of shadow's end drops by vertical Gnomon  on horizontal Cadran.
 // Gnomon height = User eye height.  Calculation units are units of Gnomon's height.
 // Calculations do for each day of given year for the moment of beginning of each hour, from 6:00 to 19:00 hours.
-// Results are: Analemmas for each hour from 6:00 to 19:00 at Cadran. = 365*14 = 5110 values.
+// Results are: Analemmas for each hour from [startH] = 7 hours to [stopH] =17;  at Cadran.
 // Then calculates coordinates of shadow's end for each 1-st day of each month of given year,
-// each 6 minutes of each calculating hours.
-// Results are:  hour's lines for 1-st day of each month  = 12(month)*13(hours)*10 = 1560 + 12(for 19:00) = 1572 values.
+// each [mStep] minutes of each calculating hours from [startH]  to [stopH].
+// Results are:  Hour's lines for 1-st day of each month.
 // Pass calculation in xls table.
 // Draw results on graphic's page.
     let latGrad = document.getElementById("latGrad");
@@ -468,20 +467,21 @@ function sunDials2AoA(){
     let localTime, utcTime,  i;
     let aDay = sYear + "-" + sMonth + "-" + sDay+ " ";
     let sMoment, aMoment;
-    let startH = 7, stopH =17;
+    let startH = 6, stopH =19;
     let hh=startH, mm=0, ss=0;
-    let ht = hh.toString(), mt= mm.toString(), st= ss.toString(), x, y, z, x2, y2, z2, tt, l;
+    let ht = hh.toString(), mt= mm.toString(), st= ss.toString(), x, y, z, x2, y2, z2, tt, l, upperEdge, refU, resRef;
 
-    sMoment = sYear + "-" + "01" + "-" + "01" + " " + ht + ":" + mt + ":" + st;         //start from 01 Jan 06:00:00
+    sMoment = sYear + "-" + "01" + "-" + "01" + " " + ht + ":" + mt + ":" + st;         //start from 01 Jan [startH]
+    //sMoment = sYear + "-" + "03" + "-" + "03" + " " + ht + ":" + mt + ":" + st;         //start from 01 Jan [startH]
     let numDays = moment(sMoment ).isLeapYear() ? 366: 365;
-    let mStep = 6;                            // each [mStep] minutes of each calculating hours
-    let arrLen1 = numDays*(stopH-startH + 1);
-    let arrLen2 = 12*(stopH-startH)*mStep + 12;
-    aMoment = moment(sMoment, "");                              //for nice formatting of tables 1-st string
+    let mStep = 6;                              // each [mStep] minutes of each calculating hours
+    let arrLen1 = numDays*(stopH-startH + 1);   //Analemmas array
+    let arrLen2 = 12*(stopH-startH)*60/mStep + 12; //Hour's lines array
+    aMoment = moment(sMoment, "");              // trick for nice formatting to tables 1-st string
     sYear = moment(aMoment).format('YYYY');
     sMonth = moment(aMoment).format('MM');
     sDay = moment(aMoment).format('DD');
-    ht = moment(aMoment).format('hh');
+    ht = moment(aMoment).format('HH');
     mt = moment(aMoment).format('mm');
     st = moment(aMoment).format('ss');
     hh = +ht;
@@ -500,15 +500,14 @@ function sunDials2AoA(){
     L = Utils.grad_textGMS2number(g, m, s);
     dUTCval = +dUTC.value;
 
-    let rowArray, EphArr, D, E, sunHt, sunAz;
+    let rowArray, EphArr, D, E, sunHt, sunAz, sunRd;
     let minSunHeight = 5; // Minimal height of sun above horizon in degrees
-    let gnomonLen  = 7;   // length of Gnomon
-    let maxShadow = 7;    // Maximal length of Gnomon's shadow in "Gnomon's" units
+    let gnomonLen    = 7;   // length of Gnomon
+    let maxShadow    = 7 * gnomonLen;    // Maximal length of Gnomon's shadow in "Gnomon's" units
 
     let AoA1stdays = new Array(arrLen1 + 1);  // +1 for Headers
-
     //Header
-    rowArray = new Array(9);
+    rowArray = new Array(10);
     rowArray[0] = window.locales["dateLb"];
     rowArray[1] = window.locales["local"]  +" "+ window.locales["timeLb"] ;
     rowArray[2] = window.locales["declinationLb"];
@@ -518,6 +517,8 @@ function sunDials2AoA(){
     rowArray[6] = "x";
     rowArray[7] = "y";
     rowArray[8] = "l";
+    rowArray[9] = "Month";
+
     AoA1stdays[0] = rowArray;
 
     // Calculations do for each day of given year for the moment of beginning of each hour, from 6:00 to 19:00 hours.
@@ -531,6 +532,7 @@ function sunDials2AoA(){
         EphArr = Utils.ReadDataFromResourceString(sDay, sMonth, sYear, utcTime, L, dUTCval);
         D = EphArr[11];
         E = EphArr[12];
+        sunRd = EphArr[13];
         options = {
             Lat: B,
             Lon: L,
@@ -544,7 +546,149 @@ function sunDials2AoA(){
         };
         solar = new Solar(options);
         resArr = solar._calculate();
-        sunHt = resArr[1]; sunAz = resArr[0];
+        sunHt = resArr[5];  // Uncorrected height of  sun's center
+        sunAz = resArr[0];
+        upperEdge = sunHt + sunRd;
+        resRef = Utils.getRefractionTP(upperEdge , sunRd , +temp, +press);
+        refU = resRef[0];
+        upperEdge = upperEdge + refU;
+        sunHt = resArr[1];  // Height of  sun's center corrected for refraction
+
+        rowArray = new Array(9);
+        rowArray[0] = aDay ;                                                    //Date
+        rowArray[1] = Utils.grad_number2text( localTime, nDig, ":: ");    //LocalTime. delm =":: " for split(":") later
+        rowArray[2] = Utils.grad_number2text(D, nDig, delm1, " ");          //Apparent declination
+        rowArray[3] = Utils.grad_number2text(E, nDig, delm2, " ");          //Equation of time
+        rowArray[4] = Utils.grad_number2text(sunHt, nDig, delm1, " ");  // Height of  sun's center corrected for refraction
+        rowArray[5] = Utils.grad_number2text(sunAz, nDig, delm1, " ");  // Sun Azimuth from North counted clockwise
+
+        if (sunHt >= minSunHeight ){
+            let shadArr = new Array(3);
+            // Calculate orthogonal 3d coordinates of sun, assume that sun is on sphere with radius of 100 gnomons
+            // Assume that Sun'd latitude is Height of Suns UPPER EDGE
+            // Assume that Sun'd longitude is (360-SunAzimuth) count it counterclockwise from NORTH AXIS
+            shadArr = Sphere2Decart(gnomonLen*100, upperEdge, (360-sunAz));
+
+            if (shadArr[2] >= 0) {
+                //Пересечение прямой и плоскости  "Ефимов Н.В. Курс Аналитической геометрии" стр.221,223
+                //координаты пересечения прямой проходящей через точки (0,0,Lgnm)(x2,y2,z2) и плоскости z=0
+                // каноническое ур-е такой прямой: x-x1   y-y1   z-z1
+                //                                 ---- = ---- = ----  полагаем = t    тогда x=x2*t; y = y2*t; z=z2*t-Lgnm*t-Lgnm=0;
+                //                                 x2-x1  y2-y1  z2-z1
+                //отсюда t= -Lgnm/(z2-Lgnm)
+                x2 = shadArr[0];
+                y2 = shadArr[1];
+                z2 = shadArr[2];
+                tt = -1 * gnomonLen / (z2 - gnomonLen);
+                z = 0;
+                y = x2 * tt;                     // y = x
+                x = -1 * (y2 * tt);              // x = -y     Rotate North UP
+                l = Math.sqrt(x * x + y * y); //shadow length
+            }
+            else { x=y=l=0;}
+        }
+        else  { x=y=l=0;}
+        if (l < maxShadow) {
+            rowArray[6] = x;
+            rowArray[7] = y;
+            rowArray[8] = l;
+        }
+        else {
+            rowArray[6] = 0;
+            rowArray[7] = 0;
+            rowArray[8] = 0;
+        }
+        rowArray[9] = +sMonth;   //month number
+
+        AoA1stdays[i] = rowArray;
+
+        aMoment = moment(sMoment, "").add(1, 'day');
+
+        sYear =   moment(aMoment).format('YYYY');
+        sMonth =  moment(aMoment).format('MM');
+        sDay =    moment(aMoment).format('DD');
+        ht =      moment(aMoment).format('HH');
+        mt =      moment(aMoment).format('mm');
+        st =      moment(aMoment).format('ss');
+        sMoment = sYear + "-" + sMonth + "-" + sDay + " " + ht + ":" + mt + ":" + st;
+        aDay = sYear + "-" + sMonth + "-" + sDay;
+
+        if (sYear !== curYear){  //after 31-dec jump to next year
+           hh = hh + 1;
+           sMoment = curYear + "-" + "01" + "-" + "01" + " " + ht + ":" + mt + ":" + st;         //start from 01 Jan
+           aMoment = moment(sMoment, "");
+           sYear =   moment(aMoment).format('YYYY');
+           sMonth =  moment(aMoment).format('MM');
+           sDay =    moment(aMoment).format('DD');
+           ht =      moment(aMoment).format('HH');
+           mt =      moment(aMoment).format('mm');
+           st =      moment(aMoment).format('ss');
+           sMoment = sYear + "-" + sMonth + "-" + sDay + " " + ht + ":" + mt + ":" + st;
+           aDay = sYear + "-" + sMonth + "-" + sDay;
+           localTime = hh+ mm/60+ ss/3600;
+           utcTime = (localTime - dUTCval);
+           if (hh > stopH){ break }
+        }
+    }
+
+    // Calculate coordinates of shadow's end for each 1-st day of each month of given year,
+    // each [mStep]  minutes of each calculating hours from .
+    hh=startH; mm = 0; ss = 0;
+    ht = hh.toString();
+    localTime = hh+ mm/60+ ss/3600;
+    utcTime = (localTime - dUTCval);
+    sMoment = curYear + "-" + "01" + "-" + "01" + " " + ht + ":" + mt + ":" + st;         //start from 01 Jan [startH]
+    aMoment = moment(sMoment, "");              // nice formatting
+    sYear = moment(aMoment).format('YYYY');
+    sMonth = moment(aMoment).format('MM');
+    sDay = moment(aMoment).format('DD');
+    ht = moment(aMoment).format('HH');
+    mt = moment(aMoment).format('mm');
+    st = moment(aMoment).format('ss');
+    sMoment = sYear + "-" + sMonth + "-" + sDay + " " + ht + ":" + mt + ":" + st;
+    aDay = sYear + "-" + sMonth + "-" + sDay;
+
+    let AoAHlines = new Array(arrLen2 + 1);  // +1 for Headers
+    //Header
+    rowArray = new Array(10);
+    rowArray[0] = window.locales["dateLb"];
+    rowArray[1] = window.locales["local"]  +" "+ window.locales["timeLb"] ;
+    rowArray[2] = window.locales["declinationLb"];
+    rowArray[3] = window.locales["equationLb"];
+    rowArray[4] = window.locales["htRadioLb"];
+    rowArray[5] = window.locales["azRadioLb"];
+    rowArray[6] = "x";
+    rowArray[7] = "y";
+    rowArray[8] = "l";
+    rowArray[9] = "Month";
+    AoAHlines[0] = rowArray;
+
+    for (i = 1; i < arrLen2+1; i++) {
+        // Get ephemeris
+        EphArr = Utils.ReadDataFromResourceString(sDay, sMonth, sYear, utcTime, L, dUTCval);
+        D = EphArr[11];
+        E = EphArr[12];
+        sunRd = EphArr[13];
+        options = {
+            Lat: B,
+            Lon: L,
+            Day: sDay,
+            Month: sMonth,
+            Year: sYear,
+            UTCTime: utcTime,
+            dUTC: dUTCval,
+            Temp: temp,
+            Press: press
+        };
+        solar = new Solar(options);
+        resArr = solar._calculate();
+        sunHt = resArr[5];  // Uncorrected height of  sun's center
+        sunAz = resArr[0];
+        upperEdge = sunHt + sunRd;
+        resRef = Utils.getRefractionTP(upperEdge , sunRd , +temp, +press);
+        refU = resRef[0];
+        upperEdge = upperEdge + refU;
+        sunHt = resArr[1];  // Height of  sun's center corrected for refraction
 
         rowArray = new Array(9);
         rowArray[0] = aDay ;                                                    //Date
@@ -555,69 +699,81 @@ function sunDials2AoA(){
         rowArray[5] = Utils.grad_number2text(sunAz, nDig, delm1, " ");  // Sun Azimuth from North counted clockwise
 
         if (sunHt >= minSunHeight ){
-            let shadowArr = new Array(3);
+            let shadArr = new Array(3);
             // Calculate orthogonal 3d coordinates of sun, assume that sun is on sphere with radius of 100 gnomons
-            shadowArr = Sphere2Decart(gnomonLen*100, sunHt, sunAz);
-            if (shadowArr[2] >= 0) {
+            // Assume that Sun'd latitude is Height of Suns UPPER EDGE
+            // Assume that Sun'd longitude is (360-SunAzimuth) count it counterclockwise from North axis
+            shadArr = Sphere2Decart(gnomonLen*100, upperEdge, (360-sunAz));
+            if (shadArr[2] >= 0) {
                 //Пересечение прямой и плоскости  "Ефимов Н.В. Курс Аналитической геометрии" стр.221,223
                 //координаты пересечения прямой проходящей через точки (0,0,Lgnm)(x2,y2,z2) и плоскости z=0
                 // каноническое ур-е такой прямой: x-x1   y-y1   z-z1
                 //                                 ---- = ---- = ----  полагаем = t    тогда x=x2*t; y = y2*t; z=z2*t-Lgnm*t-Lgnm=0;
                 //                                 x2-x1  y2-y1  z2-z1
                 //отсюда t= -Lgnm/(z2-Lgnm)
-                x2 = shadowArr[0];
-                y2 = shadowArr[1];
-                z2 = shadowArr[2];
+                x2 = shadArr[0];
+                y2 = shadArr[1];
+                z2 = shadArr[2];
                 tt = -1 * gnomonLen / (z2 - gnomonLen);
-                x = x2 * tt;
-                y = y2 * tt;
                 z = 0;
-                l = Math.sqrt(x * x + y * y);
+                y = x2 * tt;                     // y = x
+                x = -1 * (y2 * tt);              // x = -y     Rotate North UP
+                l = Math.sqrt(x * x + y * y); //shadow length
             }
             else { x=y=l=0;}
-            }
+        }
         else  { x=y=l=0;}
+        if (l < maxShadow) {
+            rowArray[6] = x;
+            rowArray[7] = y;
+            rowArray[8] = l;
+        }
+        else {
+            rowArray[6] = 0;
+            rowArray[7] = 0;
+            rowArray[8] = 0;
+            }
+        rowArray[9] = +sMonth;   //month number
 
-        rowArray[6] = x;  // shadow x
-        rowArray[7] = y;  // shadow y
-        rowArray[8] = l;  //shadow length
+        AoAHlines[i] = rowArray;
 
-        AoA1stdays[i] = rowArray;
+        aMoment = moment(sMoment, "").add(mStep, 'minutes');
 
-        aMoment = moment(sMoment, "").add(1, 'day');
         sYear = moment(aMoment).format('YYYY');
         sMonth = moment(aMoment).format('MM');
         sDay = moment(aMoment).format('DD');
-        ht = moment(aMoment).format('hh');
+        ht = moment(aMoment).format('HH');
         mt = moment(aMoment).format('mm');
         st = moment(aMoment).format('ss');
+        localTime = +ht + mt/60 + st/3600;
+        utcTime = (localTime - dUTCval);
         sMoment = sYear + "-" + sMonth + "-" + sDay + " " + ht + ":" + mt + ":" + st;
-        aDay = sYear + "-" + sMonth + "-" + sDay;
 
-        if (sYear !== curYear){  //after 31-dec jump to next year
-            hh = hh+1;
-           if (hh > stopH){ break }
-           localTime = hh+ mm/60+ ss/3600;
-           utcTime = (localTime - dUTCval);
-           sMoment = curYear + "-" + "01" + "-" + "01" + " " + ht + ":" + mt + ":" + st;         //start from 01 Jan
-           aMoment = moment(sMoment, "");
-           sYear = moment(aMoment).format('YYYY');
-           sMonth = moment(aMoment).format('MM');
-           sDay = moment(aMoment).format('DD');
-           ht = moment(aMoment).format('hh');
-           mt = moment(aMoment).format('mm');
-           st = moment(aMoment).format('ss');
-           sMoment = sYear + "-" + sMonth + "-" + sDay + " " + ht + ":" + mt + ":" + st;
-           aDay = sYear + "-" + sMonth + "-" + sDay;
+        if ( +ht >= stopH) {  // jump to next month 1-st day
+            sMonth =  +sMonth +1;
+            if (sMonth > 12) { break }
+            hh = startH; mm = 0; ss = 0;
+            ht = startH.toFixed(0);
+            sMoment = curYear + "-" + sMonth + "-" + "01" + " " + ht + ":" + "00" + ":" + "00";      //start next month
+            localTime = hh+ mm/60+ ss/3600;
+            utcTime = (localTime - dUTCval);
+            aMoment = moment(sMoment, "");              // nice formatting
+            sYear = moment(aMoment).format('YYYY');
+            sMonth = moment(aMoment).format('MM');
+            sDay = moment(aMoment).format('DD');
+            ht = moment(aMoment).format('HH');
+            mt = moment(aMoment).format('mm');
+            st = moment(aMoment).format('ss');
+            sMoment = sYear + "-" + sMonth + "-" + sDay + " " + ht + ":" + mt + ":" + st;
         }
+        aDay = sYear + "-" + sMonth + "-" + sDay;
     }
-    let result = new Array(2);
+    let result = new Array(3);
     result[0] = AoA1stdays;
-
-
-
-
-
+    result[1] = AoAHlines;
+    let arr1 = AoAHlines.slice(0);                // clone of AoAHlines
+    arr1.splice(0,1);           //remove header
+    result[2] = AoA1stdays.concat(arr1);
 
     return result;
 

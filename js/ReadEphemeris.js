@@ -103,7 +103,7 @@
         Results[12] = E;
 
         let Rds = Utils.CharDigits2Number(words[i + 15]);                        //Apparent radius  at Next day
-        Results[13] = Results[5] + (Rds - Results[5]) / 24 * TimeUTC;  //Apparent radius at  given TimeUTC
+        Results[13] = Results[5] + (Rds - Results[5]) / 24 * TimeUTC;            //Apparent radius at  given TimeUTC
 
         let Tculm = Results[8] - (Longitude / 15) * Results[9];                               //Time of upper culmination corrected at given Longitude (Minus to EAST from Greenwich!)
         let deltaT = LocalMinusUTC - Math.round(Longitude / 15);                              //Difference between LocalTimeShift and TimeZoneNumber

@@ -967,74 +967,118 @@
             if (k > ArrX.length - 1) k = 0;
 
         };
+    };
+
+    ///////////////////////////////////////////////////////  DRAWING SUNDIALS   ///////////////////////////////
+    window.Utils.showGraphic2 = function (redraw) {
+        var minx=0, maxx=0, miny=0, maxy=0;
+        var tic2, ox2, oy2, xscl, yscl, s2, lx2, ly2, less2, hFont2, time;
+        var width, height, tx, ty, txp, typ, month, hr;
+        var arr = Utils.sunDials2AoA();               //Return Array of  Arrays of SunDial results
+        var ws1 = arr[0], i;
+
+        for (i=1; i < ws1.length-1 ; i++){
+            if (ws1[i][6] < minx) {minx = ws1[i][6]}        // ws1[i][6] x dimentions
+            if (ws1[i][6] > maxx) {maxx = ws1[i][6]}
+        }
+        for (i=1; i < ws1.length-1 ; i++){
+            if (ws1[i][7] < miny) {miny = ws1[i][7]}        // ws1[i][7] y dimentions
+            if (ws1[i][7] > maxy) {maxy = ws1[i][7]}
+        }
+        var dx2 = maxx-minx;                       //range on axis x at SunDials
+        var dy2 = maxy-miny;                       //range on axis y at SunDials
+
+        var sunDialLayer = new Layer();
+        sunDialLayer.name = "sunDial";
+
+        //////////////////////////////////////      CLEAR ALL LAYERS BEFORE DRAWING
+        var layers = paper.project.layers;
+        for (i = 0; i < layers.length - 1; i++) {
+            layers[i].clear();
+            // console.log("Layer2Clear= "+layers[i].name);
+        }
+        paper.project._activeLayer.clear();
+
+        /////////////////////////////////////////////////      DEFINE SUNDIAL DRAW DIMENSIONS          /////////////////////////////////
+        paper.view.viewSize = new Size(window.innerWidth, window.innerHeight);
+        width = paper.view.viewSize.width;
+        height = paper.view.viewSize.height;
+        var col, r=0, g=0 , b=0;
+        var mcol = ['blue', 'grey', 'green', 'red', 'yellow', 'blue', 'grey', 'green', 'red', 'yellow','blue', 'grey'];
+        // col = new Color(0, 1, 1);
+        // var mcol = [col];
+        // for(i=0; i<11; i++){
+        //     r =  0.1*i;
+        //     g =  0.1*i;
+        //     b =  0.1*i;
+        //     col = new Color(r, g, b);
+        //     mcol.push(col);
+        // }
+
+        xscl = (width - 2 * gap) / dx2;    // scale on axis X
+        yscl = (height - 2 * gap) / dy2;   // scale on axis Y
+        if (xscl > yscl) less2 = yscl;     // Take smallest scale for proportional draw (the same scale on both axises)
+        else less2 = xscl;
+        s2 = less2;                        // s - is a scale: Pixels amount in one Degree°
+        ox2 = width / 2;                   // Origin of X axis in pixels
+        oy2 = height / 2;                  // Origin of Y axis in pixels
+        lx2 = dx2 * s2 / 2;                // Half length of X axis in pixels (the same scale on both axises)
+        ly2 = dy2 * s2 / 2;                // Half length of Y axis in pixels (the same scale on both axises)
+        tic2 = less2;                      // length of tics on axis
+
+        hFont2 = less2 * 2.5;
+        if (hFont2 < 12) hFont2 = 12;
+
+        //////////////////////////////////////      DRAW CADRAN's ANNALEMAS
+        var pathA = new Path({strokeColor: mcol[0]});
+        var grd="", min="", sec="";
+        var hr1 = ws1[1][1];
+        var month1 = ws1[1][9];
+        hr1 = hr1.split(":");
+        grd= hr1[0];
+        min= hr1[1];
+        sec= hr1[2];
+        hr1 = Utils.grad_textGMS2number(grd, min, sec);
+
+        for (i=1; i < ws1.length-1 ; i++){
+            month = ws1[i][9];
+            time = ws1[i][1].split(":");
+            grd= time[0];
+            min= time[1];
+            sec= time[2];
+            hr = Utils.grad_textGMS2number(grd, min, sec);
+
+            tx = ws1[i][6];
+            ty = ws1[i][7];
+            txp = ox2   + tx  * s2;
+            typ = oy2 + ly2/4 - ty  * s2;
+            //console.log(i, tm, month, tx, ty );
+            if (hr === hr1) {
+                if (tx !== 0 && ty !== 0 )   {
+                    if (month === month1) {
+                        pathA.add(new Point(txp, typ));
+                    }
+                    else{
+                        pathA.add(new Point(txp, typ));
+                        month1 = month;
+                        pathA = new Path({strokeColor: mcol[month]}); //next month starts
+                        pathA.add(new Point(txp, typ));
+                    }
+                }
+            }
+            else {             // no lines between hours analemma
+                hr1 = hr;
+                pathA = new Path({strokeColor: mcol[0]}); //next hour starts
+                if (tx !== 0 && ty !== 0 )   {
+                    pathA.add(new Point(txp, typ));
+                }
+            }
+        }
+        var curPoint = new paper.Point(ox2, oy2 + ly2/4);
+        var circle2 = new Shape.Circle({center: curPoint, radius: 6, fillColor: sunColor, strokeColor: fontSunColor});
 
 
-    }
+    };
+
+
 })();
-
-///////////////////////////////////////////////////   RANDOM ANIMATION EXAMPLE    ///////////////////////
-// var point = new Point(350, 350);
-// var circle = new Shape.Circle({
-//     center: point,
-//     radius: 20
-// });
-// circle.style.strokeColor = "blue";
-// var waypoints = [new Point(350, 350),new Point(675, 950),new Point(780, 450),new Point(680, 760),new Point(180, 80),new Point(670, 880),new Point(960, 960),];
-// var currentIndex = 0;
-// circle.onFrame = function (event) {
-//     if (event.count % 40 === 0) {
-//         //circle.position = waypoints[currentIndex];
-//         circle.tween({
-//             'position.x': Math.random() * width,
-//             'position.y': Math.random() * height,
-//         }, {
-//             easing: 'linear',
-//             duration: 500
-//         });
-//         //circle.position = paper.view.center;
-//         currentIndex++;
-//         if (currentIndex > waypoints.length - 1) currentIndex = 0;
-//     }
-// };
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////           YEAR PATH  FULL SCREEN   ///////////////////////////////////
-//         //Define analemma H,A dimensions instead 180 & 360
-//         var maxH = yearArr[732],  minH = yearArr[730], maxA = yearArr[733],  minA = yearArr[731];
-//         var dH = maxH - minH;
-//         var dA = maxA - minA;
-//         // console.log("    dH="+ dH);
-//         // console.log("    dA="+ dA);
-//         xt1=     (yearArr[1]- minA)/dA*width;
-//         yt1= height-((yearArr[0]- minH)/dH*height);
-//         xt2=     (yearArr[3]- minA)/dA*width;
-//         yt2= height-((yearArr[2]- minH)/dH*height);
-//         // console.log("xt1="+ xt1);
-//         // console.log("yt1="+ yt1);
-//         // console.log("xt2="+ xt2);
-//         // console.log("yt2="+ yt2);
-//         line2 = new Path.Line(new Point(xt1,yt1),new Point(xt2,yt2));
-//         line2.style.strokeColor = "green";
-//         for ( i=4; i < (yearArr.length - 5); i=i+2 ) {
-//             xt1=     (yearArr[i+1]- minA)/dA*width;
-//             yt1= height-((yearArr[i]  - minH)/dH*height);
-//             line2.lineTo(new Point(xt1,yt1));    // lineBy  relative coordinate;   line1.lineTo absolute coordinate;
-//         }
-/////////////////////////////////////////////////  SUN YEAR ANIMATION  FULL SCREEN /////////////////////////////////
-//         var point2 = new Point((yearArr[1]- minA)/dA*width, height-((yearArr[0]  - minH)/dH*height));
-//         var circle2 = new Shape.Circle({ center: point2,    radius: 10, fillColor: "yellow", strokeColor: "red"   });
-//         i = 0;
-//         circle2.onFrame = function (event) {
-//             if (event.count % 10 === 0) {
-//                 circle2.tween({
-//                     'position.x':     (yearArr[i+1]- minA)/dA*width,
-//                     'position.y': height-((yearArr[i]  - minH)/dH*height),
-//
-//                 }, {
-//                     easing: 'linear',
-//                     duration: 500,
-//                 });
-//                 i=i+2;
-//                 if (i > yearArr.length - 5) i = 0;
-//             }
-//         };

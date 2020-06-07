@@ -21,8 +21,6 @@
     let dUTCval = +dUTC.value;
 
     let eclipticAngle;
-    // if (!window.varsValue.eclipticDeclination) {eclipticAngle = Utils.calcEquinoxSolstice();}
-    // else {eclipticAngle = window.varsValue.eclipticDeclination}
     Utils.takeEquinoxSolsticeAE();
     eclipticAngle = window.varsValue.eclipticDeclination;
 
@@ -52,8 +50,8 @@
         }
 
         function changeTool(e) {
-            var target = e.target;
-            var action = target.getAttribute('data-action');
+            let target = e.target;
+            let action = target.getAttribute('data-action');
             action && target.blur();        //blur only elements with actions
             if (action) {
                 self[action](target);
@@ -70,7 +68,6 @@
         this.showResults = function (target) {
             Utils.show_results();
         };
-
         this.showResultTimer = function (target) {
             Utils.showResultTimer();
         };
@@ -151,7 +148,6 @@
                 Utils.showGraphic();
             });
         };
-
         this.showNow = function (target) {
             Utils.getNow();
             Utils.showGraphic();
@@ -210,8 +206,7 @@
 
         this.dayTable = function (target) {
             let dayArr = Utils.dataDeliveryDay2AoA();    //Return Array of  Arrays of results
-
-            var ws = XLSX.utils.aoa_to_sheet(
+            let ws = XLSX.utils.aoa_to_sheet(
                 // [
                 //     ['#', 'Name', 'Age'],
                 //     [1, 'John', 32],
@@ -219,7 +214,7 @@
                 // ]
                 dayArr
             );
-            var wb = XLSX.utils.book_new();
+            let wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, 'SunDayValues');
 
             //create and downloading workbook
@@ -229,23 +224,32 @@
         };
         this.yearTable = function (target) {
             let yearArr = Utils.dataDeliveryYear2AoA();   //Return Array of  Arrays of results
-            var ws = XLSX.utils.aoa_to_sheet(yearArr);
-            var wb = XLSX.utils.book_new();
+            let ws = XLSX.utils.aoa_to_sheet(yearArr);
+            let wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, 'SunYearValues');
-
             //create and downloading workbook
             XLSX.writeFile(wb, 'YearsValue.xlsx');
 
         };
         this.sunDial = function (target) {
             let arr = Utils.sunDials2AoA();     //Return Array of  Arrays of results
-            var ws = XLSX.utils.aoa_to_sheet(arr[0]);
-            var wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'SunDialValues');
+            // let ws1 = XLSX.utils.aoa_to_sheet(arr[0]);
+            // let ws2 = XLSX.utils.aoa_to_sheet(arr[1]);
+            let ws3 = XLSX.utils.aoa_to_sheet(arr[2]);
+            // let wb = XLSX.utils.book_new();
+            // XLSX.utils.book_append_sheet(wb, ws1, 'Annalemas');
+            // XLSX.utils.book_append_sheet(wb, ws2, 'HourLines');
+            // XLSX.utils.book_append_sheet(wb, ws3, 'allSunDial');
+            // //create and downloading workbook
+            // XLSX.writeFile(wb, 'SunDial.xlsx');
+            let wbcsv = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wbcsv, ws3, 'all');
+            XLSX.writeFile(wbcsv, 'SunDialAll.csv');
 
-            //create and downloading workbook
-            XLSX.writeFile(wb, 'SunDial.xlsx');
+        };
 
+        this.showSunDial = function (target){
+            Utils.showGraphic2();
         };
 
         }

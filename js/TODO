@@ -1,13 +1,14 @@
 /////////////////////// BUGS & IMPROVEMENT
-1. Make HEADERS in output Day&Year tables
+
 
 8. Return Russian Help, and how? - variable like buttuons name!
 
 9. Improve announcement of SolarCalc text file
 6. Add ephemeris 2021,
  //////////////////////////////////  FUTURE DEVELOPMENT
-1. Day and Year Arrays output to Table on separate page.
-2. User Sundials output to SVG file.
+
+1.  Draw shadow's polygon which drops  some obstacle with  x,y,z coordinates
+
 3. Add place selection on world map. Add position MAP on button HERE.
 
 
@@ -24,7 +25,9 @@
 1. Make gray gradients on twilight
 1. grad_number2text() not 123° 23' 60" but 123° 24' 00"
 precise_round check!!! in console
-
+1. Make HEADERS in output Day&Year tables
+1. Day and Year Arrays output to Table on separate page.
+2. User Sundials output to SVG file.
 ////////////////////////////     NOT NEED /////////////////////////////////
 3. Rebuild buttons HERE CURRENT on main page converting them to button-lists.
 /////////////////////////////////////////////////////////////////////////////////////////////////

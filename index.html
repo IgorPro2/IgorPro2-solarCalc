@@ -326,9 +326,9 @@
                 <button class="dropdown-item" type="button" data-action="dayTable">{{thisDayTable}}</button>
                 <button class="dropdown-item" type="button" data-action="yearTable">{{thisYearTable}}</button>
                 <button class="dropdown-item" type="button" data-action="sunDial">{{sunDial}}</button>
+                <button class="dropdown-item" type="button" data-action="showSunDial">{{showSunDial}}</button>
             </div>
         </div>
-
 
         <div class="dropdown">
             <button class="btn btn-primary btn-sm dropdown-toggle mx-1" type="button" id="dropdownMenuTime"
@@ -363,22 +363,28 @@
             </div>
         </div>
 
-        <!--    INVISIBLE BY CSS STYLE hiddenButton  -->
         <button class="btn btn-sm btn-light hiddenButton mx-1" onclick=Utils.show3D(); aria-label="show">
             <span aria-hidden="true">{{dim3BtLb}}</span>
         </button>
+
         <button class="btn btn-sm btn-light hiddenButton mx-1" onclick=Utils.showGraphic(); aria-label="show">
             <span aria-hidden="true">{{nowBtLb}}</span>
         </button>
 
-
         <button type="button" class="btn btn-sm btn-light mx-1" onclick=Utils.show3Month(); aria-label="show">
             <span aria-hidden="true">{{month3BtLb}}</span>
         </button>
+
         <button class="close mx-1" onclick=Utils.hideGraphic(); aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button>
     </div>
+
+</div>
+
+
+<div class="canvasContainer hidden" id="graphicContainer2">
+    <canvas id="myCanvas2" data-paper-resize="true"></canvas>
 
 </div>
 
@@ -417,9 +423,12 @@
 <script src="vendor/bootstrap/bootstrap.bundle.min.js"></script>
 <!--Template engine homemade-->
 <script src="js/templateEngine.js"></script>
-<script type="text/paperscript" canvas="myCanvas" src="ps/graphic.js"></script>
 <script src="js/buttonHandler.js"></script>
 
+<script type="text/paperscript" canvas="myCanvas" src="ps/graphic.js"></script>
+<!--
+<script type="text/paperscript" canvas="myCanvas2" src="ps/drawSunDial.js"></script>
+-->
 
 
 </body>
