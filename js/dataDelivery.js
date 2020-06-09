@@ -438,7 +438,7 @@ function sunDials2AoA(){
 // Then calculates coordinates of shadow's end for each 1-st day of each month of given year,
 // each [mStep] minutes of each calculating hours from [startH]  to [stopH].
 // Results are:  Hour's lines for 1-st day of each month.
-// Pass calculation in xls table.
+// Pass calculation in csv table.
 // Draw results on graphic's page.
     let latGrad = document.getElementById("latGrad");
     let latMin = document.getElementById("latMin");
@@ -455,6 +455,8 @@ function sunDials2AoA(){
     let dateYear = document.getElementById("dateYear");
     let dateMonth = document.getElementById("dateMonth");
     let dateDay = document.getElementById("dateDay");
+    var eyeHeight = document.getElementById("height");
+    eyeHeight = eyeHeight.value;
     let sYear = dateYear.value;
     let curYear = sYear;
     let sMonth = dateMonth.value;
@@ -467,16 +469,12 @@ function sunDials2AoA(){
     let localTime, utcTime,  i;
     let aDay = sYear + "-" + sMonth + "-" + sDay+ " ";
     let sMoment, aMoment;
-    let startH = 6, stopH =19;
+    let startH = 0, stopH =23;
     let hh=startH, mm=0, ss=0;
     let ht = hh.toString(), mt= mm.toString(), st= ss.toString(), x, y, z, x2, y2, z2, tt, l, upperEdge, refU, resRef;
 
     sMoment = sYear + "-" + "01" + "-" + "01" + " " + ht + ":" + mt + ":" + st;         //start from 01 Jan [startH]
     //sMoment = sYear + "-" + "03" + "-" + "03" + " " + ht + ":" + mt + ":" + st;         //start from 01 Jan [startH]
-    let numDays = moment(sMoment ).isLeapYear() ? 366: 365;
-    let mStep = 6;                              // each [mStep] minutes of each calculating hours
-    let arrLen1 = numDays*(stopH-startH + 1);   //Analemmas array
-    let arrLen2 = 12*(stopH-startH)*60/mStep + 12; //Hour's lines array
     aMoment = moment(sMoment, "");              // trick for nice formatting to tables 1-st string
     sYear = moment(aMoment).format('YYYY');
     sMonth = moment(aMoment).format('MM');
@@ -501,9 +499,16 @@ function sunDials2AoA(){
     dUTCval = +dUTC.value;
 
     let rowArray, EphArr, D, E, sunHt, sunAz, sunRd;
-    let minSunHeight = 5; // Minimal height of sun above horizon in degrees
-    let gnomonLen    = 7;   // length of Gnomon
-    let maxShadow    = 7 * gnomonLen;    // Maximal length of Gnomon's shadow in "Gnomon's" units
+    /////////////////////// PARAMETERS FOR SUN DIAL TABLES //////////////////////////////////////////////////////////
+    let minSunHeight = 5;                           // Minimal height of sun above horizon in degrees for calculation
+    //let gnomonLen    = 7;                         // length of Gnomon in some units
+    let gnomonLen    = +eyeHeight;                   // length of Gnomon in some units
+    let maxShadow    = 7 * gnomonLen;               // Maximal length of Gnomon's shadow in "Gnomon's" units
+    let numDays = moment(sMoment ).isLeapYear() ? 366: 365;
+    let mStep = 6;                                  // Each [mStep] MINUTES of each calculating hours
+    let arrLen1 = numDays*(stopH-startH + 1);       //Analemmas array
+    let arrLen2 = 12*(stopH-startH)*60/mStep + 12;  //Hour's lines array
+    /////////////////////// PARAMETERS FOR SUN DIAL TABLES //////////////////////////////////////////////////////////
 
     let AoA1stdays = new Array(arrLen1 + 1);  // +1 for Headers
     //Header
@@ -768,12 +773,13 @@ function sunDials2AoA(){
         }
         aDay = sYear + "-" + sMonth + "-" + sDay;
     }
-    let result = new Array(3);
+    let result = new Array(4);
     result[0] = AoA1stdays;
     result[1] = AoAHlines;
-    let arr1 = AoAHlines.slice(0);                // clone of AoAHlines
-    arr1.splice(0,1);           //remove header
-    result[2] = AoA1stdays.concat(arr1);
+    let arr1 = AoAHlines.slice(0);               // clone of AoAHlines
+    arr1.splice(0,1);           // remove header
+    result[2] = AoA1stdays.concat(arr1);         // Array of concatenated AoA1stdays & AoAHlines
+    result[3] = [B, L, dUTCval, gnomonLen];      // Array of calculation parameters
 
     return result;
 

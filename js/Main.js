@@ -40,7 +40,7 @@
     timeSec.value = "00";
     tempC.value = "20";
     pressP.value = "756";
-    eyeHeight.value = "1.68";
+    eyeHeight.value = "1.68";          // THIS WILL BE LENGTH OF GNOMON
 
     let sunHeight = document.getElementById("sunHeight");
     let sunAzimuth = document.getElementById("sunAzimuth");

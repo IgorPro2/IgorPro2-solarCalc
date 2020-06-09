@@ -317,6 +317,10 @@
 
     <div id="topRightGraphicsButtons" class="graphicsBtnGroup btn-group">
 
+        <button class= "btn btn-sm btn-light mx-1"  onclick=Utils.showGraphic2(); aria-label="show">
+            <span aria-hidden="true">{{showSunDial}}</span>
+        </button>
+
         <div class="dropdown">
             <button class="btn btn-primary btn-sm dropdown-toggle mx-1" type="button" id="dropdownMenuOutput"
                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -326,7 +330,6 @@
                 <button class="dropdown-item" type="button" data-action="dayTable">{{thisDayTable}}</button>
                 <button class="dropdown-item" type="button" data-action="yearTable">{{thisYearTable}}</button>
                 <button class="dropdown-item" type="button" data-action="sunDial">{{sunDial}}</button>
-                <button class="dropdown-item" type="button" data-action="showSunDial">{{showSunDial}}</button>
             </div>
         </div>
 
@@ -367,9 +370,6 @@
             <span aria-hidden="true">{{dim3BtLb}}</span>
         </button>
 
-        <button class="btn btn-sm btn-light hiddenButton mx-1" onclick=Utils.showGraphic(); aria-label="show">
-            <span aria-hidden="true">{{nowBtLb}}</span>
-        </button>
 
         <button type="button" class="btn btn-sm btn-light mx-1" onclick=Utils.show3Month(); aria-label="show">
             <span aria-hidden="true">{{month3BtLb}}</span>

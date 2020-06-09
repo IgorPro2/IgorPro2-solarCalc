@@ -975,7 +975,13 @@
         var tic2, ox2, oy2, xscl, yscl, s2, lx2, ly2, less2, hFont2, time;
         var width, height, tx, ty, txp, typ, month, hr;
         var arr = Utils.sunDials2AoA();               //Return Array of  Arrays of SunDial results
-        var ws1 = arr[0], i;
+        var calcParam = arr[3], i;
+        var B = Utils.grad_number2text(calcParam[0], 0);
+        var L = Utils.grad_number2text(calcParam[1], 0);
+        var dUTC = Utils.grad_number2text(calcParam[2], 2,"h");
+        var gnomLen = calcParam[3];
+        var ws1 = arr[0];       //Analemmas
+        var ws2 = arr[1];       //6 minute's day lines
 
         for (i=1; i < ws1.length-1 ; i++){
             if (ws1[i][6] < minx) {minx = ws1[i][6]}        // ws1[i][6] x dimentions
@@ -999,29 +1005,36 @@
         }
         paper.project._activeLayer.clear();
 
+
         /////////////////////////////////////////////////      DEFINE SUNDIAL DRAW DIMENSIONS          /////////////////////////////////
         paper.view.viewSize = new Size(window.innerWidth, window.innerHeight);
         width = paper.view.viewSize.width;
         height = paper.view.viewSize.height;
-        var col, r=0, g=0 , b=0;
-        var mcol = ['blue', 'grey', 'green', 'red', 'yellow', 'blue', 'grey', 'green', 'red', 'yellow','blue', 'grey'];
-        // col = new Color(0, 1, 1);
-        // var mcol = [col];
-        // for(i=0; i<11; i++){
-        //     r =  0.1*i;
-        //     g =  0.1*i;
-        //     b =  0.1*i;
-        //     col = new Color(r, g, b);
-        //     mcol.push(col);
-        // }
+        from = new Point(gap, gap);   // BOUNDARY RECT EMPTY
+        to = new Point(width - gap, height - gap);
+        boundRect = new Path.Rectangle(from, to);
+        boundRect.strokeColor = fontAxisColor; //whiteColor;
+        boundRect.fillColor = whiteColor;
+        var col, r=0, g=0 , b=0, labelside;
+        var mcol = ['#6307FF','#0A9CFF','#0919FF','#2E2E2E',
+                    '#FF951D','#0CEB13','#FFCD04','#FF0507',
+                    '#FF0BA9','#FF02E4','#FF8D07','#A994FF','#CB7CFF'];
+        var hrLet = ['J','F','M','A','M','J','J','A','S','O','N','D'];
+        var hrB = Math.abs(calcParam[0]) < 24? 8: 9;        //hour for month labels depends of Latitude
 
         xscl = (width - 2 * gap) / dx2;    // scale on axis X
         yscl = (height - 2 * gap) / dy2;   // scale on axis Y
         if (xscl > yscl) less2 = yscl;     // Take smallest scale for proportional draw (the same scale on both axises)
         else less2 = xscl;
-        s2 = less2;                        // s - is a scale: Pixels amount in one Degree°
-        ox2 = width / 2;                   // Origin of X axis in pixels
-        oy2 = height / 2;                  // Origin of Y axis in pixels
+        s2 = less2;                        // s - is a scale: Pixels amount in 1 gnomon
+        //console.log("scale="+s2);
+        ox2 = width / 2;                   // Origin of X axis in pixels and GNOMON point
+        oy2 = height / 2;                  // Origin of Y axis in pixels and GNOMON point
+        var gap1 = height/2 - maxy*s2;           // gap from maxy to y_0 of screen
+        var gap2 = height/2 + miny*s2;           // gap from miny to y_height of screen, assume miny negative
+        if (gap1 > gap2) {oy2 = oy2 - (gap1-gap2)/2 + 2*gap}    //shift oy2 to the center of data
+        else {oy2 = oy2 + (gap2-gap1)/2 - 2*gap}
+
         lx2 = dx2 * s2 / 2;                // Half length of X axis in pixels (the same scale on both axises)
         ly2 = dy2 * s2 / 2;                // Half length of Y axis in pixels (the same scale on both axises)
         tic2 = less2;                      // length of tics on axis
@@ -1030,16 +1043,14 @@
         if (hFont2 < 12) hFont2 = 12;
 
         //////////////////////////////////////      DRAW CADRAN's ANNALEMAS
-        var pathA = new Path({strokeColor: mcol[0]});
-        var grd="", min="", sec="";
-        var hr1 = ws1[1][1];
-        var month1 = ws1[1][9];
-        hr1 = hr1.split(":");
-        grd= hr1[0];
-        min= hr1[1];
-        sec= hr1[2];
-        hr1 = Utils.grad_textGMS2number(grd, min, sec);
-
+        var grd="", min="", sec="", pnt, pRadius=1, aDay;
+        time = ws1[1][1].split(":");
+        grd= time[0];
+        min= time[1];
+        sec= time[2];
+        //var hr1 = Utils.grad_textGMS2number(grd, min, sec);
+        var sideBshow = B.substr(0,1) !== "-" ? 6: 12;       // Northern hemisphere show hours near near june, Southern near december.
+        // Analemmas LOOP
         for (i=1; i < ws1.length-1 ; i++){
             month = ws1[i][9];
             time = ws1[i][1].split(":");
@@ -1047,38 +1058,164 @@
             min= time[1];
             sec= time[2];
             hr = Utils.grad_textGMS2number(grd, min, sec);
+            aDay = moment(ws1[i][0]).format("D");
 
             tx = ws1[i][6];
             ty = ws1[i][7];
-            txp = ox2   + tx  * s2;
-            typ = oy2 + ly2/4 - ty  * s2;
-            //console.log(i, tm, month, tx, ty );
-            if (hr === hr1) {
-                if (tx !== 0 && ty !== 0 )   {
-                    if (month === month1) {
-                        pathA.add(new Point(txp, typ));
-                    }
-                    else{
-                        pathA.add(new Point(txp, typ));
-                        month1 = month;
-                        pathA = new Path({strokeColor: mcol[month]}); //next month starts
-                        pathA.add(new Point(txp, typ));
-                    }
+            txp = ox2  + tx  * s2;
+            typ = oy2  - ty  * s2;
+            //console.log(i, month, hr, tx.toFixed(2), ty.toFixed(2), txp.toFixed(0), typ.toFixed(0), mcol[month] );
+            if (tx !== 0 && ty !== 0 )   {
+                pnt = new Shape.Circle({
+                            center: new Point(txp, typ),
+                            radius: pRadius,
+                            fillColor: mcol[month],      //draw definite color each month
+                    });
+                if ( month === sideBshow && +aDay === 21) {         //Starts new hour. Print HOUR value near equinox (summer B=N or winter B=S)
+                    if (sideBshow === 6 ) {labelside = 4*tic}
+                    else {labelside = -4*tic}                       // Southern hemisphere labels upstairs
+                    //hr1 = hr;
+                    text = new PointText({
+                        point: [txp-tic, typ+labelside],
+                        content: hr,
+                        fillColor: fontAxisColor,
+                        fontFamily: axisFont,
+                        fontWeight: axisFontWeight,
+                        fontSize: hFont*1.2
+                    });
                 }
-            }
-            else {             // no lines between hours analemma
-                hr1 = hr;
-                pathA = new Path({strokeColor: mcol[0]}); //next hour starts
-                if (tx !== 0 && ty !== 0 )   {
-                    pathA.add(new Point(txp, typ));
+                if (+aDay === 1 && hr === hrB) {      //New month starts, print Letter on 9hrs
+                    text = new PointText({
+                        point: [txp+tic, typ],
+                        content: hrLet[month-1],
+                        fillColor: mcol[month],
+                        fontFamily: axisFont,
+                        fontWeight: axisFontWeight,
+                        fontSize: hFont*1.2
+                    });
+
                 }
+
             }
         }
-        var curPoint = new paper.Point(ox2, oy2 + ly2/4);
-        var circle2 = new Shape.Circle({center: curPoint, radius: 6, fillColor: sunColor, strokeColor: fontSunColor});
+        //Lines&Labels
+        var gnomPointC = new paper.Point(ox2, oy2 ); //GNOMON center
+        var circle2;
+        circle2 = new Shape.Circle({center: gnomPointC, radius: 6, fillColor: sunColor, strokeColor: fontSunColor});
+        circle2 = new Shape.Circle({center: gnomPointC, radius: 1, fillColor: fontSunColor, strokeColor: fontSunColor});
+        //GNOMON length
+        var tmp = new Point(gnomLen/2*s2, 0);
+        var ticy = new Point(0, tic);
+        var ticf = new Point(0, 1.5*tic);
+        var gnomPoint = new Point(90, 30);
+        circle2 = new Shape.Circle({center: gnomPoint, radius: 6, fillColor: sunColor, strokeColor: fontSunColor});
+        circle2 = new Shape.Circle({center: gnomPoint, radius: 1, fillColor: fontSunColor, strokeColor: fontSunColor});
+        var gnomStart = gnomPoint - tmp;
+        var gnomEnd =   gnomPoint + tmp;
+        var gnom = new Path.Line(gnomStart ,gnomEnd);
+        //GNOMON tics
+        var gnomt1 = new Path.Line(gnomStart-ticy , gnomStart+ticy);
+        var gnomt2 = new Path.Line(gnomEnd-ticy , gnomEnd+ticy);
+        gnom.strokeColor = 'red'; gnomt1.strokeColor = 'red'; gnomt2.strokeColor = 'red';
+        // Nort Arrows
+        var lineN = new Path.Line(new Point(ox2 , 4*gap) , new Point(ox2 , 4*gap + gnomLen*s2) );
+        lineN.strokeColor = 'red';
+        lineN = new Path.Line(new Point(ox2 , 4*gap) , new Point(ox2-gap , 8*gap) );
+        lineN.strokeColor = 'red';
+        lineN = new Path.Line(new Point(ox2 , 4*gap) , new Point(ox2+gap , 8*gap) );
+        lineN.strokeColor = 'red';
+        // South Arrows
+        lineN = new Path.Line(new Point(ox2 , height - 4*gap) , new Point(ox2 , height - 4*gap - gnomLen*s2) );
+        lineN.strokeColor = 'red';
+        lineN = new Path.Line(new Point(ox2 , height - 4*gap) , new Point(ox2-gap , height - 8*gap) );
+        lineN.strokeColor = 'red';
+        lineN = new Path.Line(new Point(ox2 , height - 4*gap) , new Point(ox2+gap , height -  8*gap) );
+        lineN.strokeColor = 'red';
+        text = new PointText({
+            point: new Point(ox2 , height - 2*gap),
+            content: window.locales['south'],
+            fillColor: fontSunColor,
+            fontFamily: axisFont,
+            fontWeight: axisFontWeight,
+            fontSize: hFont,
+            justification: 'center'
+        });
+        text = new PointText({
+            point: new Point(ox2 , 3*gap),
+            content: window.locales['north'],
+            fillColor: fontSunColor,
+            fontFamily: axisFont,
+            fontWeight: axisFontWeight,
+            fontSize: hFont,
+            justification: 'center'
+        });
+        var gl =  window.locales['gnomon'] + "=" + gnomLen.toFixed(2);
+        text = new PointText({
+            point: gnomPoint - ticf,                       //gnomStart - tic,
+            content: gl,
+            fillColor: fontSunColor,
+            fontFamily: axisFont,
+            fontWeight: axisFontWeight,
+            fontSize: hFont,
+            justification: 'center'
+        });
+        text = new PointText({
+            fillColor: fontAxisColor,
+            fontFamily: sunFont,
+            fontWeight: axisFontWeight,
+            fontSize: hFont,
+            point: [20, 50],
+            content: window.locales['latLb'] + B
+        });
+        text = new PointText({
+            fillColor: fontAxisColor,
+            fontFamily: sunFont,
+            fontWeight: axisFontWeight,
+            fontSize: hFont,
+            point: [20, 70],
+            content: window.locales['lonLb'] + L
+        });
+        text = new PointText({
+            fillColor: fontAxisColor,
+            fontFamily: sunFont,
+            fontWeight: axisFontWeight,
+            fontSize: hFont,
+            point: [20, 90],
+            content: window.locales['dUTCLb'] + ": "+dUTC
+        });
+        text = new PointText({
+            fillColor: fontAxisColor,
+            fontFamily: sunFont,
+            fontWeight: axisFontWeight,
+            fontSize: hFont,
+            point: [20, 110],
+            content: window.locales['year'] + sYear
+        });
+
+        //6 minute's day lines LOOP
+        for (i=1; i < ws2.length-1 ; i++){
+            month = ws2[i][9];
+            // time = ws1[i][1].split(":");
+            // grd= time[0];
+            // min= time[1];
+            // sec= time[2];
+            // hr = Utils.grad_textGMS2number(grd, min, sec);
+            // aDay = moment(ws1[i][0]).format("D");
+
+            tx = ws2[i][6];
+            ty = ws2[i][7];
+            txp = ox2  + tx  * s2;
+            typ = oy2  - ty  * s2;
+            //console.log(i, month, hr, tx.toFixed(2), ty.toFixed(2), txp.toFixed(0), typ.toFixed(0), mcol[month] );
+            if (tx !== 0 && ty !== 0 )   {
+                pnt = new Shape.Circle({
+                    center: new Point(txp, typ),
+                    radius: pRadius,
+                    fillColor: mcol[month],      //draw definite color each month
+                });
+            }
+        }
 
 
     };
-
-
 })();
