@@ -18,6 +18,7 @@
     var timeMin = document.getElementById("timeMin");
     var timeSec = document.getElementById("timeSec");
     var dUTC = document.getElementById("dUTC");
+
     var sDay = dateDay.value;
     var sMonth = dateMonth.value;
     var sYear = dateYear.value;
@@ -793,7 +794,7 @@
             //console.log('diff='+diff.toFixed(1));
             xt2 = xt1;
             if (diff < width/2 && diff < height/2) {
-                    pathY.add(new Point(xt1, yt1));
+                pathY.add(new Point(xt1, yt1));
             } else {
                 pathY = new Path({strokeColor: yearPathColor});
             }
@@ -970,7 +971,7 @@
     };
 
     ///////////////////////////////////////////////////////  DRAWING SUNDIALS   ///////////////////////////////
-    window.Utils.showGraphic2 = function (redraw) {
+    window.Utils.drawSunDial = function () {
         var minx=0, maxx=0, miny=0, maxy=0;
         var tic2, ox2, oy2, xscl, yscl, s2, lx2, ly2, less2, hFont2, time;
         var width, height, tx, ty, txp, typ, month, hr;
@@ -983,11 +984,11 @@
         var ws1 = arr[0];       //Analemmas
         var ws2 = arr[1];       //6 minute's day lines
 
-        for (i=1; i < ws1.length-1 ; i++){
+        for (i=1; i < ws1.length ; i++){
             if (ws1[i][6] < minx) {minx = ws1[i][6]}        // ws1[i][6] x dimentions
             if (ws1[i][6] > maxx) {maxx = ws1[i][6]}
         }
-        for (i=1; i < ws1.length-1 ; i++){
+        for (i=1; i < ws1.length ; i++){
             if (ws1[i][7] < miny) {miny = ws1[i][7]}        // ws1[i][7] y dimentions
             if (ws1[i][7] > maxy) {maxy = ws1[i][7]}
         }
@@ -1017,9 +1018,9 @@
         boundRect.fillColor = whiteColor;
         var col, r=0, g=0 , b=0, labelside;
         var mcol = ['#6307FF','#0A9CFF','#0919FF','#2E2E2E',
-                    '#FF951D','#0CEB13','#FFCD04','#FF0507',
-                    '#FF0BA9','#FF02E4','#FF8D07','#A994FF','#CB7CFF'];
-        var hrLet = ['J','F','M','A','M','J','J','A','S','O','N','D'];
+            '#FF951D','#0CEB13','#FF4E04','#FF0507',
+            '#FF0BA9','#FF02E4','#FF8D07','#A994FF','#CB7CFF'];
+        var mnLet = ['J','F','M','A','M','J','J','A','S','O','N','D'];
         var hrB = Math.abs(calcParam[0]) < 24? 8: 9;        //hour for month labels depends of Latitude
 
         xscl = (width - 2 * gap) / dx2;    // scale on axis X
@@ -1043,7 +1044,7 @@
         if (hFont2 < 12) hFont2 = 12;
 
         //////////////////////////////////////      DRAW CADRAN's ANNALEMAS
-        var grd="", min="", sec="", pnt, pRadius=1, aDay;
+        var grd="", min="", sec="", pnt, pRadius=1, aDay, aMonth;
         time = ws1[1][1].split(":");
         grd= time[0];
         min= time[1];
@@ -1051,7 +1052,7 @@
         //var hr1 = Utils.grad_textGMS2number(grd, min, sec);
         var sideBshow = B.substr(0,1) !== "-" ? 6: 12;       // Northern hemisphere show hours near near june, Southern near december.
         // Analemmas LOOP
-        for (i=1; i < ws1.length-1 ; i++){
+        for (i=1; i < ws1.length ; i++){
             month = ws1[i][9];
             time = ws1[i][1].split(":");
             grd= time[0];
@@ -1059,6 +1060,7 @@
             sec= time[2];
             hr = Utils.grad_textGMS2number(grd, min, sec);
             aDay = moment(ws1[i][0]).format("D");
+            aMonth = moment(ws1[i][0]).format("MMM");
 
             tx = ws1[i][6];
             ty = ws1[i][7];
@@ -1067,10 +1069,10 @@
             //console.log(i, month, hr, tx.toFixed(2), ty.toFixed(2), txp.toFixed(0), typ.toFixed(0), mcol[month] );
             if (tx !== 0 && ty !== 0 )   {
                 pnt = new Shape.Circle({
-                            center: new Point(txp, typ),
-                            radius: pRadius,
-                            fillColor: mcol[month],      //draw definite color each month
-                    });
+                    center: new Point(txp, typ),
+                    radius: pRadius,
+                    fillColor: mcol[month],      //draw definite color each month
+                });
                 if ( month === sideBshow && +aDay === 21) {         //Starts new hour. Print HOUR value near equinox (summer B=N or winter B=S)
                     if (sideBshow === 6 ) {labelside = 4*tic}
                     else {labelside = -4*tic}                       // Southern hemisphere labels upstairs
@@ -1081,17 +1083,17 @@
                         fillColor: fontAxisColor,
                         fontFamily: axisFont,
                         fontWeight: axisFontWeight,
-                        fontSize: hFont*1.2
+                        fontSize: hFont
                     });
                 }
                 if (+aDay === 1 && hr === hrB) {      //New month starts, print Letter on 9hrs
                     text = new PointText({
-                        point: [txp+tic, typ],
-                        content: hrLet[month-1],
+                        point: [txp, typ],
+                        content: aMonth,            // mnLet[month-1],
                         fillColor: mcol[month],
                         fontFamily: axisFont,
                         fontWeight: axisFontWeight,
-                        fontSize: hFont*1.2
+                        fontSize: hFont
                     });
 
                 }
@@ -1149,7 +1151,7 @@
             fontSize: hFont,
             justification: 'center'
         });
-        var gl =  window.locales['gnomon'] + "=" + gnomLen.toFixed(2);
+        var gl =  window.locales['gnomon']              //+ "=" + gnomLen.toFixed(2);
         text = new PointText({
             point: gnomPoint - ticf,                       //gnomStart - tic,
             content: gl,
@@ -1193,20 +1195,13 @@
         });
 
         //6 minute's day lines LOOP
-        for (i=1; i < ws2.length-1 ; i++){
+        for (i=1; i < ws2.length ; i++){
             month = ws2[i][9];
-            // time = ws1[i][1].split(":");
-            // grd= time[0];
-            // min= time[1];
-            // sec= time[2];
-            // hr = Utils.grad_textGMS2number(grd, min, sec);
-            // aDay = moment(ws1[i][0]).format("D");
 
             tx = ws2[i][6];
             ty = ws2[i][7];
             txp = ox2  + tx  * s2;
             typ = oy2  - ty  * s2;
-            //console.log(i, month, hr, tx.toFixed(2), ty.toFixed(2), txp.toFixed(0), typ.toFixed(0), mcol[month] );
             if (tx !== 0 && ty !== 0 )   {
                 pnt = new Shape.Circle({
                     center: new Point(txp, typ),
@@ -1218,4 +1213,125 @@
 
 
     };
+
+    window.Utils.drawShadow = function (options) {
+        var AoAxyz = options.AoA;
+        var sMoment = options.aMoment;
+        var lat = options.Latitude;
+        var lon = options.Longitude;
+        var dUTCval= options.dUTCval;
+        var temp = options.Temperature;
+        var press = options.Pressure;
+        //sMoment = sYear + "-" + sMonth + "-" + sDay + " " + ht + ":" + mt + ":" + st;
+        //AoAxyz =[ [5342.63,4624.05,6.00],[5349.48,4622.49,6.00],[5348.64,4619.01,6.00],[5349.72,4618.77,6.00],[5348.85,4615.02,6.00],[5347.76,4615.19,6.00],[5346.96,4611.76,6.00],[5340.15,4613.37,6.00],[5345.89,4623.33,10.00],[5343.46,4612.57,10.00],[5349.31,4616.99,10.00],[5344.77,4617.92,10.00] ];
+        var resArr, shadArr, shdsArr, objArr;
+        var  gap = 8, scale, tx, ty, txp, typ, ox, oy, txsp, tysp;
+        var Size1 = AoAxyz.length;
+
+        resArr =  window.Utils.scaleAoA4Drawing(AoAxyz, gap);
+        objArr =  resArr[1];
+        shadArr = window.Utils.sunShadowMaker(objArr, sMoment, lat, lon, dUTCval, temp, press );
+        resArr =  window.Utils.scaleAoA4Drawing(shadArr, gap);
+        scale  =  resArr[0];
+        shdsArr =  resArr[1];
+
+
+        //////////////////////////////////////      CLEAR ALL LAYERS BEFORE DRAWING
+        var shadowLayer = new Layer();
+        shadowLayer.name = "shadows";
+        var layers = paper.project.layers;
+        for (i = 0; i < layers.length - 1; i++) {
+            layers[i].clear();
+            // console.log("Layer2Clear= "+layers[i].name);
+        }
+        paper.project._activeLayer.clear();
+
+        paper.view.viewSize = new Size(window.innerWidth, window.innerHeight);
+        width = paper.view.viewSize.width;
+        height = paper.view.viewSize.height;
+        from = new Point(gap, gap);   // BOUNDARY RECT EMPTY
+        to = new Point(width - gap, height - gap);
+        boundRect = new Path.Rectangle(from, to);
+        boundRect.strokeColor = fontAxisColor; //whiteColor;
+        boundRect.fillColor = whiteColor;
+        ox = gap;                   // Origin of X axis in pixels
+        oy = height-gap;                  // Origin of Y axis in pixels
+
+        var pathObj = new Path({strokeColor: 'red'});
+        var pathShad = new Path({strokeColor: 'black'});
+
+        for (i=0; i < Size1 ; i++) {
+
+            tx = shdsArr[i][0];
+            ty = shdsArr[i][1];
+            txsp = ox + tx * scale;         //end of shadows
+            tysp = oy - ty * scale;
+            var ptsh = new Point(txsp, tysp);
+
+            tx = objArr [i][0];
+            ty = objArr [i][1];
+            txp = ox + tx * scale;          //objects
+            typ = oy - ty * scale;
+            var ptob = new Point(txp, typ);
+
+            pathObj.add( ptob );
+            //pathShad.add( ptsh );
+
+            var pathConn = new Path.Line(ptob, ptsh);
+            pathConn.strokeColor = 'blue';
+        }
+    };
+
+    window.Utils.scaleAoA4Drawing = function (AoAxyz, gap) {
+        // Takes:  1. AoAxyz - AoA of [ [x,y,z], [x,y,z] ... ] where x, y are object's Easting&Northing and z is object's height.
+        //         2. gap - amount of pixels between viewSize border and drawing
+        // Return: 1. AoA of [ [xc,yc,z], [xc,yc,z] where xc,yc Easting&Northing reduced to it's minimal values
+        //         2. Scale for multiplying xc,yc for correct drawing on current paper.view.viewSize
+
+        var minx=AoAxyz[0][0], maxx=AoAxyz[0][0];
+        var miny=AoAxyz[0][1], maxy=AoAxyz[0][1];
+        var xscl, yscl, scale;
+        var width, height;
+        var totalSize=0;
+        for (var i=0; i<AoAxyz.length; i++)
+            totalSize += AoAxyz[i].length;
+        var Size1 = AoAxyz.length;
+        var sclArr = new Array(Size1);
+        var resArr = new Array(2);
+
+        for (i=0; i < Size1 ; i++){
+            if (AoAxyz[i][0] < minx) {minx = AoAxyz[i][0] }        // ws1[i][6] x dimentions
+            if (AoAxyz[i][0]  > maxx) {maxx = AoAxyz[i][0] }
+        }
+        for (i=0; i < Size1 ; i++){
+            if (AoAxyz[i][1] < miny) {miny = AoAxyz[i][1]}        // ws1[i][7] y dimentions
+            if (AoAxyz[i][1] > maxy) {maxy = AoAxyz[i][1]}
+        }
+        var dx = maxx-minx;                       //range on axis x at SunDials
+        var dy = maxy-miny;                       //range on axis y at SunDials
+
+        paper.view.viewSize = new Size(window.innerWidth, window.innerHeight);
+        width = paper.view.viewSize.width;
+        height = paper.view.viewSize.height;
+
+        xscl = (width - 2 * gap) / dx;    // scale on axis X
+        yscl = (height - 2 * gap) / dy;   // scale on axis Y
+        if (xscl > yscl) scale = yscl;     // Take smallest scale for proportional draw (the same scale on both axises)
+        else scale = xscl;
+
+        for (i=0; i < Size1 ; i++){
+            var rowArr = new Array(3);
+            rowArr[0] = AoAxyz[i][0] - minx;
+            rowArr[1] = AoAxyz[i][1] - miny;
+            rowArr[2] = AoAxyz[i][2];
+            sclArr[i] = rowArr;
+        }
+        resArr[0] = scale;          //  scale: Pixels amount in 1 x,y unit
+        resArr[1] = sclArr;
+
+        return resArr;
+    };
+
+
+
 })();

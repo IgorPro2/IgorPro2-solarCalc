@@ -1,5 +1,5 @@
 /////////////////////// BUGS & IMPROVEMENT
-
+1/ for( i=0; i < Arr.length-1; i++) change on Arr.length !!!
 
 8. Return Russian Help, and how? - variable like buttuons name!
 

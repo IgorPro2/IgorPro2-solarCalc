@@ -8,7 +8,7 @@ function Solar(options) {
     let timeUTC = options.UTCTime;                 //Decimal hours    Time for position calculation. MUST BE IN UTC!!!
     let dUTCval = options.dUTC;                    //Decimal hours =  (LocalTime - UTCTime)
     let tempC = options.Temp;                      //Ambient temperature in Celsius degrees
-    let pressP = options.Press;                    //Ambient pressure in Hmm
+    let pressP = options.Press;                    //Ambient pressure in Hgmm
     let isBeforeNoon = options.isAM;               //Boolean true to find Time is BeforeNoon
     let givenH = options.sunHeight;                // Given sun height Decimal degrees
     let givenA = options.sunAzimuth;               // Given sun azimuth Decimal degrees
@@ -38,8 +38,8 @@ function Solar(options) {
         let EphArr = Utils.ReadDataFromResourceString(sDay, sMonth, sYear, timeUTC, Longitude, dUTCval);
         Declination = EphArr[11];  Equation = EphArr[12];   SunRadius = EphArr[13];
 
-        let Results = new Array(14);
-        let tT, p, p1, Ar, SunA, SunH, SunHcor, aRef = 0.0, Parallax, HzParallax;
+        let Results = new Array(15);
+        let tT, p, p1, Ar, SunA, SunH, SunHcor, aRef = 0.0, Parallax, HzParallax, upperEdge;
         let Res = new Array(3);
         // Hour Angle of Sun
         tT = (timeUTC + Equation) * 15 + Longitude;
@@ -69,13 +69,17 @@ function Solar(options) {
 
         SunH = Utils.toDegrees(SunH);
         SunHcor = SunH;
+        upperEdge = SunH + SunRadius;
 
         //Apply refraction to SunHeight
         let TC=+tempC, Pmm=+pressP;
         if ((TC !== 0) && (Pmm !== 0)) {
             Res = Utils.getRefractionTP(SunHcor, SunRadius, TC, Pmm);
             aRef = Res[0];
-            SunHcor = SunHcor + aRef;        //Sun height corrected for Refraction
+            SunHcor = SunHcor + aRef;        //Sun's center height corrected for Refraction
+            Res = Utils.getRefractionTP(upperEdge, SunRadius, TC, Pmm);
+            aRef = Res[0];
+            upperEdge = upperEdge + aRef;   //Sun's upperEdge height corrected for Refraction
         }
 
         ///////////////Return values ALL in DECIMAL DEGREES at given UTCTime //////////////////////
@@ -92,9 +96,10 @@ function Solar(options) {
 
         Results[9] =  Utils.toDegrees(Declination);
         Results[10] = Utils.toDegrees(Equation);
-        Results[11] = timeUTC;                        //UTC time in DECIMAL HOURS
+        Results[11] = timeUTC;                        //calculation moment UTC time in DECIMAL HOURS
         Results[12] = Longitude;
         Results[13] = Latitude;
+        Results[14] = upperEdge;            //Sun's upperEdge height corrected for Refraction
 
         return Results;
     };

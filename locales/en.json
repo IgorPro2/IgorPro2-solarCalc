@@ -98,6 +98,7 @@
   "gnomon": "Gnomon's length",
   "year": "Year: ",
   "north": "North",
-  "south": "South"
+  "south": "South",
+  "shadowMap": "Object's shadow"
 
 }

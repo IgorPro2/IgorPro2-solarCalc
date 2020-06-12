@@ -169,7 +169,7 @@ function dataDeliveryDay2AoA() {
     let rowArray, EphArr, D, E, R;
     let tableAoA = new Array(720);
 
-        //Header
+    //Header
     rowArray = new Array(8);
     rowArray[0] = window.locales["local"] + window.locales["dateLb"] + window.locales["timeLb"] ;
     rowArray[1] = window.locales["htRadioLb"];
@@ -572,7 +572,7 @@ function sunDials2AoA(){
             // Calculate orthogonal 3d coordinates of sun, assume that sun is on sphere with radius of 100 gnomons
             // Assume that Sun'd latitude is Height of Suns UPPER EDGE
             // Assume that Sun'd longitude is (360-SunAzimuth) count it counterclockwise from NORTH AXIS
-            shadArr = Sphere2Decart(gnomonLen*100, upperEdge, (360-sunAz));
+            shadArr = Sphere2Decart(gnomonLen*10000, upperEdge, (360-sunAz));
 
             if (shadArr[2] >= 0) {
                 //Пересечение прямой и плоскости  "Ефимов Н.В. Курс Аналитической геометрии" стр.221,223
@@ -619,20 +619,20 @@ function sunDials2AoA(){
         aDay = sYear + "-" + sMonth + "-" + sDay;
 
         if (sYear !== curYear){  //after 31-dec jump to next year
-           hh = hh + 1;
-           sMoment = curYear + "-" + "01" + "-" + "01" + " " + ht + ":" + mt + ":" + st;         //start from 01 Jan
-           aMoment = moment(sMoment, "");
-           sYear =   moment(aMoment).format('YYYY');
-           sMonth =  moment(aMoment).format('MM');
-           sDay =    moment(aMoment).format('DD');
-           ht =      moment(aMoment).format('HH');
-           mt =      moment(aMoment).format('mm');
-           st =      moment(aMoment).format('ss');
-           sMoment = sYear + "-" + sMonth + "-" + sDay + " " + ht + ":" + mt + ":" + st;
-           aDay = sYear + "-" + sMonth + "-" + sDay;
-           localTime = hh+ mm/60+ ss/3600;
-           utcTime = (localTime - dUTCval);
-           if (hh > stopH){ break }
+            hh = hh + 1;
+            sMoment = curYear + "-" + "01" + "-" + "01" + " " + ht + ":" + mt + ":" + st;         //start from 01 Jan
+            aMoment = moment(sMoment, "");
+            sYear =   moment(aMoment).format('YYYY');
+            sMonth =  moment(aMoment).format('MM');
+            sDay =    moment(aMoment).format('DD');
+            ht =      moment(aMoment).format('HH');
+            mt =      moment(aMoment).format('mm');
+            st =      moment(aMoment).format('ss');
+            sMoment = sYear + "-" + sMonth + "-" + sDay + " " + ht + ":" + mt + ":" + st;
+            aDay = sYear + "-" + sMonth + "-" + sDay;
+            localTime = hh+ mm/60+ ss/3600;
+            utcTime = (localTime - dUTCval);
+            if (hh > stopH){ break }
         }
     }
 
@@ -708,7 +708,7 @@ function sunDials2AoA(){
             // Calculate orthogonal 3d coordinates of sun, assume that sun is on sphere with radius of 100 gnomons
             // Assume that Sun'd latitude is Height of Suns UPPER EDGE
             // Assume that Sun'd longitude is (360-SunAzimuth) count it counterclockwise from North axis
-            shadArr = Sphere2Decart(gnomonLen*100, upperEdge, (360-sunAz));
+            shadArr = Sphere2Decart(gnomonLen*10000, upperEdge, (360-sunAz));
             if (shadArr[2] >= 0) {
                 //Пересечение прямой и плоскости  "Ефимов Н.В. Курс Аналитической геометрии" стр.221,223
                 //координаты пересечения прямой проходящей через точки (0,0,Lgnm)(x2,y2,z2) и плоскости z=0
@@ -737,7 +737,7 @@ function sunDials2AoA(){
             rowArray[6] = 0;
             rowArray[7] = 0;
             rowArray[8] = 0;
-            }
+        }
         rowArray[9] = +sMonth;   //month number
 
         AoAHlines[i] = rowArray;
@@ -860,9 +860,109 @@ function DecartRotation(rx, ry, rz, x, y, z) {
 
 }
 
+function sunShadowMaker(AoAxyz, sMoment, lat, lon, dUTC, temp, press ){
+// This function is intended for shadow calculation on one land parcel.
+// We assume that on horizontal plane exist some point objects. Distance between outside objects less than 1 nautical mile
+// Function does:
+// Takes: 1. AoAxyz - AoA of [ [x,y,z], [x,y,z] ... ] where x, y are object's Easting, Northing and z is object's height.
+//       2. sMoment - Date&Time string "YYYY-MM-DD-hh-mm-ss
+//       3. lat     - Latitude in decimal degrees  (of central point of parcel)
+//       4. lon     - Longitude in decimal degrees (of central point of parcel)
+//       5. dUTC    - difference between  LocalTime and UTC in decimal hours
+//       6. temp    - ambient temperature in Celsius decimal degrees
+//       7. press   - atmosphere's pressure in Hgmm
+// Returns: AoA of  [ [x,y,0], [x,y,0] ... ]      where x, y are Easting, Northing of end of each object's shadow.
+// Each object drops this shadow from SUN at given Date&Time.
+    let nn = AoAxyz.length;
+    let minSunHeight = 5;                           // Minimal height of sun above horizon in degrees for calculation
+    let options, solar, resArr, Ht0, Az0, i, xs, ys, zs, xp, yp, zp, lp, tt, sunHt, sunAz, rowArray, gnomonLen, maxlen =0;
+    let resAoA = new Array(nn);
+
+    for(i=0; i < nn; i++){
+        gnomonLen = AoAxyz[i][2];
+        if (gnomonLen > maxlen) {maxlen = gnomonLen}
+    }
+    let maxShadow    = 7 * maxlen;       // Maximal length of Gnomon's shadow in "Gnomon's" units
+
+    let aMoment = moment(sMoment, "");
+    let sYear =   moment(aMoment).format('YYYY');
+    let sMonth =  moment(aMoment).format('MM');
+    let sDay =    moment(aMoment).format('DD');
+    let ht =      moment(aMoment).format('HH');
+    let mt =      moment(aMoment).format('mm');
+    let st =      moment(aMoment).format('ss');
+    let localTime = +ht+ mt/60+ st/3600;
+    let utcTime = (localTime - dUTC);
+
+    options = {
+        Lat: lat,
+        Lon: lon,
+        Day: sDay,
+        Month: sMonth,
+        Year: sYear,
+        UTCTime: utcTime,
+        dUTC: dUTC,
+        Temp: temp,
+        Press: press
+    };
+    solar = new Solar(options);
+    resArr = solar._calculate();
+    sunHt = resArr[14];                     // new feature in solarClass - upperEdge
+    sunAz = resArr[0];
+
+    for(i=0;  i < nn; i++){
+        if (sunHt >= minSunHeight ){
+            let shadArr = new Array(3);
+            // Calculate orthogonal 3d coordinates of sun, assume that sun is on sphere with radius of 10000 gnomons
+            // Assume that Sun'd latitude is Height of Suns UPPER EDGE corrected for refraction
+            // Assume that Sun'd longitude is (360-SunAzimuth) count it counterclockwise from NORTH AXIS
+            shadArr = Sphere2Decart(gnomonLen*10000, sunHt, (360-sunAz));
+
+            if (shadArr[2] >= 0) {
+                //Пересечение прямой и плоскости  "Ефимов Н.В. Курс Аналитической геометрии" стр.221,223
+                //координаты пересечения прямой проходящей через точки (0,0,Lgnm)(x2,y2,z2) и плоскости z=0
+                // каноническое ур-е такой прямой: x-x1   y-y1   z-z1
+                //                                 ---- = ---- = ----  полагаем = t    тогда x=x2*t; y = y2*t; z=z2*t-Lgnm*t-Lgnm=0;
+                //                                 x2-x1  y2-y1  z2-z1
+                //отсюда t= -Lgnm/(z2-Lgnm)
+                xs = shadArr[0];
+                ys = shadArr[1];
+                zs = shadArr[2];
+                gnomonLen = AoAxyz[i][2];
+                tt = -1 * gnomonLen / (zs - gnomonLen);
+                zp = 0;
+
+                yp = xs * tt;                     // y = x
+                xp = -1 * (ys * tt);              // x = -y     Rotate North UP
+
+
+                lp = Math.sqrt(xp * xp + yp * yp); //shadow length
+            }
+            else { xp=yp=lp=0;}
+        }
+        else  { xp=yp=lp=0;}
+
+        rowArray = new Array(3);
+
+        if (lp < maxShadow) {
+            rowArray[0] = AoAxyz[i][0] + xp;
+            rowArray[1] = AoAxyz[i][1] + yp;
+            rowArray[2] = lp;
+        }
+        else {
+            rowArray[0] = 0;
+            rowArray[1] = 0;
+            rowArray[2] = 0;
+        }
+        resAoA[i] = rowArray;
+
+    }
+    return resAoA;
+}
 
 window.Utils.dataDeliveryDay = dataDeliveryDay;
 window.Utils.dataDeliveryYear = dataDeliveryYear;
 window.Utils.dataDeliveryDay2AoA = dataDeliveryDay2AoA;
 window.Utils.dataDeliveryYear2AoA = dataDeliveryYear2AoA;
 window.Utils.sunDials2AoA = sunDials2AoA;
+window.Utils.sunShadowMaker = sunShadowMaker;
