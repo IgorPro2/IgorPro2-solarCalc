@@ -99,6 +99,8 @@
   "year": "Год: ",
   "north": "Север",
   "south": "Юг",
-  "shadowMap": "Тень от объектов"
+  "shadowMap": "Тень от объектов",
+  "dayShadowAnimation": "Дневная анимация тени",
+  "yearShadowAnimation": "Годовая анимация тени"
 
 }

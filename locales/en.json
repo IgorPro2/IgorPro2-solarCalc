@@ -99,6 +99,7 @@
   "year": "Year: ",
   "north": "North",
   "south": "South",
-  "shadowMap": "Object's shadow"
-
+  "shadowMap": "Object's shadow",
+  "dayShadowAnimation": "Day Shadow Animation",
+  "yearShadowAnimation": "Year Shadow Animation"
 }

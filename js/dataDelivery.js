@@ -910,25 +910,20 @@ function sunShadowMaker(AoAxyz, sMoment, lat, lon, dUTC, temp, press ){
     sunHt = resArr[14];                     // new feature in solarClass - upperEdge
     sunAz = resArr[0];
 
-    for(i=0;  i < nn; i++){
+    for(i=0;  i < nn; i++)  {
         if (sunHt >= minSunHeight ){
-            let shadArr = new Array(3);
             // Calculate orthogonal 3d coordinates of sun, assume that sun is on sphere with radius of 10000 gnomons
             // Assume that Sun'd latitude is Height of Suns UPPER EDGE corrected for refraction
             // Assume that Sun'd longitude is (360-SunAzimuth) count it counterclockwise from NORTH AXIS
+            let shadArr = new Array(3);
+
+            gnomonLen= AoAxyz[i][2];
             shadArr = Sphere2Decart(gnomonLen*10000, sunHt, (360-sunAz));
 
             if (shadArr[2] >= 0) {
-                //Пересечение прямой и плоскости  "Ефимов Н.В. Курс Аналитической геометрии" стр.221,223
-                //координаты пересечения прямой проходящей через точки (0,0,Lgnm)(x2,y2,z2) и плоскости z=0
-                // каноническое ур-е такой прямой: x-x1   y-y1   z-z1
-                //                                 ---- = ---- = ----  полагаем = t    тогда x=x2*t; y = y2*t; z=z2*t-Lgnm*t-Lgnm=0;
-                //                                 x2-x1  y2-y1  z2-z1
-                //отсюда t= -Lgnm/(z2-Lgnm)
                 xs = shadArr[0];
                 ys = shadArr[1];
                 zs = shadArr[2];
-                gnomonLen = AoAxyz[i][2];
                 tt = -1 * gnomonLen / (zs - gnomonLen);
                 zp = 0;
 

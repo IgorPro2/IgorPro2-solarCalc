@@ -1224,16 +1224,17 @@
         var press = options.Pressure;
         //sMoment = sYear + "-" + sMonth + "-" + sDay + " " + ht + ":" + mt + ":" + st;
         //AoAxyz =[ [5342.63,4624.05,6.00],[5349.48,4622.49,6.00],[5348.64,4619.01,6.00],[5349.72,4618.77,6.00],[5348.85,4615.02,6.00],[5347.76,4615.19,6.00],[5346.96,4611.76,6.00],[5340.15,4613.37,6.00],[5345.89,4623.33,10.00],[5343.46,4612.57,10.00],[5349.31,4616.99,10.00],[5344.77,4617.92,10.00] ];
-        var resArr, shadArr, shdsArr, objArr;
-        var  gap = 8, scale, tx, ty, txp, typ, ox, oy, txsp, tysp;
+        var resArr, resArr1, shadArr, shdsArr, objsArr;
+        var  gap = 8, scale, tx, ty, txp, typ, ox, oy, txsp, tysp, ob1, sh1;
         var Size1 = AoAxyz.length;
 
         resArr =  window.Utils.scaleAoA4Drawing(AoAxyz, gap);
-        objArr =  resArr[1];
-        shadArr = window.Utils.sunShadowMaker(objArr, sMoment, lat, lon, dUTCval, temp, press );
-        resArr =  window.Utils.scaleAoA4Drawing(shadArr, gap);
-        scale  =  resArr[0];
-        shdsArr =  resArr[1];
+        objsArr =  resArr[0];
+
+        shadArr = window.Utils.sunShadowMaker(objsArr, sMoment, lat, lon, dUTCval, temp, press );
+        resArr1 =  window.Utils.scaleAoA4Drawing(shadArr, gap);
+        scale  =  resArr1[1]/3.6;
+        shdsArr =   shadArr;        //shadArr are already scaled
 
 
         //////////////////////////////////////      CLEAR ALL LAYERS BEFORE DRAWING
@@ -1254,32 +1255,51 @@
         boundRect = new Path.Rectangle(from, to);
         boundRect.strokeColor = fontAxisColor; //whiteColor;
         boundRect.fillColor = whiteColor;
-        ox = gap;                   // Origin of X axis in pixels
-        oy = height-gap;                  // Origin of Y axis in pixels
+        // ox = gap;
+        // oy = height-gap;
+        // ox = width/2 ;
+        // oy = height- height/3;
+        var minx = resArr1 [2];
+        var maxx = resArr1 [3];
+        var miny = resArr1 [4];
+        var maxy = resArr1 [5];
 
-        var pathObj = new Path({strokeColor: 'red'});
-        var pathShad = new Path({strokeColor: 'black'});
+        ox = width / 2;                   // Origin of X axis in pixels at the center of view
+        oy = height / 2;                  // Origin of Y axis in pixels at the center of view
+        var gap1 = height/2 - maxy*scale;           // gap from maxy to y_0 of screen
+        var gap2 = height/2 - miny*scale;           // gap from miny to y_height of screen, assume miny positive
+        if (gap1 > gap2) {oy = oy - (gap1-gap2)/2 + 2*gap}    //shift oy2 to the center of data
+        else {oy = oy + (gap2-gap1)/2 - 2*gap}
+
+
+
+        var pathObj = new Path({strokeColor: 'red', fillColor: '#A994FF'});
+        var pathShad = new Path({strokeColor: 'black', fillColor: 'lightgrey'});
 
         for (i=0; i < Size1 ; i++) {
+
+            tx = objsArr [i][0];
+            ty = objsArr [i][1];
+            txp = ox + tx * scale;          //objects
+            typ = oy - ty * scale;
+            var ptob = new Point(txp, typ);
+            if (i===0) {ob1 = ptob }
 
             tx = shdsArr[i][0];
             ty = shdsArr[i][1];
             txsp = ox + tx * scale;         //end of shadows
             tysp = oy - ty * scale;
             var ptsh = new Point(txsp, tysp);
-
-            tx = objArr [i][0];
-            ty = objArr [i][1];
-            txp = ox + tx * scale;          //objects
-            typ = oy - ty * scale;
-            var ptob = new Point(txp, typ);
+            if (i===0) {sh1 = ptsh }
 
             pathObj.add( ptob );
-            //pathShad.add( ptsh );
+            pathShad.add( ptsh );
 
             var pathConn = new Path.Line(ptob, ptsh);
             pathConn.strokeColor = 'blue';
         }
+        pathShad.add( sh1 );
+        pathObj.add( ob1 );        //1-st point
     };
 
     window.Utils.scaleAoA4Drawing = function (AoAxyz, gap) {
@@ -1287,6 +1307,7 @@
         //         2. gap - amount of pixels between viewSize border and drawing
         // Return: 1. AoA of [ [xc,yc,z], [xc,yc,z] where xc,yc Easting&Northing reduced to it's minimal values
         //         2. Scale for multiplying xc,yc for correct drawing on current paper.view.viewSize
+        //         3. Min&Max values for all x,y in AoA
 
         var minx=AoAxyz[0][0], maxx=AoAxyz[0][0];
         var miny=AoAxyz[0][1], maxy=AoAxyz[0][1];
@@ -1297,7 +1318,7 @@
             totalSize += AoAxyz[i].length;
         var Size1 = AoAxyz.length;
         var sclArr = new Array(Size1);
-        var resArr = new Array(2);
+        var resArr = new Array(6);
 
         for (i=0; i < Size1 ; i++){
             if (AoAxyz[i][0] < minx) {minx = AoAxyz[i][0] }        // ws1[i][6] x dimentions
@@ -1326,8 +1347,12 @@
             rowArr[2] = AoAxyz[i][2];
             sclArr[i] = rowArr;
         }
-        resArr[0] = scale;          //  scale: Pixels amount in 1 x,y unit
-        resArr[1] = sclArr;
+        resArr[0] = sclArr;         // Array of scaled x,y and same z
+        resArr[1] = scale;          // scale: Pixels amount in 1 x,y unit
+        resArr[2] = minx;
+        resArr[3] = maxx;
+        resArr[4] = miny;
+        resArr[5] = maxy;
 
         return resArr;
     };
