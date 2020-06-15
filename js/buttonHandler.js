@@ -23,6 +23,17 @@
     let st = timeSec.value;
     let dUTCval = +dUTC.value;
 
+    let AoAxyz =[ [5342.63,4624.05,6.00],[5345.89,4623.33,10.00],[5349.48,4622.49,6.00],[5348.64,4619.01,6.00],
+                  [5349.72,4618.77,6.00],[5349.31,4616.99,10.00],[5348.85,4615.02,6.00],[5347.76,4615.19,6.00],
+                  [5346.96,4611.76, 6.00],[5343.46,4612.57,10.00],[5340.15,4613.37,6.00] ];
+    let sMoment = sYear + "-" + sMonth + "-" + sDay + " " + ht + ":" + mt + ":" + st;
+    let lat = Utils.grad_textGMS2number(latGrad.value, latMin.value , latSec.value);
+    let lon = Utils.grad_textGMS2number(lonGrad.value, lonMin.value , lonSec.value);
+    let temp = document.getElementById("temp").value;
+    let press = document.getElementById("press").value;
+
+
+
     let eclipticAngle;
     Utils.takeEquinoxSolsticeAE();
     eclipticAngle = window.varsValue.eclipticDeclination;
@@ -37,7 +48,7 @@
     let autumnTime = window.varsValue.autumnEquinox;
     let winterTime = window.varsValue.winterSolstice;
 
-    let sMoment, aMoment, curTime;
+    let aMoment, curTime;
 
 
     //Button Handler Class
@@ -254,9 +265,6 @@
             Utils.drawSunDial();
         };
         this.shadowMap = function (target){
-            let AoAxyz =[ [5342.63,4624.05,6.00],[5345.89,4623.33,10.00],[5349.48,4622.49,6.00],[5348.64,4619.01,6.00],
-                          [5349.72,4618.77,6.00],[5349.31,4616.99,10.00],[5348.85,4615.02,6.00],[5347.76,4615.19,6.00],
-                          [5346.96,4611.76, 6.00],[5343.46,4612.57,10.00],[5340.15,4613.37,6.00] ];
             let sYear = document.getElementById("dateYear").value;
             let sMonth  = document.getElementById("dateMonth").value;
             let sDay = document.getElementById("dateDay").value;
@@ -269,7 +277,6 @@
             let dUTCval = document.getElementById("dUTC").value;
             let temp = document.getElementById("temp").value;
             let press = document.getElementById("press").value;
-
             let options = {
                 AoA: AoAxyz,
                 aMoment: sMoment,
@@ -279,10 +286,53 @@
                 Temperature: temp,
                 Pressure: press,
             };
-
             Utils.drawShadow(options);
         };
 
+        this.dayShadowAnim = function (target){
+            let sYear = document.getElementById("dateYear").value;
+            let sMonth  = document.getElementById("dateMonth").value;
+            let sDay = document.getElementById("dateDay").value;
+            let ht = document.getElementById("timeHour").value;
+            let mt = document.getElementById("timeMin").value;
+            let st = document.getElementById("timeSec").value;
+            let sMoment = sYear + "-" + sMonth + "-" + sDay + " " + ht + ":" + mt + ":" + st;
+            let localTime = +ht+ mt/60+ st/3600;
+            let utcTime = (localTime - dUTC);
+            let lat = Utils.grad_textGMS2number(latGrad.value, latMin.value , latSec.value);
+            let lon = Utils.grad_textGMS2number(lonGrad.value, lonMin.value , lonSec.value);
+            let dUTCval = document.getElementById("dUTC").value;
+            let temp = document.getElementById("temp").value;
+            let press = document.getElementById("press").value;
+            let counter = 0;
+            let aDuration = 1000; //timelaps in miliseconds
+
+            for (let i=0; i<24; i++) {
+                (function delay(duration) {
+
+                    let aMoment = moment(sMoment, "").add(1, 'hour');
+                    ht = moment(aMoment).format('HH');
+                    mt = moment(aMoment).format('mm');
+                    st = moment(aMoment).format('ss');
+                    sMoment = sYear + "-" + sMonth + "-" + sDay + " " + ht + ":" + mt + ":" + st;
+
+                    let options = {
+                        AoA: AoAxyz,
+                        aMoment: sMoment,
+                        Latitude: lat,
+                        Longitude: lon,
+                        dUTCval: dUTCval,
+                        Temperature: temp,
+                        Pressure: press,
+                    };
+                    Utils.drawShadow(options);
+
+                    if (++counter <= 60 && window.timerIsOn) setTimeout(delay, duration, duration);
+
+                })(aDuration)
+            }
+
+        }
         }
 
     let graphicsButtons = document.getElementById('topRightGraphicsButtons');
