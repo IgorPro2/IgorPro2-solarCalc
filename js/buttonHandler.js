@@ -289,6 +289,7 @@
             Utils.drawShadow(options);
         };
 
+
         this.dayShadowAnim = function (target){
             let sYear = document.getElementById("dateYear").value;
             let sMonth  = document.getElementById("dateMonth").value;
@@ -297,43 +298,53 @@
             let mt = document.getElementById("timeMin").value;
             let st = document.getElementById("timeSec").value;
             let sMoment = sYear + "-" + sMonth + "-" + sDay + " " + ht + ":" + mt + ":" + st;
-            let localTime = +ht+ mt/60+ st/3600;
-            let utcTime = (localTime - dUTC);
             let lat = Utils.grad_textGMS2number(latGrad.value, latMin.value , latSec.value);
             let lon = Utils.grad_textGMS2number(lonGrad.value, lonMin.value , lonSec.value);
             let dUTCval = document.getElementById("dUTC").value;
             let temp = document.getElementById("temp").value;
             let press = document.getElementById("press").value;
-            let counter = 0;
-            let aDuration = 1000; //timelaps in miliseconds
 
-            for (let i=0; i<24; i++) {
-                (function delay(duration) {
+            let options = {
+                AoA: AoAxyz,
+                aMoment: sMoment,
+                Latitude: lat,
+                Longitude: lon,
+                dUTCval: dUTCval,
+                Temperature: temp,
+                Pressure: press,
+            };
+            Utils.shadowAnimationDay(options);
+        };
 
-                    let aMoment = moment(sMoment, "").add(1, 'hour');
-                    ht = moment(aMoment).format('HH');
-                    mt = moment(aMoment).format('mm');
-                    st = moment(aMoment).format('ss');
-                    sMoment = sYear + "-" + sMonth + "-" + sDay + " " + ht + ":" + mt + ":" + st;
+        this.yearShadowAnim = function (target){
+            let sYear = document.getElementById("dateYear").value;
+            let sMonth  = document.getElementById("dateMonth").value;
+            let sDay = document.getElementById("dateDay").value;
+            let ht = document.getElementById("timeHour").value;
+            let mt = document.getElementById("timeMin").value;
+            let st = document.getElementById("timeSec").value;
+            let sMoment = sYear + "-" + sMonth + "-" + sDay + " " + ht + ":" + mt + ":" + st;
+            let lat = Utils.grad_textGMS2number(latGrad.value, latMin.value , latSec.value);
+            let lon = Utils.grad_textGMS2number(lonGrad.value, lonMin.value , lonSec.value);
+            let dUTCval = document.getElementById("dUTC").value;
+            let temp = document.getElementById("temp").value;
+            let press = document.getElementById("press").value;
 
-                    let options = {
-                        AoA: AoAxyz,
-                        aMoment: sMoment,
-                        Latitude: lat,
-                        Longitude: lon,
-                        dUTCval: dUTCval,
-                        Temperature: temp,
-                        Pressure: press,
-                    };
-                    Utils.drawShadow(options);
+            let options = {
+                AoA: AoAxyz,
+                aMoment: sMoment,
+                Latitude: lat,
+                Longitude: lon,
+                dUTCval: dUTCval,
+                Temperature: temp,
+                Pressure: press,
+            };
+            Utils.shadowAnimationYear(options);
+        };
 
-                    if (++counter <= 60 && window.timerIsOn) setTimeout(delay, duration, duration);
 
-                })(aDuration)
-            }
 
-        }
-        }
+    }
 
     let graphicsButtons = document.getElementById('topRightGraphicsButtons');
     let mainPageButtons = document.getElementById('mainPageButtons');
