@@ -882,7 +882,6 @@ function sunShadowMaker(AoAxyz, sMoment, lat, lon, dUTC, temp, press ){
         gnomonLen = AoAxyz[i][2];
         if (gnomonLen > maxlen) {maxlen = gnomonLen}
     }
-    let maxShadow    = 7 * maxlen;       // Maximal length of Gnomon's shadow in "Gnomon's" units
 
     let aMoment = moment(sMoment, "");
     let sYear =   moment(aMoment).format('YYYY');
@@ -939,16 +938,9 @@ function sunShadowMaker(AoAxyz, sMoment, lat, lon, dUTC, temp, press ){
 
         rowArray = new Array(3);
 
-        if (lp < maxShadow) {
-            rowArray[0] = AoAxyz[i][0] + xp;
-            rowArray[1] = AoAxyz[i][1] + yp;
-            rowArray[2] = lp;
-        }
-        else {
-            rowArray[0] = 0;
-            rowArray[1] = 0;
-            rowArray[2] = 0;
-        }
+        rowArray[0] = AoAxyz[i][0] + xp;
+        rowArray[1] = AoAxyz[i][1] + yp;
+        rowArray[2] = lp;
         resAoA[i] = rowArray;
 
     }

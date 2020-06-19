@@ -23,9 +23,22 @@
     let st = timeSec.value;
     let dUTCval = +dUTC.value;
 
-    let AoAxyz =[ [5342.63,4624.05,6.00],[5345.89,4623.33,10.00],[5349.48,4622.49,6.00],[5348.64,4619.01,6.00],
-                  [5349.72,4618.77,6.00],[5349.31,4616.99,10.00],[5348.85,4615.02,6.00],[5347.76,4615.19,6.00],
-                  [5346.96,4611.76, 6.00],[5343.46,4612.57,10.00],[5340.15,4613.37,6.00] ];
+    let Home = [ [5342.27,4624.58,6],[5346.09,4623.70,9.5],[5349.99,4622.80,6],[5349.18,4619.38,6],
+                 [5350.11,4619.16,6],[5349.55,4616.83,9.5],[5348.98,4614.48,6],[5348.08,4614.71,6],
+                 [5347.27,4611.28,6],[5343.45,4612.16,9.5],[5338.90,4613.22,5.44],[5340.09,4618.24,5.44], [5340.83,4618.09,6]  ];
+    let Roof = [ [5346.09,4623.70,9.5], [5344.77,4617.92,9.5], [5349.55,4616.83,9.5], [5344.77,4617.92,9.5], [5343.45,4612.16,9.5]];
+    let Fence1 = [ [5345.26,4633.94,1.8], [5346.27,4631.93,1.8], [5354.45,4629.62,1.8], [5354.40,4629.43,1.8], [5346.11,4631.77,1.8], [5345.14,4633.71,1.8]];
+    let Fence2 = [ [5340.79,4635.33,2.1], [5345.26,4633.94,2.1], [5345.19,4633.70,2.1], [5340.72,4635.09,2.1] ];
+
+    let Fence3 = [ [5338.92,4627.15,2.15], [5339.50,4629.70,2.15], [5339.75,4629.66,2.15], [5339.17,4627.10,2.15] ];
+    let Fence4 = [ [5338.33,4624.53,2.35], [5338.92,4627.15,2.35], [5339.17,4627.10,2.35], [5338.57,4624.49,2.35] ];
+    let Fence5 = [ [5337.74,4621.94,2.55], [5338.33,4624.53,2.55], [5338.57,4624.49,2.55], [5337.99,4621.89,2.55] ];
+    let Fence6 = [ [5337.16,4619.35,2.75], [5337.74,4621.94,2.75], [5337.99,4621.89,2.75], [5337.40,4619.30,2.75] ];
+    let Fence7 = [ [5343.63,4609.99,2.00], [5339.85,4611.25,2.00], [5339.93,4611.49,2.00], [5343.71,4610.23,2.00] ];
+    let Fence8 = [ [5339.85,4611.25,3.00], [5336.67,4612.32,3.00], [5338.71,4618.51,3.00], [5338.96,4618.46,3.00], [5336.99,4612.47,3.00], [5339.93,4611.49,3.00] ];
+    let objects4shadow = [ Home, Roof, Fence1, Fence2, Fence3, Fence4, Fence5, Fence6, Fence7, Fence8];
+
+
     let sMoment = sYear + "-" + sMonth + "-" + sDay + " " + ht + ":" + mt + ":" + st;
     let lat = Utils.grad_textGMS2number(latGrad.value, latMin.value , latSec.value);
     let lon = Utils.grad_textGMS2number(lonGrad.value, lonMin.value , lonSec.value);
@@ -198,7 +211,6 @@
             sMoment = moment(aMoment).format('YYYY MM DD HH:mm:ss');
             setInput(sMoment);
             Utils.showGraphic();
-
         };
 
         function setInput(aTime) {
@@ -264,6 +276,7 @@
         this.showSunDial = function (target){
             Utils.drawSunDial();
         };
+
         this.shadowMap = function (target){
             let sYear = document.getElementById("dateYear").value;
             let sMonth  = document.getElementById("dateMonth").value;
@@ -277,16 +290,36 @@
             let dUTCval = document.getElementById("dUTC").value;
             let temp = document.getElementById("temp").value;
             let press = document.getElementById("press").value;
+
+            let resArr = Utils.scaleAoA4Drawing(objects4shadow[0], 4);   //define scales from first object
+            let scale =resArr [1];
+            scale = scale/ 3;
+            let minx = resArr [2];
+            let maxx = resArr [3];
+            let miny = resArr [4];
+            let maxy = resArr [5];
+
             let options = {
-                AoA: AoAxyz,
+                AoA: objects4shadow,                   //[ AoAxyz,  AoAxyz2 ],
                 aMoment: sMoment,
                 Latitude: lat,
                 Longitude: lon,
                 dUTCval: dUTCval,
                 Temperature: temp,
                 Pressure: press,
+                Scale: scale,
+                minx: minx,
+                maxx: maxx,
+                miny: miny,
+                maxy: maxy,
             };
-            Utils.drawShadow(options);
+            let resArr2 = Utils.calcObjectShadow (options);
+
+            let options2 = {
+                AoA: resArr2
+            };
+
+            Utils.drawShadow(options2);
         };
 
 
@@ -305,7 +338,7 @@
             let press = document.getElementById("press").value;
 
             let options = {
-                AoA: AoAxyz,
+                AoA: objects4shadow,                     //[ AoAxyz,  AoAxyz2 ],
                 aMoment: sMoment,
                 Latitude: lat,
                 Longitude: lon,
@@ -331,7 +364,7 @@
             let press = document.getElementById("press").value;
 
             let options = {
-                AoA: AoAxyz,
+                AoA: objects4shadow,
                 aMoment: sMoment,
                 Latitude: lat,
                 Longitude: lon,
