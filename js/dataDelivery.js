@@ -455,7 +455,7 @@ function sunDials2AoA(){
     let dateYear = document.getElementById("dateYear");
     let dateMonth = document.getElementById("dateMonth");
     let dateDay = document.getElementById("dateDay");
-    var eyeHeight = document.getElementById("height");
+    let eyeHeight = document.getElementById("height");
     eyeHeight = eyeHeight.value;
     let sYear = dateYear.value;
     let curYear = sYear;
@@ -905,8 +905,8 @@ function sunShadowMaker(AoAxyz, sMoment, lat, lon, dUTC, temp, press ){
         Press: press
     };
     solar = new Solar(options);
-    resArr = solar._calculate();
-    sunHt = resArr[14];                     // new feature in solarClass - upperEdge
+    resArr = solar._calculate();           // resArr[5] Uncorrected height of  sun's center
+    sunHt = resArr[14];                     // new feature in solarClass - resArr[14]upperEdge
     sunAz = resArr[0];
 
     for(i=0;  i < nn; i++)  {
@@ -947,9 +947,198 @@ function sunShadowMaker(AoAxyz, sMoment, lat, lon, dUTC, temp, press ){
     return resAoA;
 }
 
+function sunShadowMaker3D(params){
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// This function is intended for shadow calculation on one land parcel.
+// We assume that on horizontal plane exist one polygonal object. Plane dimension of object less than 1 nautical mile
+// ( lat, lon are given for center of object and we not take into account parallax if object will be not very big)
+// Assume that plane height equals 0.
+//
+// Function sunShadowMaker3D() Takes:
+//      1. AoAxyz - AoA of [ [x, y, zLow, zUp], [x, y, zLow, zUp] ... ]
+//                    Each   [x, y, zLow, zUp] describe one point of object where x, y are object's Easting, Northing,
+//                    zLow is point's lower height, zUp is point's upper height.
+//                    Assume that lower and upper z have the same x,y. It is the same one point in plane.
+//       2. sMoment     - Date&Time string "YYYY-MM-DD-hh-mm-ss
+//       3. lat         - Latitude in decimal degrees  (of central point of object)
+//       4. lon         - Longitude in decimal degrees (of central point of object)
+//       5. dUTC        - Difference between  LocalTime and UTC in decimal hours
+//       6. temp        - Ambient temperature in Celsius decimal degrees
+//       7. press       - Atmosphere's pressure in Hgmm
+//       8. minSunHeight- Minimal height of sun above horizon in degrees for calculation.
+//                        if sunHt < minSunHeight return will be xp=yp=lp=0;
+//
+// Function sunShadowMaker3D()  Returns: AoA of  [ [xLow, yLow, lLow, xUp, yUp, lUp], [], ..., sunHt ]
+//                              where: xLow, yLow are Easting and Northing of the end of shadow from Low point's height.
+////                                   xUp, yUp are Easting and Northing of the end of shadow from Upper point's height.                                     z of each point's shadow always = 0 (shadow is on the plane) and we not return it
+//                                   lLow, lUp - length of each shadow on plane IF lUp=0 SUN IS UNDER HORIZON
+//                                   Each object drops this shadow from SUN at given local time sMoment (Date&Time).
+//   sunHt - (the last value in return array) is the Sun's height at sMoment (we use it for coloring twilight when draw)
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    let AoAxyz = params.AoAxyz;
+    let sMoment = params.sMoment;
+    let lat = params.lat;
+    let lon = params.lon;
+    let dUTC = params.dUTC;
+    let temp = params.temp;
+    let press = params.press;
+    let minSunHeight = params.minSunHeight;
+
+    let numPnt = AoAxyz.length;
+    let options, solar, resArr, i, sunHt, sunAz, rowArray;
+    let xs1, ys1, zs1, xp1, yp1, zp1, lp1, tt1, xs2, ys2, zs2, xp2, yp2, zp2, lp2, tt2;
+    let gnomonLenLow, gnomonLenUp;
+    let resAoA = new Array(numPnt);
+
+    // for(i=0; i < numPnt; i++){
+    //     gnomonLenLow = AoAxyz[i][2];
+    //     gnomonLenUp =  AoAxyz[i][3];
+    // }
+
+    let aMoment = moment(sMoment, "");
+    let sYear =   moment(aMoment).format('YYYY');
+    let sMonth =  moment(aMoment).format('MM');
+    let sDay =    moment(aMoment).format('DD');
+    let ht =      moment(aMoment).format('HH');
+    let mt =      moment(aMoment).format('mm');
+    let st =      moment(aMoment).format('ss');
+    let localTime = +ht+ mt/60+ st/3600;
+    let utcTime = (localTime - dUTC);
+
+    options = {
+        Lat: lat,
+        Lon: lon,
+        Day: sDay,
+        Month: sMonth,
+        Year: sYear,
+        UTCTime: utcTime,
+        dUTC: dUTC,
+        Temp: temp,
+        Press: press
+    };
+    solar = new Solar(options);
+    resArr = solar._calculate();
+    sunHt = resArr[14];                     // new feature in solarClass - solar's upperEdge
+    sunAz = resArr[0];
+
+    for(i=0;  i < numPnt; i++)  {
+        if (sunHt >= minSunHeight ){
+            // Calculate orthogonal 3d coordinates of sun, assume that sun is on sphere with radius of 10000 gnomons
+            // Assume that Sun'd latitude is Height of Suns UPPER EDGE corrected for refraction
+            // Assume that Sun'd longitude is (360-SunAzimuth) count it counterclockwise from NORTH AXIS
+            gnomonLenLow = AoAxyz[i][2];
+            gnomonLenUp =  AoAxyz[i][3];
+            let shadArrLow = new Array(3);
+            gnomonLenLow = AoAxyz[i][2];
+            shadArrLow = Sphere2Decart(gnomonLenLow*10000, sunHt, (360-sunAz));
+
+            let shadArrUp = new Array(3);
+            gnomonLenUp  = AoAxyz[i][3];
+            shadArrUp = Sphere2Decart(gnomonLenUp*10000, sunHt, (360-sunAz));
+
+            if (Math.abs(shadArrLow[2] - 0) > 0.000001 ) {  //we have shadow from low height of object's point
+                xs1 = shadArrLow[0];
+                ys1 = shadArrLow[1];
+                zs1 = shadArrLow[2];
+                tt1 = -1 * gnomonLenLow / (zs1 - gnomonLenLow);
+                zp1 = 0;
+                yp1 = xs1 * tt1;                                // y = x
+                xp1 = -1 * (ys1 * tt1);                         // x = -y     Rotate North UP
+                lp1 = Math.sqrt(xp1 * xp1 + yp1 * yp1);      // Low shadow length
+            }
+            else { xp1=yp1=lp1=0; }
+
+            if (Math.abs(shadArrUp[2] - 0) > 0.000001 ) {  //we have shadow from upper height of object's point
+                xs2 = shadArrUp[0];
+                ys2 = shadArrUp[1];
+                zs2 = shadArrUp[2];
+                tt2 = -1 * gnomonLenUp / (zs2 - gnomonLenUp);
+                zp2 = 0;
+                yp2 = xs2 * tt2;                                // y = x
+                xp2 = -1 * (ys2 * tt2);                         // x = -y     Rotate North UP
+                lp2 = Math.sqrt(xp2 * xp2 + yp2 * yp2);      // Upper shadow length
+            }
+            else { xp2=yp2=lp2=0;}
+        }
+        else  { xp1=yp1=lp1=0; xp2=yp2=lp2=0;}    //sunHt < minSunHeight
+
+        rowArray = new Array(6);
+
+        let pntx = AoAxyz[i][0];
+        let pnty = AoAxyz[i][1];
+        rowArray[0] = pntx + xp1;
+        rowArray[1] = pnty + yp1;
+        rowArray[2] = lp1;
+        rowArray[3] = pntx + xp2;
+        rowArray[4] = pnty + yp2;
+        rowArray[5] = lp2;
+
+        resAoA[i] = rowArray;
+    }
+    resAoA.push(sunHt);             //sunHt - (the last value in return array)
+    return resAoA;                  //Returns: AoA of  [ [xLow, yLow, lLow, xUp, yUp, lUp], [], ..., sunHt ]
+}
+
+function calcObjectsShadow3D(options) {
+    // Function takes: AoA,aMoment.......
+    // Each 1-st level element of global AoA describes one object.   It has index of 1-st level in global AoA
+    // 2-d level elements are arrays of [x,y,z] that describes each point of one object. It has index of 2-nd level in global AoA
+    // Each point describes by 3 coordinates x,y,z  as elements with index of 3-d level in global AoA
+    // Example:
+    // [  [  [x,y,zLow,zUp], [x,y,zLow zUp], [x,y,zLow,zUp], [x,y,zLow,zUp] ],- object constructed from 4 points.
+    //    [  [x,y,zLow,zUp], [x,y,zLow,zUp], [x,y,zLow,zUp          ],        - object constructed from 3 points.
+    //    [  [x,y,zLow,zUp, [x,y,zLow,zUp],                  ]  ]             - object constructed from 2 points.
+    //
+    //   Points of each objects must be written consequently clock-wise
+    //
+    // Function returns: AoA of shadow's end of input objects in the same coordinate system as input
+    //
+    //        [xLow, yLow, lLow, xUp, yUp, lUp], [xLow, yLow, lLow, xUp, yUp, lUp]   - object constructed from 2 points.
+
+    let AoAobj = options.AoA;               // Array of some objects
+    let sMoment = options.aMoment;
+    let lat = options.Latitude;
+    let lon = options.Longitude;
+    let dUTCval = options.dUTCval;
+    let temp = options.Temperature;
+    let press = options.Pressure;
+    let minSunHeight = options.minSunHeight;
+
+    let tx, ty, txp, typ, ox, oy, txsp, tysp, ob1, sh1;
+    let tx2, ty2, txp2, typ2, txsp2, tysp2;
+
+
+
+    let numObj = AoAobj.length;                            //Amount of objects in array
+    let shadowsOne = [];                                   //Empty array of shadows of one object
+    let shadowsAll = [];                                   //Empty array of shadows of one object
+
+    for (let j = 0; j < numObj; j++) {
+
+        let AoAxyz = AoAobj[j];                             // one object in initial coordinates
+            options = {
+                AoAxyz: AoAxyz,
+                sMoment: sMoment,
+                lat: lat,
+                lon: lon,
+                dUTC: dUTCval,
+                temp: temp,
+                press: press,
+                minSunHeight: minSunHeight
+            };
+            shadowsOne= sunShadowMaker3D(options);
+        shadowsAll.push( shadowsOne )
+    }
+    return shadowsAll;
+
+}
+
+
 window.Utils.dataDeliveryDay = dataDeliveryDay;
 window.Utils.dataDeliveryYear = dataDeliveryYear;
 window.Utils.dataDeliveryDay2AoA = dataDeliveryDay2AoA;
 window.Utils.dataDeliveryYear2AoA = dataDeliveryYear2AoA;
 window.Utils.sunDials2AoA = sunDials2AoA;
 window.Utils.sunShadowMaker = sunShadowMaker;
+window.Utils.sunShadowMaker3D = sunShadowMaker3D;
+window.Utils.calcObjectsShadow3D = calcObjectsShadow3D;

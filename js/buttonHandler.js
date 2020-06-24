@@ -26,9 +26,9 @@
     let Home = [ [5342.27,4624.58,6],[5346.09,4623.70,9.5],[5349.99,4622.80,6],[5349.18,4619.38,6],
                  [5350.11,4619.16,6],[5349.55,4616.83,9.5],[5348.98,4614.48,6],[5348.08,4614.71,6],
                  [5347.27,4611.28,6],[5343.45,4612.16,9.5],[5338.90,4613.22,5.44],[5340.09,4618.24,5.44], [5340.83,4618.09,6]  ];
-    let Roof = [ [5346.09,4623.70,9.5], [5344.77,4617.92,9.5], [5349.55,4616.83,9.5], [5344.77,4617.92,9.5], [5343.45,4612.16,9.5]];
+    //let Roof = [ [5346.09,4623.70,9.5], [5344.77,4617.92,9.5], [5349.55,4616.83,9.5], [5344.77,4617.92,9.5], [5343.45,4612.16,9.5]];
     let Fence1 = [ [5345.26,4633.94,1.8], [5346.27,4631.93,1.8], [5354.45,4629.62,1.8], [5354.40,4629.43,1.8], [5346.11,4631.77,1.8], [5345.14,4633.71,1.8]];
-    let Fence2 = [ [5340.79,4635.33,2.1], [5345.26,4633.94,2.1], [5345.19,4633.70,2.1], [5340.72,4635.09,2.1] ];
+    //let Fence2 = [ [5340.79,4635.33,2.1], [5345.26,4633.94,2.1], [5345.19,4633.70,2.1], [5340.72,4635.09,2.1] ];
 
     let Fence3 = [ [5338.92,4627.15,2.15], [5339.50,4629.70,2.15], [5339.75,4629.66,2.15], [5339.17,4627.10,2.15] ];
     let Fence4 = [ [5338.33,4624.53,2.35], [5338.92,4627.15,2.35], [5339.17,4627.10,2.35], [5338.57,4624.49,2.35] ];
@@ -36,10 +36,23 @@
     let Fence6 = [ [5337.16,4619.35,2.75], [5337.74,4621.94,2.75], [5337.99,4621.89,2.75], [5337.40,4619.30,2.75] ];
     let Fence7 = [ [5343.63,4609.99,2.00], [5339.85,4611.25,2.00], [5339.93,4611.49,2.00], [5343.71,4610.23,2.00] ];
     let Fence8 = [ [5339.85,4611.25,3.00], [5336.67,4612.32,3.00], [5338.71,4618.51,3.00], [5338.96,4618.46,3.00], [5336.99,4612.47,3.00], [5339.93,4611.49,3.00] ];
-    let objects4shadow = [ Home, Roof, Fence1, Fence2, Fence3, Fence4, Fence5, Fence6, Fence7, Fence8];
 
+
+    let Home3d = [ [5342.27,4624.58,0,6],[5346.09,4623.70,0,9.5],[5349.99,4622.80,0,6],[5349.18,4619.38,0,6],
+                   [5350.11,4619.160,0,6],[5349.55,4616.83,0,9.5],[5348.98,4614.48,0,6],[5348.08,4614.71,0,6],
+                   [5347.27,4611.28,0,6],[5343.45,4612.16,0,9.5],[5338.90,4613.22,0,5.44],[5340.09,4618.24,0,5.44], [5340.83,4618.09,0,6]  ];
+
+    let Home4corners3d = [ [5342.27,4624.58,5.9,6],[5349.99,4622.80,5.9,6], [5347.27,4611.28,5.9,6],[5338.90,4613.22,5.9,6] ];
+    let Foot4corners3d = [ [5342,4620,0,6], [5343,4620,0,6], [5343,4619,0,6],[5342,4619,0,6] ];
+
+    let Roof = [ [5346.09,4623.70,0,9.5], [5344.77,4617.92,0,9.5], [5349.55,4616.83,0,9.5], [5344.77,4617.92,0,9.5], [5343.45,4612.16,0,9.5]];
+    let Fence2 = [ [5340.79,4635.33,0,2.1], [5345.26,4633.94,0,2.1], [5345.19,4633.70,0,2.1], [5340.72,4635.09,0,2.1] ];
+
+    //let objects4shadow = [ Home, Roof, Fence1, Fence2, Fence3, Fence4, Fence5, Fence6, Fence7, Fence8];
+    let objects4shadow = [ Home4corners3d, Foot4corners3d ];
 
     let sMoment = sYear + "-" + sMonth + "-" + sDay + " " + ht + ":" + mt + ":" + st;
+
     let lat = Utils.grad_textGMS2number(latGrad.value, latMin.value , latSec.value);
     let lon = Utils.grad_textGMS2number(lonGrad.value, lonMin.value , lonSec.value);
     let temp = document.getElementById("temp").value;
@@ -257,7 +270,7 @@
             XLSX.writeFile(wb, 'YearsValue.xlsx');
 
         };
-        this.sunDial = function (target) {
+        this.sunDialTable = function (target) {
             let arr = Utils.sunDials2AoA();     //Return Array of  Arrays of results
             // let ws1 = XLSX.utils.aoa_to_sheet(arr[0]);
             // let ws2 = XLSX.utils.aoa_to_sheet(arr[1]);
@@ -273,7 +286,8 @@
             XLSX.writeFile(wbcsv, 'SunDialAll.csv');
 
         };
-        this.showSunDial = function (target){
+
+        this.showCadran = function (target){
             Utils.drawSunDial();
         };
 
@@ -290,6 +304,8 @@
             let dUTCval = document.getElementById("dUTC").value;
             let temp = document.getElementById("temp").value;
             let press = document.getElementById("press").value;
+
+            //if ( window.varsValue.userObjects) objects4shadow = window.varsValue.userObjects;
 
             let resArr = Utils.scaleAoA4Drawing(objects4shadow[0], 4);   //define scales from first object
             let scale =resArr [1];
@@ -322,6 +338,47 @@
             Utils.drawShadow(options2);
         };
 
+        this.shadowMap3D = function (objectsAoA){
+            let sYear = document.getElementById("dateYear").value;
+            let sMonth  = document.getElementById("dateMonth").value;
+            let sDay = document.getElementById("dateDay").value;
+            let ht = document.getElementById("timeHour").value;
+            let mt = document.getElementById("timeMin").value;
+            let st = document.getElementById("timeSec").value;
+            let sMoment = sYear + "-" + sMonth + "-" + sDay + " " + ht + ":" + mt + ":" + st;
+            let lat = Utils.grad_textGMS2number(latGrad.value, latMin.value , latSec.value);
+            let lon = Utils.grad_textGMS2number(lonGrad.value, lonMin.value , lonSec.value);
+            let dUTCval = document.getElementById("dUTC").value;
+            let temp = document.getElementById("temp").value;
+            let press = document.getElementById("press").value;
+            let minSunHeight = 5;
+
+            let options = {
+                AoA: objects4shadow,               // Array of objects  [x,y,zLow,zUp], [x,y,zLow zUp],........
+                aMoment: sMoment,
+                Latitude: lat,
+                Longitude: lon,
+                dUTCval: dUTCval,
+                Temperature: temp,
+                Pressure: press,
+                minSunHeight: minSunHeight
+            };
+            let shadArr = Utils.calcObjectsShadow3D (options);
+
+            let options2 = {
+                AoAshadows: shadArr,
+                AoAobjects: objects4shadow,        // [ Home3d,  Roof3d,  Fence23d ]
+                aMoment: sMoment,
+                Latitude: lat,
+                Longitude: lon,
+                dUTCval: dUTCval,
+                Temperature: temp,
+                Pressure: press,
+                minSunHeight: minSunHeight
+            };
+
+            Utils.drawShadow3D(options2 );
+        };
 
         this.dayShadowAnim = function (target){
             let sYear = document.getElementById("dateYear").value;
@@ -336,6 +393,7 @@
             let dUTCval = document.getElementById("dUTC").value;
             let temp = document.getElementById("temp").value;
             let press = document.getElementById("press").value;
+            let minSunHeight = 5;
 
             let options = {
                 AoA: objects4shadow,                     //[ AoAxyz,  AoAxyz2 ],
@@ -345,8 +403,9 @@
                 dUTCval: dUTCval,
                 Temperature: temp,
                 Pressure: press,
+                minSunHeight: minSunHeight,
             };
-            Utils.shadowAnimationDay(options);
+            Utils.shadowAnimationDay3D(options);
         };
 
         this.yearShadowAnim = function (target){
@@ -362,17 +421,19 @@
             let dUTCval = document.getElementById("dUTC").value;
             let temp = document.getElementById("temp").value;
             let press = document.getElementById("press").value;
+            let minSunHeight = 5;
 
             let options = {
-                AoA: objects4shadow,
+                AoA: objects4shadow,                     //[ AoAxyz,  AoAxyz2 ],
                 aMoment: sMoment,
                 Latitude: lat,
                 Longitude: lon,
                 dUTCval: dUTCval,
                 Temperature: temp,
                 Pressure: press,
+                minSunHeight: minSunHeight,
             };
-            Utils.shadowAnimationYear(options);
+            Utils.shadowAnimationYear3D(options);
         };
 
 

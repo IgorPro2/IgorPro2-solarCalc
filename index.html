@@ -316,10 +316,11 @@
     <canvas id="myCanvas" data-paper-resize="true"></canvas>
 
     <div id="topRightGraphicsButtons" class="graphicsBtnGroup btn-group">
-
+        <!--
         <button class= "btn btn-sm btn-light mx-1"  onclick=Utils.drawSunDial(); aria-label="show">
             <span aria-hidden="true">{{showSunDial}}</span>
         </button>
+        -->
 
         <div class="dropdown">
             <button class="btn btn-primary btn-sm dropdown-toggle mx-1" type="button" id="dropdownMenuOutput"
@@ -329,10 +330,21 @@
             <div class="dropdown-menu" aria-labelledby="dropdownMenuTime">
                 <button class="dropdown-item" type="button" data-action="dayTable">{{thisDayTable}}</button>
                 <button class="dropdown-item" type="button" data-action="yearTable">{{thisYearTable}}</button>
-                <button class="dropdown-item" type="button" data-action="sunDial">{{sunDial}}</button>
-                <button class="dropdown-item" type="button" data-action="shadowMap">{{shadowMap}}</button>
+                <button class="dropdown-item" type="button" data-action="sunDialTable">{{sunDialTable}}</button>
+                <button class="dropdown-item" type="button" data-action="objectsImport">{{objectsXYZ}}</button>
+            </div>
+        </div>
+
+        <div class="dropdown">
+            <button class="btn btn-primary btn-sm dropdown-toggle mx-1" type="button" id="dropdownMenuShadow"
+                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                {{shadows}}
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuTime">
+                <button class="dropdown-item" type="button" data-action="shadowMap3D">{{shadowMap}}</button>
                 <button class="dropdown-item" type="button" data-action="dayShadowAnim">{{dayShadowAnimation}}</button>
                 <button class="dropdown-item" type="button" data-action="yearShadowAnim">{{yearShadowAnimation}}</button>
+                <button class="dropdown-item" type="button" data-action="showCadran">{{showSunDial}}</button>
             </div>
         </div>
 
