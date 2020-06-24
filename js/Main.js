@@ -35,7 +35,7 @@
     dateYear.value = "2020";
     dateMonth.value = "04";
     dateDay.value = "04";
-    timeHour.value = "10";
+    timeHour.value = "07";
     timeMin.value = "00";
     timeSec.value = "00";
     tempC.value = "20";

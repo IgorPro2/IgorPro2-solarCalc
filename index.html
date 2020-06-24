@@ -321,6 +321,9 @@
             <span aria-hidden="true">{{showSunDial}}</span>
         </button>
         -->
+        <div class="sheetsPicker">
+            <label for="sheetsPicker">csv File</label> <input tabindex="-1" type="file" id="sheetsPicker" name="underlayerImage">
+        </div>
 
         <div class="dropdown">
             <button class="btn btn-primary btn-sm dropdown-toggle mx-1" type="button" id="dropdownMenuOutput"
@@ -331,7 +334,7 @@
                 <button class="dropdown-item" type="button" data-action="dayTable">{{thisDayTable}}</button>
                 <button class="dropdown-item" type="button" data-action="yearTable">{{thisYearTable}}</button>
                 <button class="dropdown-item" type="button" data-action="sunDialTable">{{sunDialTable}}</button>
-                <button class="dropdown-item" type="button" data-action="objectsImport">{{objectsXYZ}}</button>
+                <button class="dropdown-item" type="button" data-action="csvObjectImport">{{objectsXYZ}}</button>
             </div>
         </div>
 

@@ -92,3 +92,32 @@ canvas[data-paper-resize] {
 .tableValue {
     border-left: none !important;
 }
+
+
+
+.sheetsPicker{
+    display: block;
+    position: relative;
+    float: none;
+}
+
+.sheetsPicker [type=file] {
+    display: none;
+    visibility: hidden;
+}
+
+.sheetsPicker > label {
+    display: block;
+    background-color: #4D4D4D;
+    opacity: 0.75;
+    color: #fff;
+    border: none;
+/box-shadow: 2px 4px 4px rgba(0, 0, 0, 0.3);/
+outline: none;
+    cursor: pointer;
+    padding: 8px 10px;
+/line-height: normal;/
+/font-size: 100%;/
+margin-bottom: 0px;
+    transition: 0.3s;
+}

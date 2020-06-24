@@ -1756,7 +1756,7 @@
             fontWeight: axisFontWeight,
             fontSize: hFont,
             point: [20, 80],
-            content: window.locales["sunHeight"] + Utils.grad_number2text(curSunHeight)
+            content: window.locales["sunHeight"] + Utils.grad_number2text(curSunHeight,0,"°")
         });
 
     };

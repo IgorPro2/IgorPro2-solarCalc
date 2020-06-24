@@ -1133,6 +1133,43 @@ function calcObjectsShadow3D(options) {
 
 }
 
+;(function () {
+
+    var sheetsPicker = document.getElementById('sheetsPicker');
+
+    if (!sheetsPicker) return false;
+
+    sheetsPicker.addEventListener('change', handleFileSelect, false);
+
+    function handleFileSelect(evt) {
+        var f = evt.target.files[0]; // FileList object
+        if (!f) return false;
+        // Only process text files.
+        // if (f.type.match('text.*')) {//TODO: DETECT PROPER FILETYPE
+        if (true) {
+            var reader = new FileReader();
+            // Closure to capture the file information.
+            reader.onload = (function (theFile) {
+                evt.target.value = null;
+                return function (e) {
+                    // console.log(e.target);
+                    var fileName = encodeURI(theFile.name);
+                    // window.loadFromFile(fileName, e.target.result);
+                    console.log("LOADING " + fileName);
+                    var data = new Uint8Array(e.target.result);
+                    // var workbook = XLSX.read(data, {type: 'array', cellStyles: true, bookImages: true});
+                    // var worksheet = workbook.Sheets[workbook.SheetNames[0]];
+                    // var container = document.getElementById('table');
+                    // container.innerHTML = XLSX.utils.sheet_to_html(worksheet);
+
+                    window.workbook = XLSX.read(data, {type: 'array', template: true});
+                    console.log(workbook);
+                };
+            })(f);
+            reader.readAsArrayBuffer(f);
+        }
+    }
+}());
 
 window.Utils.dataDeliveryDay = dataDeliveryDay;
 window.Utils.dataDeliveryYear = dataDeliveryYear;
