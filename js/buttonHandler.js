@@ -105,6 +105,8 @@
             Utils.showResultTimer();
         };
         this.showGraphic = function (target) {
+            clearTimeout(window.varsValue.yearTimeOut) ;        //2stop  shadowAnimationYear
+            clearTimeout(window.varsValue.dayTimeOut) ;         //2stop  shadowAnimationDay
             Utils.showGraphic();
         };
         this.calcTimeAtGivenHA = function (target) {
@@ -118,7 +120,6 @@
 
 
         this.setGivenPlace = function (target) {
-            //Utils.show3D();
             let B, L;
             B = window.varsValue.B;
             L = window.varsValue.L;
@@ -130,80 +131,160 @@
             lonGrad.value = L[3] + L[0];
             lonMin.value = L[1];
             lonSec.value = L[2];
-            Utils.showGraphic();
+            clearTimeout(window.varsValue.yearTimeOut) ;        //2stop  shadowAnimationYear
+            clearTimeout(window.varsValue.dayTimeOut) ;         //2stop  shadowAnimationDay
+            if (window.varsValue.animationDayWorks ) { this.dayShadowAnim();}
+            if (window.varsValue.animationYearWorks) { this.yearShadowAnim();}
+            if (window.varsValue.drawShadowWorks)    { this.shadowMap();}
+            if (window.varsValue.showGraphicWorks)   { Utils.showGraphic();}
 
         };
         this.setNorthPole = function (target) {
             latGrad.value = "90";
             latMin.value = "00";
             latSec.value = "00";
-            Utils.showGraphic();
+            window.varsValue.B = 90;
+            clearTimeout(window.varsValue.yearTimeOut) ;        //2stop  shadowAnimationYear
+            clearTimeout(window.varsValue.dayTimeOut) ;         //2stop  shadowAnimationDay
+            if (window.varsValue.animationDayWorks ) { this.dayShadowAnim();}
+            if (window.varsValue.animationYearWorks) { this.yearShadowAnim();}
+            if (window.varsValue.drawShadowWorks)    { this.shadowMap();}
+            if (window.varsValue.showGraphicWorks)   { Utils.showGraphic();}
         };
         this.setSouthPole = function (target) {
             latGrad.value = "-90";
             latMin.value = "00";
             latSec.value = "00";
-            Utils.showGraphic();
+            window.varsValue.B = -90;
+            clearTimeout(window.varsValue.yearTimeOut) ;        //2stop  shadowAnimationYear
+            clearTimeout(window.varsValue.dayTimeOut) ;         //2stop  shadowAnimationDay
+            if (window.varsValue.animationDayWorks ) { this.dayShadowAnim();}
+            if (window.varsValue.animationYearWorks) { this.yearShadowAnim();}
+            if (window.varsValue.showGraphicWorks)   { Utils.showGraphic();}
+            if (window.varsValue.drawShadowWorks)    { this.shadowMap();}
         };
         this.setEquator = function (target) {
             latGrad.value = "00";
             latMin.value = "00";
             latSec.value = "00";
-            Utils.showGraphic();
+            window.varsValue.B = 0;
+            clearTimeout(window.varsValue.yearTimeOut) ;        //2stop  shadowAnimationYear
+            clearTimeout(window.varsValue.dayTimeOut) ;         //2stop  shadowAnimationDay
+            if (window.varsValue.animationDayWorks ) { this.dayShadowAnim();}
+            if (window.varsValue.animationYearWorks) { this.yearShadowAnim();}
+            if (window.varsValue.showGraphicWorks)   { Utils.showGraphic();}
+            if (window.varsValue.drawShadowWorks)    { this.shadowMap();}
         };
         this.setNorthCircle = function (target) {
             latGrad.value = NorthCircleLat[0];
             latMin.value = NorthCircleLat[1];
             latSec.value = NorthCircleLat[2];
-            Utils.showGraphic();
+            window.varsValue.B = 90-window.varsValue.eclipticDeclination;
+            clearTimeout(window.varsValue.yearTimeOut) ;        //2stop  shadowAnimationYear
+            clearTimeout(window.varsValue.dayTimeOut) ;         //2stop  shadowAnimationDay
+            if (window.varsValue.animationDayWorks ) { this.dayShadowAnim();}
+            if (window.varsValue.animationYearWorks) { this.yearShadowAnim();}
+            if (window.varsValue.showGraphicWorks)   { Utils.showGraphic();}
+            if (window.varsValue.drawShadowWorks)    { this.shadowMap();}
         };
         this.setNorthTropic = function (target) {
             latGrad.value = NorthTropicLat[0];
             latMin.value = NorthTropicLat[1];
             latSec.value = NorthTropicLat[2];
-            Utils.showGraphic();
+            window.varsValue.B = +window.varsValue.eclipticDeclination;
+            clearTimeout(window.varsValue.yearTimeOut) ;        //2stop  shadowAnimationYear
+            clearTimeout(window.varsValue.dayTimeOut) ;         //2stop  shadowAnimationDay
+            if (window.varsValue.animationDayWorks ) { this.dayShadowAnim();}
+            if (window.varsValue.animationYearWorks) { this.yearShadowAnim();}
+            if (window.varsValue.showGraphicWorks)   { Utils.showGraphic();}
+            if (window.varsValue.drawShadowWorks)    { this.shadowMap();}
         };
         this.setSouthCircle = function (target) {
             latGrad.value = SouthCircleLat[3] + SouthCircleLat[0];
             latMin.value = SouthCircleLat[1];
             latSec.value = SouthCircleLat[2];
-            Utils.showGraphic();
+            window.varsValue.B = -90+window.varsValue.eclipticDeclination;
+            clearTimeout(window.varsValue.yearTimeOut) ;        //2stop  shadowAnimationYear
+            clearTimeout(window.varsValue.dayTimeOut) ;         //2stop  shadowAnimationDay
+            if (window.varsValue.animationDayWorks ) { this.dayShadowAnim();}
+            if (window.varsValue.animationYearWorks) { this.yearShadowAnim();}
+            if (window.varsValue.showGraphicWorks)   { Utils.showGraphic();}
+            if (window.varsValue.drawShadowWorks)    { this.shadowMap();}
         };
         this.setSouthTropic = function (target) {
             latGrad.value = SouthTropicLat[3] + SouthTropicLat[0];
             latMin.value = SouthTropicLat[1];
             latSec.value = SouthTropicLat[2];
-            Utils.showGraphic();
+            window.varsValue.B = -1*window.varsValue.eclipticDeclination;
+            clearTimeout(window.varsValue.yearTimeOut) ;        //2stop  shadowAnimationYear
+            clearTimeout(window.varsValue.dayTimeOut) ;         //2stop  shadowAnimationDay
+            if (window.varsValue.animationDayWorks ) { this.dayShadowAnim();}
+            if (window.varsValue.animationYearWorks) { this.yearShadowAnim();}
+            if (window.varsValue.showGraphicWorks)   { Utils.showGraphic();}
+            if (window.varsValue.drawShadowWorks)    { this.shadowMap();}
         };
         this.setHerePlace = function (target) {
-            Utils.getLocation(function (err) {
-                if (err) return console.error(err);
-                Utils.showGraphic();
-            });
+            // Utils.getLocation(function (err) {
+            //     if (err) return console.error(err);
+            // });
+            Utils.getLocation();
+            window.varsValue.B =  Utils.grad_textGMS2number(latGrad.value, latMin.value, latSec.value);
+            window.varsValue.L =  Utils.grad_textGMS2number(lonGrad.value, lonMin.value, lonSec.value);
+            clearTimeout(window.varsValue.yearTimeOut) ;        //2stop  shadowAnimationYear
+            clearTimeout(window.varsValue.dayTimeOut) ;         //2stop  shadowAnimationDay
+            if (window.varsValue.animationDayWorks ) { this.dayShadowAnim();}
+            if (window.varsValue.animationYearWorks) { this.yearShadowAnim();}
+            if (window.varsValue.showGraphicWorks)   { Utils.showGraphic();}
+            if (window.varsValue.drawShadowWorks)    { this.shadowMap();}
         };
         this.showNow = function (target) {
             Utils.getNow();
-            Utils.showGraphic();
+            clearTimeout(window.varsValue.yearTimeOut) ;        //2stop  shadowAnimationYear
+            clearTimeout(window.varsValue.dayTimeOut) ;         //2stop  shadowAnimationDay
+            if (window.varsValue.animationDayWorks ) { this.dayShadowAnim();}
+            if (window.varsValue.animationYearWorks) { this.yearShadowAnim();}
+            if (window.varsValue.showGraphicWorks)   { Utils.showGraphic();}
+            if (window.varsValue.drawShadowWorks)    { this.shadowMap();}
         };
         this.showSpring = function (target) {
             sMoment = springTime;
             setInput(sMoment);
-            Utils.showGraphic();
+            clearTimeout(window.varsValue.yearTimeOut) ;        //2stop  shadowAnimationYear
+            clearTimeout(window.varsValue.dayTimeOut) ;         //2stop  shadowAnimationDay
+            if (window.varsValue.animationDayWorks ) { this.dayShadowAnim();}
+            if (window.varsValue.animationYearWorks) { this.yearShadowAnim();}
+            if (window.varsValue.showGraphicWorks)   { Utils.showGraphic();}
+            if (window.varsValue.drawShadowWorks)    { this.shadowMap();}
         };
         this.showSummer = function (target) {
             sMoment = summerTime;
             setInput(sMoment);
-            Utils.showGraphic();
+            clearTimeout(window.varsValue.yearTimeOut) ;        //2stop  shadowAnimationYear
+            clearTimeout(window.varsValue.dayTimeOut) ;         //2stop  shadowAnimationDay
+            if (window.varsValue.animationDayWorks ) { this.dayShadowAnim();}
+            if (window.varsValue.animationYearWorks) { this.yearShadowAnim();}
+            if (window.varsValue.showGraphicWorks)   { Utils.showGraphic();}
+            if (window.varsValue.drawShadowWorks)    { this.shadowMap();}
         };
         this.showAutumn = function (target) {
             sMoment = autumnTime;
             setInput(sMoment);
-            Utils.showGraphic();
+            clearTimeout(window.varsValue.yearTimeOut) ;        //2stop  shadowAnimationYear
+            clearTimeout(window.varsValue.dayTimeOut) ;         //2stop  shadowAnimationDay
+            if (window.varsValue.animationDayWorks ) { this.dayShadowAnim();}
+            if (window.varsValue.animationYearWorks) { this.yearShadowAnim();}
+            if (window.varsValue.showGraphicWorks)   { Utils.showGraphic();}
+            if (window.varsValue.drawShadowWorks)    { this.shadowMap();}
         };
         this.showWinter = function (target) {
             sMoment = winterTime;
             setInput(sMoment);
-            Utils.showGraphic();
+            clearTimeout(window.varsValue.yearTimeOut) ;        //2stop  shadowAnimationYear
+            clearTimeout(window.varsValue.dayTimeOut) ;         //2stop  shadowAnimationDay
+            if (window.varsValue.animationDayWorks ) { this.dayShadowAnim();}
+            if (window.varsValue.animationYearWorks) { this.yearShadowAnim();}
+            if (window.varsValue.showGraphicWorks)   { Utils.showGraphic();}
+            if (window.varsValue.drawShadowWorks)    { this.shadowMap();}
         };
         this.plus1month = function (target) {
             sDay = dateDay.value;
@@ -216,7 +297,12 @@
             aMoment = moment(curTime, "").add(1, 'month');
             sMoment = moment(aMoment).format('YYYY MM DD HH:mm:ss');
             setInput(sMoment);
-            Utils.showGraphic();
+            clearTimeout(window.varsValue.yearTimeOut) ;        //2stop  shadowAnimationYear
+            clearTimeout(window.varsValue.dayTimeOut) ;         //2stop  shadowAnimationDay
+            if (window.varsValue.animationDayWorks ) { this.dayShadowAnim();}
+            if (window.varsValue.animationYearWorks) { this.yearShadowAnim();}
+            if (window.varsValue.showGraphicWorks)   { Utils.showGraphic();}
+            if (window.varsValue.drawShadowWorks)    { this.shadowMap();}
         };
 
         function setInput(aTime) {
@@ -280,6 +366,8 @@
 
         };
         this.showCadran = function (target){
+            clearTimeout(window.varsValue.yearTimeOut) ;        //2stop  shadowAnimationYear
+            clearTimeout(window.varsValue.dayTimeOut) ;         //2stop  shadowAnimationDay
             Utils.drawSunDial();
         };
 
@@ -288,53 +376,6 @@
         };
 
         this.shadowMap = function (target){
-            let sYear = document.getElementById("dateYear").value;
-            let sMonth  = document.getElementById("dateMonth").value;
-            let sDay = document.getElementById("dateDay").value;
-            let ht = document.getElementById("timeHour").value;
-            let mt = document.getElementById("timeMin").value;
-            let st = document.getElementById("timeSec").value;
-            let sMoment = sYear + "-" + sMonth + "-" + sDay + " " + ht + ":" + mt + ":" + st;
-            let lat = Utils.grad_textGMS2number(latGrad.value, latMin.value , latSec.value);
-            let lon = Utils.grad_textGMS2number(lonGrad.value, lonMin.value , lonSec.value);
-            let dUTCval = document.getElementById("dUTC").value;
-            let temp = document.getElementById("temp").value;
-            let press = document.getElementById("press").value;
-
-            //if ( window.varsValue.userObjects) objects4shadow = window.varsValue.userObjects;
-
-            let resArr = Utils.scaleAoA4Drawing(objects4shadow[0], 4);   //define scales from first object
-            let scale =resArr [1];
-            scale = scale/ 3;
-            let minx = resArr [2];
-            let maxx = resArr [3];
-            let miny = resArr [4];
-            let maxy = resArr [5];
-
-            let options = {
-                AoA: objects4shadow,                   //[ AoAxyz,  AoAxyz2 ],
-                aMoment: sMoment,
-                Latitude: lat,
-                Longitude: lon,
-                dUTCval: dUTCval,
-                Temperature: temp,
-                Pressure: press,
-                Scale: scale,
-                minx: minx,
-                maxx: maxx,
-                miny: miny,
-                maxy: maxy,
-            };
-            let resArr2 = Utils.calcObjectShadow (options);
-
-            let options2 = {
-                AoA: resArr2
-            };
-
-            Utils.drawShadow(options2);
-        };
-
-        this.shadowMap3D = function (objectsAoA){
             let sYear = document.getElementById("dateYear").value;
             let sMonth  = document.getElementById("dateMonth").value;
             let sDay = document.getElementById("dateDay").value;
@@ -373,7 +414,9 @@
                 minSunHeight: minSunHeight
             };
 
-            Utils.drawShadow3D(options2 );
+            clearTimeout(window.varsValue.yearTimeOut) ;        //2stop  shadowAnimationYear
+            clearTimeout(window.varsValue.dayTimeOut) ;         //2stop  shadowAnimationDay
+            Utils.drawShadow(options2 );
         };
 
         this.dayShadowAnim = function (target){
@@ -394,14 +437,14 @@
             let options = {
                 AoA: objects4shadow,                     //[ AoAxyz,  AoAxyz2 ],
                 aMoment: sMoment,
-                Latitude: lat,
-                Longitude: lon,
+                Latitude: window.varsValue.B,
+                Longitude: window.varsValue.L,
                 dUTCval: dUTCval,
                 Temperature: temp,
                 Pressure: press,
                 minSunHeight: minSunHeight,
             };
-            Utils.shadowAnimationDay3D(options);
+            Utils.shadowAnimationDay(options);
         };
 
         this.yearShadowAnim = function (target){
@@ -422,18 +465,15 @@
             let options = {
                 AoA: objects4shadow,                     //[ AoAxyz,  AoAxyz2 ],
                 aMoment: sMoment,
-                Latitude: lat,
-                Longitude: lon,
+                Latitude: window.varsValue.B,
+                Longitude: window.varsValue.L,
                 dUTCval: dUTCval,
                 Temperature: temp,
                 Pressure: press,
                 minSunHeight: minSunHeight,
             };
-            Utils.shadowAnimationYear3D(options);
+            Utils.shadowAnimationYear(options);
         };
-
-
-
     }
 
     let graphicsButtons = document.getElementById('topRightGraphicsButtons');

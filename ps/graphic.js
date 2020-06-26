@@ -114,7 +114,8 @@
         for (i = 0; i < layers.length - 1; i++) {
             layers[i].clear();
         }
-        window.animationIsOn = false;
+        clearTimeout(window.varsValue.yearTimeOut) ;        //2stop  shadowAnimationYear
+        clearTimeout(window.varsValue.dayTimeOut) ;         //2stop  shadowAnimationDay
     };
 
 ///////////   SHOW GRAPHIC   SHOW GRAPhIC   SHOW GRAPHIC   SHOW GRAPhIC SHOW GRAPHIC   SHOW GRAPhIC   SHOW GRAPHIC  ////
@@ -123,9 +124,14 @@
         window.Utils.calcSunRise();           // to calculate polarDay for gradient
         window.Utils.showDayDuration();       // to calculate polarDay for gradient
         window.timerIsOn = false;             // to stop showTimer() in function showResultTimer()
+        window.currentAction = "graphic";
+        window.varsValue.animationYearWorks = false;
+        window.varsValue.animationDayWorks  = false;
+        window.varsValue.drawShadowWorks  =  false;
+        window.varsValue.showGraphicWorks  =  true;
+
         graphicContainer.classList.contains("hidden") && graphicContainer.classList.toggle("hidden");
         !calcContainer.classList.contains("hidden") && calcContainer.classList.toggle("hidden");
-        window.currentAction = "graphic";
         var axisLayer = new Layer();
         axisLayer.name = "axisLyr";
 
@@ -861,6 +867,9 @@
     };
 
     window.Utils.show3Month = function () {
+
+        if(! window.varsValue.showGraphicWorks) return false;  //show lines only with showGraphic()
+
         var options = {Day: sDay3M, Month: sMonth3M, Year: sYear3M};
         var res = Utils.dataDeliveryDay(options);    //Array of 3 Arrays of Results
         var dayArr = res[0];    //Array of 1440 pairs of Ht,Az;Every 2 minute during a day
@@ -1507,7 +1516,7 @@
         return resArr;           // Array of scaled x,y and the scaled shadows
     };
 
-    window.Utils.drawShadow3D= function (options) {
+    window.Utils.drawShadow= function (options) {
         //////////////////////////////////////      CLEAR ALL LAYERS BEFORE DRAWING   //////////////////////////
         var shadowLayer = new Layer();
         shadowLayer.name = "shadows";
@@ -1518,6 +1527,10 @@
         }
         paper.project._activeLayer.clear();
         //////////////////////////////////////    DRAW    BOUNDARY    RECTANGLE ////////////////////////////
+        window.varsValue.animationYearWorks = false;
+        window.varsValue.animationDayWorks  = false;
+        window.varsValue.drawShadowWorks  =  true;
+        window.varsValue.showGraphicWorks  =  false;
         paper.view.viewSize = new Size(window.innerWidth, window.innerHeight);
         width = paper.view.viewSize.width;
         height = paper.view.viewSize.height;
@@ -1529,8 +1542,10 @@
         var shadowsAoA = options.AoAshadows;     // AoA of shadows in world coordinate
         var objectsAoA = options.AoAobjects;     // AoA of objects in world coordinate
         var sMoment = options.aMoment;
-        var lat = options.Latitude;
-        var lon = options.Longitude;
+        // var lat = options.Latitude;
+        // var lon = options.Longitude;
+        var lat = window.varsValue.B;
+        var lon = window.varsValue.L;
         var dUTC = options.dUTCval;
         var minSunHeight = options.minSunHeight;
 
@@ -1756,16 +1771,16 @@
             fontWeight: axisFontWeight,
             fontSize: hFont,
             point: [20, 80],
-            content: window.locales["sunHeight"] + Utils.grad_number2text(curSunHeight,0,"°")
+            content: window.locales["sunHeightUp"] + Utils.grad_number2text(curSunHeight,0,"°")
         });
 
     };
 
-    window.Utils.shadowAnimationDay3D = function (options) {
+    window.Utils.shadowAnimationDay = function (options) {
         var AoAobj = options.AoA;   // Array of objects. Each objects described by points arrays.
         var sMoment = options.aMoment;
-        var lat = options.Latitude;
-        var lon = options.Longitude;
+        var lat = window.varsValue.B;
+        var lon = window.varsValue.L;
         var dUTCval = options.dUTCval;
         var temp = options.Temperature;
         var press = options.Pressure;
@@ -1774,10 +1789,14 @@
         var atMoment;
         var aDuration = 40; //timelaps in miliseconds
         var counter = 0;
-        window.animationIsOn = true;
+
+        window.varsValue.animationYearWorks = false;
+        window.varsValue.animationDayWorks  = true;
+        window.varsValue.drawShadowWorks  =  true;
+        window.varsValue.showGraphicWorks  =  false;
+        clearTimeout(window.varsValue.yearTimeOut) ;        //2stop  shadowAnimationYear
 
         (function delay(duration) {
-            if (!window.animationIsOn || isPaused) return false;
 
             atMoment = moment(sMoment, "").add(2,"minute");
             sMoment = moment(atMoment, "").format('YYYY-MM-DD HH:mm:ss');
@@ -1806,21 +1825,20 @@
                 minSunHeight: minSunHeight
             };
 
-            Utils.drawShadow3D(options2 );
+            Utils.drawShadow(options2 );
 
-            if (++counter <= 72000 && window.animationIsOn) setTimeout(delay, duration, duration);
-            else {counter = 0}
+            window.varsValue.dayTimeOut = setTimeout(delay, duration, duration);
 
         })(aDuration);
 
 
     };
 
-    window.Utils.shadowAnimationYear3D = function (options) {
+    window.Utils.shadowAnimationYear = function (options) {
         var AoAobj = options.AoA;   // Array of objects. Each objects described by points arrays.
         var sMoment = options.aMoment;
-        var lat = options.Latitude;
-        var lon = options.Longitude;
+        var lat = window.varsValue.B;
+        var lon = window.varsValue.L;
         var dUTCval = options.dUTCval;
         var temp = options.Temperature;
         var press = options.Pressure;
@@ -1829,10 +1847,14 @@
         var atMoment;
         var aDuration = 40; //timelaps in miliseconds
         var counter = 0;
-        window.animationIsOn = true;
+
+        window.varsValue.animationYearWorks = false;
+        window.varsValue.animationDayWorks  = true;
+        window.varsValue.drawShadowWorks  =  true;
+        window.varsValue.showGraphicWorks  =  false;
+        clearTimeout(window.varsValue.dayTimeOut) ;         //2stop  shadowAnimationYear
 
         (function delay(duration) {
-            if (!window.animationIsOn) return false;
 
             atMoment = moment(sMoment, "").add(1,"day");
             sMoment = moment(atMoment, "").format('YYYY-MM-DD HH:mm:ss');
@@ -1861,10 +1883,9 @@
                 minSunHeight: minSunHeight
             };
 
-            Utils.drawShadow3D(options2 );
+            Utils.drawShadow(options2 );
 
-            if (++counter <= 7200 && window.animationIsOn) setTimeout(delay, duration, duration);
-            else {counter = 0}
+            window.varsValue.yearTimeOut = setTimeout(delay, duration, duration);
 
         })(aDuration);
 
