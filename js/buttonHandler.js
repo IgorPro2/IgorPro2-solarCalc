@@ -21,11 +21,11 @@
     let ht = timeHour.value;
     let mt = timeMin.value;
     let st = timeSec.value;
-    let dUTCval = +dUTC.value;
+    // let dUTCval = +dUTC.value;
 
     let Home = [ [5342.27,4624.58,0,6],[5346.09,4623.70,0,9.5],[5349.99,4622.80,0,6],[5349.18,4619.38,0,6],
-        [5350.11,4619.160,0,6],[5349.55,4616.83,0,9.5],[5348.98,4614.48,0,6],[5348.08,4614.71,0,6],
-        [5347.27,4611.28,0,6],[5343.45,4612.16,0,9.5],[5338.90,4613.22,0,5.44],[5340.09,4618.24,0,5.44], [5340.83,4618.09,0,6]  ];
+                 [5350.11,4619.160,0,6],[5349.55,4616.83,0,9.5],[5348.98,4614.48,0,6],[5348.08,4614.71,0,6],
+                 [5347.27,4611.28,0,6],[5343.45,4612.16,0,9.5],[5338.90,4613.22,0,5.44],[5340.09,4618.24,0,5.44], [5340.83,4618.09,0,6]  ];
     let Roof = [ [5346.09,4623.70,0,9.5], [5344.77,4617.92,0,9.5], [5349.55,4616.83,0,9.5], [5344.77,4617.92,0,9.5], [5343.45,4612.16,0,9.5]];
     let Fence1 = [ [5345.26,4633.94,1.8], [5346.27,4631.93,1.8], [5354.45,4629.62,1.8], [5354.40,4629.43,1.8], [5346.11,4631.77,1.8], [5345.14,4633.71,1.8]];
     let Fence2 = [ [5340.79,4635.33,0,2.1], [5345.26,4633.94,0,2.1], [5345.19,4633.70,0,2.1], [5340.72,4635.09,0,2.1] ];
@@ -35,23 +35,20 @@
     let Fence6 = [ [5337.16,4619.35,0,2.75], [5337.74,4621.94,0,2.75], [5337.99,4621.890,0,2.75], [5337.40,4619.30,0,2.75] ];
     let Fence7 = [ [5343.63,4609.99,0,2.00], [5339.85,4611.25,0,2.00], [5339.93,4611.49,0,2.00], [5343.71,4610.23,0,2.00] ];
     let Fence8 = [ [5339.85,4611.25,0,3.00], [5336.67,4612.320,0,3.00], [5338.71,4618.51,0,3.00], [5338.96,4618.46,0,3.00], [5336.99,4612.47,0,3.00], [5339.93,4611.49,0,3.00] ];
-
-
-
-    // let Home4corners3d = [ [5342.27,4624.58,5.9,6],[5349.99,4622.80,5.9,6], [5347.27,4611.28,5.9,6],[5338.90,4613.22,5.9,6] ];
-    // let Foot4corners3d = [ [5342,4620,0,6], [5343,4620,0,6], [5343,4619,0,6],[5342,4619,0,6] ];
-
-    let objects4shadow = [ Home, Roof, Fence1, Fence2, Fence3, Fence4, Fence5, Fence6, Fence7, Fence8];
-    //let objects4shadow = [ Home4corners3d, Foot4corners3d ];
+    let cubeHole1 = [ [5356,4630,0,6],[5360,4630,0,6],[5360,4628,0,6],[5356,4628,0,6]];
+    let cubeHole2 = [ [5356,4626,0,6],[5360,4626,0,6],[5360,4624,0,6],[5356,4624,0,6]];
+    let holeLow =   [ [5356,4628,0,2],[5360,4628,0,2],[5360,4626,0,2],[5356,4626,0,2]];
+    let holeUp =    [ [5356,4628,4,6],[5360,4628,4,6],[5360,4626,4,6],[5356,4626,4,6]];
+    let objects4shadow = [ Home, Roof, Fence1, Fence2, Fence3, Fence4, Fence5, Fence6, Fence7, Fence8,cubeHole1,cubeHole2,holeLow,holeUp];
 
     let sMoment = sYear + "-" + sMonth + "-" + sDay + " " + ht + ":" + mt + ":" + st;
 
-    let lat = Utils.grad_textGMS2number(latGrad.value, latMin.value , latSec.value);
-    let lon = Utils.grad_textGMS2number(lonGrad.value, lonMin.value , lonSec.value);
-    let temp = document.getElementById("temp").value;
-    let press = document.getElementById("press").value;
+    // let lat = Utils.grad_textGMS2number(latGrad.value, latMin.value , latSec.value);
+    // let lon = Utils.grad_textGMS2number(lonGrad.value, lonMin.value , lonSec.value);
+    // let temp = document.getElementById("temp").value;
+    // let press = document.getElementById("press").value;
 
-
+    window.varsValue.minSunHeight = 5;  // Minimal height of sun above horizon in degrees for calculation
 
     let eclipticAngle;
     Utils.takeEquinoxSolsticeAE();
@@ -371,10 +368,6 @@
             Utils.drawSunDial();
         };
 
-        this.csvObjectImport = function (target){
-            //stub
-        };
-
         this.shadowMap = function (target){
             let sYear = document.getElementById("dateYear").value;
             let sMonth  = document.getElementById("dateMonth").value;
@@ -388,30 +381,32 @@
             let dUTCval = document.getElementById("dUTC").value;
             let temp = document.getElementById("temp").value;
             let press = document.getElementById("press").value;
-            let minSunHeight = 5;
+            let AoA;
+            if( window.varsValue.userObj4shadow) { AoA = window.varsValue.userObj4shadow;}
+            else {AoA = objects4shadow;}
 
             let options = {
-                AoA: objects4shadow,               // Array of objects  [x,y,zLow,zUp], [x,y,zLow zUp],........
+                AoA: AoA,               // Array of objects  [x,y,zLow,zUp], [x,y,zLow zUp],........
                 aMoment: sMoment,
                 Latitude: lat,
                 Longitude: lon,
                 dUTCval: dUTCval,
                 Temperature: temp,
                 Pressure: press,
-                minSunHeight: minSunHeight
+                minSunHeight: window.varsValue.minSunHeight
             };
             let shadArr = Utils.calcObjectsShadow3D (options);
 
             let options2 = {
                 AoAshadows: shadArr,
-                AoAobjects: objects4shadow,        // [ Home3d,  Roof3d,  Fence23d ]
+                AoAobjects: AoA,
                 aMoment: sMoment,
                 Latitude: lat,
                 Longitude: lon,
                 dUTCval: dUTCval,
                 Temperature: temp,
                 Pressure: press,
-                minSunHeight: minSunHeight
+                minSunHeight: window.varsValue.minSunHeight
             };
 
             clearTimeout(window.varsValue.yearTimeOut) ;        //2stop  shadowAnimationYear
@@ -432,17 +427,19 @@
             let dUTCval = document.getElementById("dUTC").value;
             let temp = document.getElementById("temp").value;
             let press = document.getElementById("press").value;
-            let minSunHeight = 5;
+            let AoA;
+            if( window.varsValue.userObj4shadow) { AoA = window.varsValue.userObj4shadow;}
+            else {AoA = objects4shadow;}
 
             let options = {
-                AoA: objects4shadow,                     //[ AoAxyz,  AoAxyz2 ],
+                AoA: AoA,
                 aMoment: sMoment,
                 Latitude: window.varsValue.B,
                 Longitude: window.varsValue.L,
                 dUTCval: dUTCval,
                 Temperature: temp,
                 Pressure: press,
-                minSunHeight: minSunHeight,
+                minSunHeight: window.varsValue.minSunHeight
             };
             Utils.shadowAnimationDay(options);
         };
@@ -460,17 +457,19 @@
             let dUTCval = document.getElementById("dUTC").value;
             let temp = document.getElementById("temp").value;
             let press = document.getElementById("press").value;
-            let minSunHeight = 5;
+            let AoA;
+            if( window.varsValue.userObj4shadow) { AoA = window.varsValue.userObj4shadow;}
+            else {AoA = objects4shadow;}
 
             let options = {
-                AoA: objects4shadow,                     //[ AoAxyz,  AoAxyz2 ],
+                AoA: AoA,
                 aMoment: sMoment,
                 Latitude: window.varsValue.B,
                 Longitude: window.varsValue.L,
                 dUTCval: dUTCval,
                 Temperature: temp,
                 Pressure: press,
-                minSunHeight: minSunHeight,
+                minSunHeight: window.varsValue.minSunHeight
             };
             Utils.shadowAnimationYear(options);
         };

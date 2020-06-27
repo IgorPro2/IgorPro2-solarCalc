@@ -95,20 +95,20 @@ canvas[data-paper-resize] {
 
 
 
-.sheetsPicker{
+.filePicker{
     display: block;
     position: relative;
     float: none;
 }
 
-.sheetsPicker [type=file] {
+.filePicker [type=file] {
     display: none;
     visibility: hidden;
 }
 
-.sheetsPicker > label {
+.filePicker > label {
     display: block;
-    background-color: #4D4D4D;
+    background-color: #C1D1DC;
     opacity: 0.75;
     color: #fff;
     border: none;

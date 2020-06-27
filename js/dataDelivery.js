@@ -500,7 +500,7 @@ function sunDials2AoA(){
 
     let rowArray, EphArr, D, E, sunHt, sunAz, sunRd;
     /////////////////////// PARAMETERS FOR SUN DIAL TABLES //////////////////////////////////////////////////////////
-    let minSunHeight = 5;                           // Minimal height of sun above horizon in degrees for calculation
+    let minSunHeight = window.varsValue.minSunHeight;// Minimal height of sun above horizon in degrees for calculation
     //let gnomonLen    = 7;                         // length of Gnomon in some units
     let gnomonLen    = +eyeHeight;                   // length of Gnomon in some units
     let maxShadow    = 7 * gnomonLen;               // Maximal length of Gnomon's shadow in "Gnomon's" units
@@ -874,7 +874,7 @@ function sunShadowMaker(AoAxyz, sMoment, lat, lon, dUTC, temp, press ){
 // Returns: AoA of  [ [x,y,0], [x,y,0] ... ]      where x, y are Easting, Northing of end of each object's shadow.
 // Each object drops this shadow from SUN at given Date&Time.
     let nn = AoAxyz.length;
-    let minSunHeight = 5;                           // Minimal height of sun above horizon in degrees for calculation
+    let minSunHeight = window.varsValue.minSunHeight;  // Minimal height of sun above horizon in degrees for calculation
     let options, solar, resArr, Ht0, Az0, i, xs, ys, zs, xp, yp, zp, lp, tt, sunHt, sunAz, rowArray, gnomonLen, maxlen =0;
     let resAoA = new Array(nn);
 
@@ -1132,43 +1132,86 @@ function calcObjectsShadow3D(options) {
     return shadowsAll;
 
 }
+// //Philip example
+// ;(function () {
+//     var sheetsPicker = document.getElementById('sheetsPicker');
+//     if (!sheetsPicker) return false;
+//     sheetsPicker.addEventListener('change', handleFileSelect, false);
+//     function handleFileSelect(evt) {
+//         var f = evt.target.files[0]; // FileList object
+//         if (!f) return false;
+//         // Only process text files.
+//         // if (f.type.match('text.*')) {//TODO: DETECT PROPER FILETYPE
+//         if (true) {
+//             var reader = new FileReader();
+//             // Closure to capture the file information.
+//             reader.onload = (function (theFile) {
+//                 evt.target.value = null;
+//                 return function (e) {
+//                     // console.log(e.target);
+//                     var fileName = encodeURI(theFile.name);
+//                     // window.loadFromFile(fileName, e.target.result);
+//                     console.log("LOADING " + fileName);
+//                     var data = new Uint8Array(e.target.result);
+//                     // var workbook = XLSX.read(data, {type: 'array', cellStyles: true, bookImages: true});
+//                     // var worksheet = workbook.Sheets[workbook.SheetNames[0]];
+//                     // var container = document.getElementById('table');
+//                     // container.innerHTML = XLSX.utils.sheet_to_html(worksheet);
+//
+//                     window.userCSV = XLSX.read(data, {type: 'array', template: true});
+//                     console.log(userCSV);
+//                 };
+//             })(f);
+//             reader.readAsArrayBuffer(f);
+//         }
+//     }
+// }());
 
 ;(function () {
-
-    var sheetsPicker = document.getElementById('sheetsPicker');
-
-    if (!sheetsPicker) return false;
-
-    sheetsPicker.addEventListener('change', handleFileSelect, false);
-
-    function handleFileSelect(evt) {
-        var f = evt.target.files[0]; // FileList object
-        if (!f) return false;
-        // Only process text files.
-        // if (f.type.match('text.*')) {//TODO: DETECT PROPER FILETYPE
-        if (true) {
-            var reader = new FileReader();
-            // Closure to capture the file information.
-            reader.onload = (function (theFile) {
-                evt.target.value = null;
-                return function (e) {
-                    // console.log(e.target);
-                    var fileName = encodeURI(theFile.name);
-                    // window.loadFromFile(fileName, e.target.result);
-                    console.log("LOADING " + fileName);
-                    var data = new Uint8Array(e.target.result);
-                    // var workbook = XLSX.read(data, {type: 'array', cellStyles: true, bookImages: true});
-                    // var worksheet = workbook.Sheets[workbook.SheetNames[0]];
-                    // var container = document.getElementById('table');
-                    // container.innerHTML = XLSX.utils.sheet_to_html(worksheet);
-
-                    window.workbook = XLSX.read(data, {type: 'array', template: true});
-                    console.log(workbook);
-                };
-            })(f);
-            reader.readAsArrayBuffer(f);
-        }
+    if ( ! (window.File && window.FileReader && window.FileList && window.Blob)) {
+        alert('The File APIs are not fully supported in this browser.');
     }
+    function handleFileSelect(evt) {
+        let file = evt.target.files[0];
+        if (!file.type.match('text.*')) {
+            return alert(file.name + " is not a valid text file.");
+        }
+        let reader = new FileReader();
+        reader.readAsText(file);
+        reader.onload = function (e) {           //making AoA of each line
+            let userCSV = reader.result.split("\n").map(function(x){return x.split(",")});
+            console.log(userCSV);
+        ///////////////////// %%%%%%%%%%%%   PARSING   %%%%%%%%%
+        let numObj = userCSV.length, objName;
+        let obj4Shadow = [];
+        for (let i=0; i < numObj; i++ ){
+            let oneArr = userCSV[i];
+            objName = oneArr.shift();
+            let numEl = oneArr.length;
+            let oneObj = [];
+
+            for (let j=0; j < numEl; j=j+4 ){
+                let aPoint = [];
+
+                for (let k=j; k < j+4; k++) {
+                    aPoint.push(+oneArr[k])         //+ to make number from string
+                }
+                oneObj.push(aPoint)
+            }
+            obj4Shadow.push(oneObj)
+        }
+        window.varsValue.userObj4shadow = obj4Shadow;
+        ///////////////////// %%%%%%%%%%%%   PARSING   %%%%%%%%%
+
+    };
+
+
+    }
+    window.onload = function () {
+        document.getElementById('filePicker').addEventListener('change', handleFileSelect, false);
+    };
+
+
 }());
 
 window.Utils.dataDeliveryDay = dataDeliveryDay;
