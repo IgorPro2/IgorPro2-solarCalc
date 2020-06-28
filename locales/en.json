@@ -89,7 +89,7 @@
   "civilLb": "Civil Twilight -6°",
   "nauticalLb": "Nautical Twilight -12°",
   "astronomicLb": "Astronomic Twilight -18°",
-  "outputDropBtLb": "Input/Output",
+  "outputDropBtLb": "Output to csv",
   "thisDayTable": "This day every 2 minutes -> csv",
   "thisYearTable": "This time every day of year -> csv",
   "sunDialTable": "Sun Dial's Cadran - > csv",
@@ -105,6 +105,7 @@
   "yearShadowAnimation": "Year Shadow Animation",
   "shadows": "Shadow",
   "showSunDial": "SunDial's Cadran",
-  "sunHeightUp": "Sun's upper edge height:"
+  "sunHeightUp": "Sun's upper edge height:",
+  "objectsFile": "Object's XYZ"
 
 }

@@ -89,7 +89,7 @@
   "civilLb": "Гражданские сумерки -6°",
   "nauticalLb": "Навигационные сумерки -12°",
   "astronomicLb": "Астрономические сумерки -18°",
-  "outputDropBtLb": "Ввод/Вывод",
+  "outputDropBtLb": "Вывод в csv",
   "thisDayTable": "Этот день через 2 минуты -> csv",
   "thisYearTable": "Это время каждый день этого года -> csv",
   "sunDialTable": "Кадран солнечных часов -> csv",
@@ -105,6 +105,6 @@
   "yearShadowAnimation": "Годовая анимация тени",
   "shadows": "Тень",
   "showSunDial": "Кадран солнечных часов",
-  "sunHeightUp": "Высота верхнего края солнца:"
-
+  "sunHeightUp": "Высота верхнего края солнца:",
+  "objectsFile": "XYZ объектов"
 }

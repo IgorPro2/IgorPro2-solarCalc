@@ -25,7 +25,7 @@
     let pressP = document.getElementById("press");
     let eyeHeight = document.getElementById("height");
     //Time & Place it was pushed to wwww.solarcalculator.ru
-    latGrad.value = "44";
+    latGrad.value = "76";
     latMin.value = "06";
     latSec.value = "16";
     lonGrad.value = "39";
@@ -33,7 +33,7 @@
     lonSec.value = "03";
     dUTC.value = "3";
     dateYear.value = "2020";
-    dateMonth.value = "04";
+    dateMonth.value = "03";
     dateDay.value = "04";
     timeHour.value = "07";
     timeMin.value = "00";
