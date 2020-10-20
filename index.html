@@ -8,13 +8,10 @@
     <script src="js/ephemeris/2018.js"></script>
     <script src="js/ephemeris/2019.js"></script>
     <script src="js/underscore.js"></script>
-
-
     <!--    CTRL-ALT-L - code alignment    -->
     <!--    CTRL-/(?)     - comment    -->
     <!--    CTRL-D     - copy string/text    -->
     <!--    ALT+Select - multiple input    Два разных текста на одной строке-->
-
     <link rel="stylesheet" href="vendor/bootstrap/bootstrap.min.css">
     <link rel="stylesheet" href="css/app.css">
 
@@ -44,6 +41,12 @@
     </noscript>
     <!-- /Yandex.Metrika counter -->
 
+    <!-- JQuery Location Picker plugin -->
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript" src='http://maps.google.com/maps/api/js?sensor=false&libraries=places'></script>
+    <script src="js/locationpicker.jquery.js"></script>
+    <!-- JQuery Location Picker plugin -->
+
 </head>
 <body>
 
@@ -54,22 +57,30 @@
     <div class="logoSign">
         <span>{{logoSignLb}}</span>
     </div>
+
     <div class="row mt-3">
         <div class="col-sm-12 col-md-3 text-center">
             <img src="images/Склонение.jpg" width="135px" height="86">
         </div>
+
+        <!--JQuery Location Picker plugin
+        <div id="somecomponent" style="width: 200px; height: 180px;"></div>
+        <script>
+            $('#somecomponent').locationpicker();
+        </script>
+        -->
+
         <div class="col-sm-12 col-md-6 text-center">
             <h1 class="">{{pageTitleLb}}</h1>
-            <!--     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
-                     Help
-                 </button>  -->
         </div>
-        <div class="col-md-3 d-none d-md-block text-center">
-            <img src="images/Уравнение.gif" width="135px" height="86">
-        </div>
+
+      <div class="col-md-3 d-none d-md-block text-center">
+          <img src="images/Уравнение.gif" width="135px" height="86">
+      </div>
+
     </div>
 
-    <!--    INPUT-->
+  <!--    INPUT-->
     <div class="row justify-content-center rowInput">
 
         <div class="col-sm-12 col-md-auto text-center text-nowrap">
@@ -348,6 +359,7 @@
                 <button class="dropdown-item" type="button" data-action="dayShadowAnim">{{dayShadowAnimation}}</button>
                 <button class="dropdown-item" type="button" data-action="yearShadowAnim">{{yearShadowAnimation}}</button>
                 <button class="dropdown-item" type="button" data-action="showCadran">{{showSunDial}}</button>
+                <button class="dropdown-item" type="button" data-action="showGraphic">{{graphicsMenu}}</button>
             </div>
         </div>
 
@@ -419,7 +431,6 @@
         </div>
     </div>
 </div>
-
 
 <script src="js/moment.js"></script>
 <script src="js/paper-full.min.js"></script>

@@ -1181,7 +1181,7 @@ function calcObjectsShadow3D(options) {
         reader.onload = function (e) {           //making AoA of each line
             let userCSV = reader.result.split("\n").map(function(x){return x.split(",")});
             console.log(userCSV);
-        ///////////////////// %%%%%%%%%%%%   PARSING   %%%%%%%%%
+        ///////////////////// %%%%%%%%%%%%   PARSING  user csv file %%%%%%%%%
         let numObj = userCSV.length, objName;
         let obj4Shadow = [];
         for (let i=0; i < numObj; i++ ){
@@ -1201,7 +1201,7 @@ function calcObjectsShadow3D(options) {
             obj4Shadow.push(oneObj)
         }
         window.varsValue.userObj4shadow = obj4Shadow;
-        ///////////////////// %%%%%%%%%%%%   PARSING   %%%%%%%%%
+        ///////////////////// %%%%%%%%%%%%   PARSING  user csv file %%%%%%%%%
 
     };
 

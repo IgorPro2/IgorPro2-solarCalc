@@ -25,17 +25,17 @@
     let pressP = document.getElementById("press");
     let eyeHeight = document.getElementById("height");
     //Time & Place it was pushed to wwww.solarcalculator.ru
-    latGrad.value = "76";
-    latMin.value = "06";
-    latSec.value = "16";
+    latGrad.value = "45";
+    latMin.value = "00";
+    latSec.value = "00";
     lonGrad.value = "39";
-    lonMin.value = "04";
-    lonSec.value = "03";
+    lonMin.value = "00";
+    lonSec.value = "00";
     dUTC.value = "3";
     dateYear.value = "2020";
-    dateMonth.value = "03";
+    dateMonth.value = "04";
     dateDay.value = "04";
-    timeHour.value = "07";
+    timeHour.value = "10";
     timeMin.value = "00";
     timeSec.value = "00";
     tempC.value = "20";
@@ -296,6 +296,7 @@
         givAs.classList.remove("invalidVal");
 
     }
+    var delay = async (ms) => await new Promise(resolve => setTimeout(resolve, ms));
 
 ///////////////////////////////////////////////////   SHOW RESULTS TIMER    ////////////////////////////////////////////
 

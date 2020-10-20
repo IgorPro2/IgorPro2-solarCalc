@@ -222,9 +222,11 @@
         // Pause/Unpause View at mouse click
         if (isPaused) {
             isPaused = false;
+            // console.log("isPaused = false");
             view.play();
         } else {
             isPaused = true;
+            // console.log("isPaused = true");
             view.pause();
         }
     };
@@ -1155,6 +1157,8 @@
             fontSize: hFont,
             justification: 'center'
         });
+        if (window.varsValue.B === -90) {text.content =window.locales['north'] }    //south pole
+
         text = new PointText({
             point: new Point(ox2 , 3*gap),
             content: window.locales['north'],
@@ -1164,6 +1168,8 @@
             fontSize: hFont,
             justification: 'center'
         });
+        if (window.varsValue.B === 90) {text.content =window.locales['south'] }    //north pole
+
         var gl =  window.locales['gnomon'];             //+ "=" + gnomLen.toFixed(2);
         text = new PointText({
             point: gnomPoint - ticf,                       //gnomStart - tic,
@@ -1353,224 +1359,221 @@
         var numShad = shadowsAoA.length;                              //Amount of shadows in array
         var r,g,b,c1,c2,d,rc, alf = 0.6;
 
-        for ( var j=0; j < numShad; j++  ) {
+            for (var j = 0; j < numShad; j++) {
 
-            var curSunHeight = shadowsAoA[j].pop();   // remove last element from Array before scaling
-            if (curSunHeight > minSunHeight) {
-                // current object/shadow in screen coordinates with scale from 1-st object and center in 1-st object center
-                var resArr3 = Utils.scaleAoA4Drawing3D(shadowsAoA[j], gap, scale, minx, maxx, miny, maxy);
-                var curShad = resArr3[0];
-                var numPnt = curShad.length;         // number of points in current shadow
+                var curSunHeight = shadowsAoA[j].pop();   // remove last element from Array before scaling
+                if (curSunHeight > minSunHeight) {
+                    // current object/shadow in screen coordinates with scale from 1-st object and center in 1-st object center
+                    var resArr3 = Utils.scaleAoA4Drawing3D(shadowsAoA[j], gap, scale, minx, maxx, miny, maxy);
+                    var curShad = resArr3[0];
+                    var numPnt = curShad.length;         // number of points in current shadow
 
-                for (var i = 0; i < numPnt; i++) {  //Draw shadows polygon between 2-points of each line of shadow [LowShadow - UpShadow -nextPointUpShadow - nextPointLowShadow ]
-                    xlow =  curShad [i][0];
-                    ylow =  curShad [i][1];
-                    xup =   curShad [i][3];
-                    yup =   curShad [i][4];
-                    if ( i === numPnt-1){
-                        xup2 =  curShad [0][3];     //close to 1-st point
-                        yup2 =  curShad [0][4];
-                        xlow2 = curShad [0][0];
-                        ylow2 = curShad [0][1];
+                    for (var i = 0; i < numPnt; i++) {  //Draw shadows polygon between 2-points of each line of shadow [LowShadow - UpShadow -nextPointUpShadow - nextPointLowShadow ]
+                        xlow = curShad [i][0];
+                        ylow = curShad [i][1];
+                        xup = curShad [i][3];
+                        yup = curShad [i][4];
+                        if (i === numPnt - 1) {
+                            xup2 = curShad [0][3];     //close to 1-st point
+                            yup2 = curShad [0][4];
+                            xlow2 = curShad [0][0];
+                            ylow2 = curShad [0][1];
+                        } else {
+                            xup2 = curShad [i + 1][3];
+                            yup2 = curShad [i + 1][4];
+                            xlow2 = curShad [i + 1][0];
+                            ylow2 = curShad [i + 1][1];
+                        }
+
+                        var plow = new Point(xlow, ylow);
+                        var pup = new Point(xup, yup);
+                        var pup2 = new Point(xup2, yup2);
+                        var plow2 = new Point(xlow2, ylow2);
+
+                        //////////////////    4debugging   4debugging   4debugging   4debugging  //////////////////
+                        // var ct = new Shape.Circle({
+                        //     center: plow,
+                        //     radius: 2,
+                        //     fillColor: mcol[(i*2%11)],
+                        // });
+                        // var pt = new PointText({
+                        //     fillColor: mcol[(i*2%11)],
+                        //     fontSize: hFont,
+                        //     point: plow + new Point(i*8, i*8),
+                        //     content: i.toFixed(0)
+                        // });
+                        // ct = new Shape.Circle({
+                        // center: pup,
+                        // radius: 2,
+                        // fillColor: mcol[(i*2%11)],
+                        // });
+                        // pt = new PointText({
+                        // fillColor: mcol[(i*2%11)],
+                        // fontSize: hFont,
+                        // point: pup + new Point(i*8, i*8),
+                        // content: i.toFixed(0)
+                        // });
+                        // ct = new Shape.Circle({
+                        //     center: pup2,
+                        //     radius: 2,
+                        //     fillColor: mcol[(i*2%11)],
+                        // });
+                        // pt = new PointText({
+                        //     fillColor: mcol[(i*2%11)],
+                        //     fontSize: hFont,
+                        //     point: pup2 + new Point(i*8, i*8),
+                        //     content: i.toFixed(0)
+                        // });
+                        // ct = new Shape.Circle({
+                        //     center: plow2,
+                        //     radius: 2,
+                        //     fillColor: mcol[(i*2%11)],
+                        // });
+                        // pt = new PointText({
+                        //     fillColor: mcol[(i*2%11)],
+                        //     fontSize: hFont,
+                        //     point: plow2 + new Point(i*8, i*8),
+                        //     content: i.toFixed(0)
+                        // });
+                        //////////////////    4debugging   4debugging   4debugging   4debugging  //////////////////
+                        var pathShad = new Path();
+
+                        pathShad.add(plow);
+                        pathShad.add(pup);
+                        pathShad.add(pup2);
+                        pathShad.add(plow2);
+                        pathShad.add(plow);
+                        pathShad.fillColor = 'lightgrey';
                     }
-                    else {
-                        xup2 =  curShad [i+1][3];
-                        yup2 =  curShad [i+1][4];
-                        xlow2 = curShad [i+1][0];
-                        ylow2 = curShad [i+1][1];
+
+                    var pathShadLow = new Path();       //Draw shadows polygon between all points of Low shadow clockwise
+                    for (i = 0; i < numPnt; i++) {
+                        xlow = curShad [i][0];
+                        ylow = curShad [i][1];
+                        plow = new Point(xlow, ylow);
+                        pathShadLow.add(plow)
+                    }
+                    pathShadLow.fillColor = 'lightgrey';
+
+                } else {                                   // dawn, twilight, night
+                    {
+                        function findMiddleColorComponent(comp1, comp2, percentChanged) {
+                            return (comp2 - comp1) * percentChanged + comp1;
+                        }
+
+                        function findMiddleRGBColor(c1, c2, percentChanged) {
+                            return new Color(findMiddleColorComponent(c1.red, c2.red, percentChanged),
+                                findMiddleColorComponent(c1.green, c2.green, percentChanged),
+                                findMiddleColorComponent(c1.blue, c2.blue, percentChanged));
+                        }
+
+                        if (curSunHeight >= 0) {
+                            nightRect = new Path.Rectangle(from, to);
+                            c1 = new Color(1, 1, 1, alf);
+                            c2 = new Color(1, 1, 0, alf);
+                            d = (minSunHeight - curSunHeight) / minSunHeight;
+                            rc = findMiddleRGBColor(c1, c2, d);                              // white 1,1,1 to yellow 1,1,0
+                            //console.log(curSunHeight.toFixed(2),d.toFixed(2),' white to yellow=',rc);
+                            nightRect.fillColor = rc;
+                        } else if (curSunHeight >= civilTwilight) {
+                            nightRect = new Path.Rectangle(from, to);
+                            // gradient = new Gradient(['yellow', 'red', 'blue', 'black']);
+                            // nightRect.fillColor = new Color(gradient, from, to);
+                            c1 = new Color(1, 1, 0, alf);
+                            //c1 = window.varsValue.dawnColor;
+                            c2 = new Color(1, 0, 0, alf);
+                            d = curSunHeight / civilTwilight;
+                            rc = findMiddleRGBColor(c1, c2, d);                              // yellow 1,1,0 to red 1,0,0
+                            //console.log(curSunHeight.toFixed(2),d.toFixed(2),' yellow to red',rc);
+                            nightRect.fillColor = rc;
+                            window.varsValue.dawnColor = rc;
+                        } else if (curSunHeight >= nauticalTwilight) {
+                            nightRect = new Path.Rectangle(from, to);
+                            c1 = new Color(1, 0, 0, alf);
+                            //c1 = window.varsValue.dawnColor;
+                            c2 = new Color(0, 0, 1, alf);
+                            d = (curSunHeight - civilTwilight) / (nauticalTwilight - civilTwilight);
+                            rc = findMiddleRGBColor(c1, c2, d);                                // red 1,0,0 to blue 0,0,1
+                            //console.log(curSunHeight.toFixed(2),d.toFixed(2),' red to blue=',rc);
+                            nightRect.fillColor = rc;
+                        } else if (curSunHeight >= astronomicTwilight) {
+                            nightRect = new Path.Rectangle(from, to);
+                            c1 = new Color(0, 0, 1, alf);
+                            //c1 = window.varsValue.dawnColor;
+                            c2 = new Color(0, 0, 0, alf);
+                            d = (curSunHeight - nauticalTwilight) / (astronomicTwilight - nauticalTwilight);
+                            rc = findMiddleRGBColor(c1, c2, d);                                // blue 0,0,1 to black ,0,0,0
+                            //console.log(curSunHeight.toFixed(2),d.toFixed(2),' blue to black=',rc);
+                            nightRect.fillColor = rc;
+                        } else if (curSunHeight <= astronomicTwilight) {
+                            nightRect = new Path.Rectangle(from, to);
+                            nightRect.fillColor = 'black';
+                        }
                     }
 
-                    var plow = new Point(xlow, ylow);
-                    var pup = new Point(xup, yup);
-                    var pup2 = new Point(xup2, yup2);
-                    var plow2 = new Point(xlow2, ylow2);
 
-                    //////////////////    4debugging   4debugging   4debugging   4debugging  //////////////////
-                    // var ct = new Shape.Circle({
-                    //     center: plow,
-                    //     radius: 2,
-                    //     fillColor: mcol[(i*2%11)],
-                    // });
-                    // var pt = new PointText({
-                    //     fillColor: mcol[(i*2%11)],
-                    //     fontSize: hFont,
-                    //     point: plow + new Point(i*8, i*8),
-                    //     content: i.toFixed(0)
-                    // });
-                    // ct = new Shape.Circle({
-                    // center: pup,
-                    // radius: 2,
-                    // fillColor: mcol[(i*2%11)],
-                    // });
-                    // pt = new PointText({
-                    // fillColor: mcol[(i*2%11)],
-                    // fontSize: hFont,
-                    // point: pup + new Point(i*8, i*8),
-                    // content: i.toFixed(0)
-                    // });
-                    // ct = new Shape.Circle({
-                    //     center: pup2,
-                    //     radius: 2,
-                    //     fillColor: mcol[(i*2%11)],
-                    // });
-                    // pt = new PointText({
-                    //     fillColor: mcol[(i*2%11)],
-                    //     fontSize: hFont,
-                    //     point: pup2 + new Point(i*8, i*8),
-                    //     content: i.toFixed(0)
-                    // });
-                    // ct = new Shape.Circle({
-                    //     center: plow2,
-                    //     radius: 2,
-                    //     fillColor: mcol[(i*2%11)],
-                    // });
-                    // pt = new PointText({
-                    //     fillColor: mcol[(i*2%11)],
-                    //     fontSize: hFont,
-                    //     point: plow2 + new Point(i*8, i*8),
-                    //     content: i.toFixed(0)
-                    // });
-                    //////////////////    4debugging   4debugging   4debugging   4debugging  //////////////////
-                    var pathShad = new Path();
-
-                    pathShad.add(plow);
-                    pathShad.add(pup);
-                    pathShad.add(pup2);
-                    pathShad.add(plow2);
-                    pathShad.add(plow);
-                    pathShad.fillColor = 'lightgrey';
                 }
-
-                var pathShadLow = new Path();       //Draw shadows polygon between all points of Low shadow clockwise
-                for ( i = 0; i < numPnt; i++) {
-                    xlow =  curShad [i][0];
-                    ylow =  curShad [i][1];
-                    plow = new Point(xlow, ylow);
-                    pathShadLow.add(plow)
-                }
-                pathShadLow.fillColor = 'lightgrey';
-
             }
-            else {                                   // dawn, twilight, night
-                {
-                    function findMiddleColorComponent(comp1, comp2, percentChanged) {
-                        return (comp2 - comp1)*percentChanged + comp1;
+
+            //////////////////////////////////////    Drawing objects   ////////////////////////////////////
+            var numObj = objectsAoA.length;       //Amount of objects in array
+            var txp, typ, ptob, ob1;
+            var allPathObj = new CompoundPath();
+            for (var l = 0; l < numObj; l++) {
+                var resArr2 = Utils.scaleAoA4Drawing3D(objectsAoA[l], gap, scale, minx, maxx, miny, maxy);
+                var sclObj = resArr2[0];
+                var pathObj = new Path();
+                for (var k = 0; k < sclObj.length; k++) {       //Draw scaled objects polygon
+                    txp = sclObj [k][0];
+                    typ = sclObj [k][1];
+                    ptob = new Point(txp, typ);
+                    if (k === 0) {
+                        ob1 = ptob
                     }
-                    function findMiddleRGBColor(c1, c2, percentChanged) {
-                        return new Color(findMiddleColorComponent(c1.red, c2.red, percentChanged),
-                            findMiddleColorComponent(c1.green, c2.green, percentChanged),
-                            findMiddleColorComponent(c1.blue, c2.blue, percentChanged));
-                    }
-                    if (curSunHeight >= 0) {
-                        nightRect = new Path.Rectangle(from, to);
-                        c1 = new Color(1, 1, 1, alf);
-                        c2 = new Color(1, 1, 0, alf);
-                        d = (minSunHeight - curSunHeight) / minSunHeight;
-                        rc = findMiddleRGBColor(c1, c2, d);                              // white 1,1,1 to yellow 1,1,0
-                        console.log(curSunHeight.toFixed(2),d.toFixed(2),' white to yellow=',rc);
-                        nightRect.fillColor = rc;
-                        window.varsValue.dawnColor = rc;
-                    } else if (curSunHeight >= civilTwilight) {
-                        nightRect = new Path.Rectangle(from, to);
-                        // gradient = new Gradient(['yellow', 'red', 'blue', 'black']);
-                        // nightRect.fillColor = new Color(gradient, from, to);
-                        c1 = new Color(1, 1, 0, alf);
-                        //c1 = window.varsValue.dawnColor;
-                        c2 = new Color(1, 0, 0, alf);
-                        d = curSunHeight / civilTwilight;
-                        rc = findMiddleRGBColor(c1, c2, d);                              // yellow 1,1,0 to red 1,0,0
-                        console.log(curSunHeight.toFixed(2),d.toFixed(2),' yellow to red',rc);
-                        nightRect.fillColor = rc;
-                        window.varsValue.dawnColor = rc;
-                    } else if (curSunHeight >= nauticalTwilight) {
-                        nightRect = new Path.Rectangle(from, to);
-                        c1 = new Color(1, 0, 0, alf);
-                        //c1 = window.varsValue.dawnColor;
-                        c2 = new Color(0, 0, 1, alf);
-                        d = (curSunHeight - civilTwilight) / (nauticalTwilight - civilTwilight);
-                        rc = findMiddleRGBColor(c1, c2, d);                                // red 1,0,0 to blue 0,0,1
-                        console.log(curSunHeight.toFixed(2),d.toFixed(2),' red to blue=',rc);
-                        nightRect.fillColor = rc;
-                        window.varsValue.dawnColor = rc;
-                    } else if (curSunHeight >= astronomicTwilight) {
-                        nightRect = new Path.Rectangle(from, to);
-                        c1 = new Color(0, 0, 1, alf);
-                        //c1 = window.varsValue.dawnColor;
-                        c2 = new Color(0, 0, 0, alf);
-                        d = (curSunHeight - nauticalTwilight) / (astronomicTwilight - nauticalTwilight);
-                        rc = findMiddleRGBColor(c1, c2, d);                                // blue 0,0,1 to black ,0,0,0
-                        console.log(curSunHeight.toFixed(2),d.toFixed(2),' blue to black=',rc);
-                        nightRect.fillColor = rc;
-                        window.varsValue.dawnColor = rc;
-                    } else if (curSunHeight <= astronomicTwilight) {
-                        nightRect = new Path.Rectangle(from, to);
-                        nightRect.fillColor = 'black';
-                        window.varsValue.dawnColor = 'black';
-                    }
+                    pathObj.add(ptob);
                 }
-
-
+                pathObj.add(ob1);                 //1-st point for closing path
+                allPathObj.addChild(pathObj)
             }
-        }
+            allPathObj.fillColor = '#A994FF';
+            allPathObj.strokeColor = 'blue';
 
-        //////////////////////////////////////    Drawing objects   ////////////////////////////////////
-        var numObj = objectsAoA.length;       //Amount of objects in array
-        var txp, typ, ptob, ob1;
-        var allPathObj = new CompoundPath();
-        for ( var l=0; l < numObj; l++  ) {
-            var resArr2 = Utils.scaleAoA4Drawing3D(objectsAoA[l], gap, scale, minx, maxx, miny, maxy);
-            var sclObj = resArr2[0];
-            var pathObj = new Path();
-            for (var k = 0; k < sclObj .length; k++) {       //Draw scaled objects polygon
-                txp=  sclObj [k][0];
-                typ =  sclObj [k][1];
-                ptob = new Point(txp, typ);
-                if (k === 0) {
-                    ob1 = ptob
-                }
-                pathObj.add(ptob);
+            //////////////////////////////////////    Drawing objects   ////////////////////////////////////
+
+            {
+                var textLat = new PointText({
+                    fillColor: fontAxisColor,
+                    fontFamily: sunFont,
+                    fontWeight: axisFontWeight,
+                    fontSize: hFont,
+                    point: [20, 20],
+                    content: window.locales['latLb'] + Utils.grad_number2text(lat)
+                });
+                var textLon = new PointText({
+                    fillColor: fontAxisColor,
+                    fontFamily: sunFont,
+                    fontWeight: axisFontWeight,
+                    fontSize: hFont,
+                    point: [20, 40],
+                    content: window.locales['lonLb'] + Utils.grad_number2text(lon)
+                });
+                var textMoment = new PointText({
+                    fillColor: fontAxisColor,
+                    fontFamily: sunFont,
+                    fontWeight: axisFontWeight,
+                    fontSize: hFont,
+                    point: [20, 60],
+                    content: window.locales["timeDropBtLb"] + sMoment +" "+ window.locales["dUTCLb"] +"="+ dUTC+"h"
+                });
+                var textSunHeight = new PointText({
+                    fillColor: fontAxisColor,
+                    fontFamily: sunFont,
+                    fontWeight: axisFontWeight,
+                    fontSize: hFont,
+                    point: [20, 80],
+                    content: window.locales["sunHeightUp"] + Utils.grad_number2text(curSunHeight, 0, "°")
+                });
             }
-            pathObj.add(ob1);                 //1-st point for closing path
-            allPathObj.addChild(pathObj)
-        }
-        allPathObj.fillColor = '#A994FF';
-        allPathObj.strokeColor = 'blue';
-        //////////////////////////////////////    Drawing objects   ////////////////////////////////////
-
-        {
-            var textLat = new PointText({
-                fillColor: fontAxisColor,
-                fontFamily: sunFont,
-                fontWeight: axisFontWeight,
-                fontSize: hFont,
-                point: [20, 20],
-                content: window.locales['latLb'] + Utils.grad_number2text(lat)
-            });
-            var textLon = new PointText({
-                fillColor: fontAxisColor,
-                fontFamily: sunFont,
-                fontWeight: axisFontWeight,
-                fontSize: hFont,
-                point: [20, 40],
-                content: window.locales['lonLb'] + Utils.grad_number2text(lon)
-            });
-            var textMoment = new PointText({
-                fillColor: fontAxisColor,
-                fontFamily: sunFont,
-                fontWeight: axisFontWeight,
-                fontSize: hFont,
-                point: [20, 60],
-                content: window.locales["timeDropBtLb"] + sMoment + window.locales["dUTCLb"] + dUTC
-            });
-            var textSunHeight = new PointText({
-                fillColor: fontAxisColor,
-                fontFamily: sunFont,
-                fontWeight: axisFontWeight,
-                fontSize: hFont,
-                point: [20, 80],
-                content: window.locales["sunHeightUp"] + Utils.grad_number2text(curSunHeight, 0, "°")
-            });
-        }
 
     };
 
@@ -1594,41 +1597,44 @@
         window.varsValue.showGraphicWorks  =  false;
         clearTimeout(window.varsValue.yearTimeOut) ;        //2stop  shadowAnimationYear
 
-        (function delay(duration) {
 
-            atMoment = moment(sMoment, "").add(2,"minute");
-            sMoment = moment(atMoment, "").format('YYYY-MM-DD HH:mm:ss');
 
-            var options = {
-                AoA:  AoAobj ,               // Array of objects [  [ [x,y,zLow,zUp], [x,y,zLow zUp] ],........ ]
-                aMoment: sMoment,
-                Latitude: lat,
-                Longitude: lon,
-                dUTCval: dUTCval,
-                Temperature: temp,
-                Pressure: press,
-                minSunHeight: minSunHeight
-            };
-            var shadArr = Utils.calcObjectsShadow3D (options);
+            (function delay(duration) {
 
-            var options2 = {
-                AoAshadows: shadArr,
-                AoAobjects:  AoAobj  ,        // [ Home3d,  Roof3d,  Fence23d ]
-                aMoment: sMoment,
-                Latitude: lat,
-                Longitude: lon,
-                dUTCval: dUTCval,
-                Temperature: temp,
-                Pressure: press,
-                minSunHeight: minSunHeight
-            };
+                if (!isPaused) {
+                    atMoment = moment(sMoment, "").add(2, "minute");
+                    sMoment = moment(atMoment, "").format('YYYY-MM-DD HH:mm:ss');
+                }
 
-            Utils.drawShadow(options2 );
+                    var options = {
+                        AoA: AoAobj,               // Array of objects [  [ [x,y,zLow,zUp], [x,y,zLow zUp] ],........ ]
+                        aMoment: sMoment,
+                        Latitude: lat,
+                        Longitude: lon,
+                        dUTCval: dUTCval,
+                        Temperature: temp,
+                        Pressure: press,
+                        minSunHeight: minSunHeight
+                    };
+                    var shadArr = Utils.calcObjectsShadow3D(options);
 
-            window.varsValue.dayTimeOut = setTimeout(delay, duration, duration);
+                    var options2 = {
+                        AoAshadows: shadArr,
+                        AoAobjects: AoAobj,        // [ Home3d,  Roof3d,  Fence23d ]
+                        aMoment: sMoment,
+                        Latitude: lat,
+                        Longitude: lon,
+                        dUTCval: dUTCval,
+                        Temperature: temp,
+                        Pressure: press,
+                        minSunHeight: minSunHeight
+                    };
 
-        })(aDuration);
+                    Utils.drawShadow(options2);
 
+                    window.varsValue.dayTimeOut = setTimeout(delay, duration, duration);
+
+            })(aDuration);
 
     };
 
@@ -1654,9 +1660,10 @@
 
         (function delay(duration) {
 
-            atMoment = moment(sMoment, "").add(1,"day");
-            sMoment = moment(atMoment, "").format('YYYY-MM-DD HH:mm:ss');
-
+            if (!isPaused) {
+                atMoment = moment(sMoment, "").add(1, "day");
+                sMoment = moment(atMoment, "").format('YYYY-MM-DD HH:mm:ss');
+            }
             var options = {
                 AoA:  AoAobj ,               // Array of objects [  [ [x,y,zLow,zUp], [x,y,zLow zUp] ],........ ]
                 aMoment: sMoment,

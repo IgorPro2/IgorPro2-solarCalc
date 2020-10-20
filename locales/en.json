@@ -94,7 +94,7 @@
   "thisYearTable": "This time every day of year -> csv",
   "sunDialTable": "Sun Dial's Cadran - > csv",
   "objectsXYZ": "xyx.csv -> Objects for shadowing",
-  "helpText": "  Input your: Latitude/Longitude and TimeZone difference from UTC. Input your: Date/Time and Temperature/Pressure (for correction SunHeight on vertical\nrefraction).\nBUTTONS ARE:\nCALCULATE- Calculate apparent suns position at given Place Date and Time.\nCURRENT - Calculate SunPosition each second at system clock Time.\n GRAPH - Draw and animate SunPathes: Year(analemma) and Day moves.\nGivenHtAz- Calculate local Time moment when Suns Center is at your specified Height or Azimuth.\nThe Altitude/Azimuth values you need, are set in the line below the BUTTONS.\nTo calculate the Time when the Sun is at a given height in the afternoon, check the box in this line.\n If Suns Height or Azimuth impossible at the specified Place/Date, their values are given in red.",
+  "helpText": "  Input your: Latitude/Longitude and TimeZone difference from UTC. Input your: Date/Time and Temperature/Pressure (for correction SunHeight on vertical\nrefraction).\nBUTTONS ARE:\nCALCULATE- Calculate apparent suns position at given Place Date and Time.\nCURRENT - Calculate SunPosition each second at system clock Time.\n GRAPH - Draw and animate SunPathes: Year(analemma) and Day path.\nGivenHtAz- Calculate local Time moment when Suns Center is at your specified Height or Azimuth.\nThe Altitude/Azimuth values you need, are set in the line below the BUTTONS.\nTo calculate the Time when the Sun is at a given height afternoon, check the box in this line.\n If Suns Height or Azimuth impossible at the specified Place/Date, their values given in red.   Text file of objects for shadowing: One line - one object. Each line starts with object's name. Object's points are clockwise. One point consists of 4 values: x(east), y(north), bottom height, top height. Value's separator is comma.",
   "drawCadran": "Draw Cadran",
   "gnomon": "Gnomon's length",
   "year": "Year: ",
@@ -106,6 +106,7 @@
   "shadows": "Shadow",
   "showSunDial": "SunDial's Cadran",
   "sunHeightUp": "Sun's upper edge height:",
-  "objectsFile": "Object's XYZ"
+  "objectsFile": "Object's XYZ",
+  "graphicsMenu": "Graph"
 
 }
