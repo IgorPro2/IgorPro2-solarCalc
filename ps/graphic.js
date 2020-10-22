@@ -86,6 +86,8 @@
         paper.view.viewSize = new Size(window.innerWidth, window.innerHeight);
         width = paper.view.viewSize.width;
         height = paper.view.viewSize.height;
+        window.varsValue.width = width;
+        window.varsValue.height = height;
 
         tx = (width - 2 * gap) / dx;    //scale on axis X
         ty = (height - 2 * gap) / dy;   //scale on axis Y
@@ -1232,15 +1234,25 @@
     };
 
     window.Utils.scaleAoA4Drawing3D = function (AoAxyz, gap, scale, minx, maxx, miny, maxy) {
-        // Takes:  1. AoAxyz - AoA of [ [xLow, yLow, lLow, xUp, yUp, lUp], [], ... ]
+        // Takes:  1. AoAxyz( ONE OBJECT) - AoA of [ [xLow, yLow, hLow, xUp, yUp, hUp], [], ... ]
+        //            where xLow, yLow, are object's Lower point Easting&Northing and hLow is Lower point height.
+        //            xUp, yUp, are object's Upper point Easting&Northing and hUp is Upper point height.
+        //            We use  OBJECTS for initial scaling 2define Scale       in that case height scaled too but useless
+        //   OR
+        // Takes:  1. AoAxyz(ONE SHADOW) - AoA of [ [xLow, yLow, lLow, xUp, yUp, lUp], [], ... ]
         //            where xLow, yLow, are object's Low shadows Easting&Northing and lLow is Low shadow Length.
         //            xUp, yUp, are object's Up shadows Easting&Northing and lUp is Up shadow Length.
+        //            We use  SHADOWS for scaling shadow's length and drawing it later
+
         //         2. gap - amount of pixels between viewSize border and drawing
-        //         3. scale, minx, maxx, miny, maxy - IF THEY ARE ABSENT WE CALCULATE IT, IF PRESENT USE GIVEN  !!!!!!!!!!
-        // Return: 1. AoA of [ [xLow, yLow, lLow, xUp, yUp, lUp], [],...] where Easting&Northing&Lenght REDUCED  to it's minimal values
-        //                                                                AND SCALED to draw on paper.view.viewSize
+        //         3. scale, minx, maxx, miny, maxy - IF THEY ARE ABSENT WE CALCULATE IT, IF PRESENT USE GIVEN  !!!!!!!
+
+        // Return: 1. AoA of [ [xLow, yLow, lLow, xUp, yUp, lUp], [],...] where Easting&Northing&Lenght
+        //                                 REDUCED  to it's minimal values AND SCALED to draw on paper.view.viewSize
         //         2. Scale for multiplying xc,yc for correct drawing on current paper.view.viewSize
         //         3. Min&Max values for all x,y in AoA
+        //                    SCALE is Pixels amount in 1 original x,y unit (The bigger x,y range the smaller is SCALE)
+
 
         var xscl, yscl;
         var width, height, ox, oy;
@@ -1249,9 +1261,11 @@
         var sclArr = new Array(Size1);
         var resArr = new Array(6);
 
-        if (!minx || !miny) {           //define scales by objects, not by their shadows
+        if (!minx || !miny) {
+
             minx = AoAxyz[0][0];
             maxx = AoAxyz[0][0];
+
             for (i = 0; i < Size1; i++) {
                 if (AoAxyz[i][0] < minx) {
                     minx = AoAxyz[i][0]
@@ -1273,12 +1287,14 @@
         }
 
 
-        var dx = maxx-minx;                       //range on axis x at SunDials
-        var dy = maxy-miny;                       //range on axis y at SunDials
+        var dx = maxx-minx;                       //range on axis x for all points of one object in AoA
+        var dy = maxy-miny;                       //range on axis y for all points of one object in AoA
 
         paper.view.viewSize = new Size(window.innerWidth, window.innerHeight);
         width = paper.view.viewSize.width;
         height = paper.view.viewSize.height;
+        window.varsValue.width = width;
+        window.varsValue.height = height;
 
         if (!scale) {
             xscl = (width - 2 * gap) / dx;     // scale on axis X
@@ -1304,14 +1320,69 @@
 
             sclArr[i] = rowArr;
         }
-        resArr[0] = sclArr;         // Array of scaled x,y and the scaled shadows
-        resArr[1] = scale;          // scale: Pixels amount in 1 initial x,y unit
+        resArr[0] = sclArr;         // Array of scaled x,y and the scaled shadows length
+        resArr[1] = scale;          // scale is Pixels amount in 1 initial x,y unit
         resArr[2] = minx;
         resArr[3] = maxx;
         resArr[4] = miny;
         resArr[5] = maxy;
 
         return resArr;           // Array of scaled x,y and the scaled shadows
+    };
+
+    window.Utils.defineDrawScale= function (options){
+        // Function takes: AoA of objects 3D coordinates.
+        // Each 1-st level element of global AoA describes one object.   It has index of 1-st level in global AoA
+        // 2-d level elements are arrays of [x,y,z] that describes each point of one object. It has index of 2-nd level in global AoA
+        // Each point describes by 3 coordinates x,y,z  as elements with index of 3-d level in global AoA
+        // Example:
+        // [  [  [x,y,zLow,zUp], [x,y,zLow zUp], [x,y,zLow,zUp], [x,y,zLow,zUp] ],- object constructed from 4 points.
+        //    [  [x,y,zLow,zUp], [x,y,zLow,zUp], [x,y,zLow,zUp]          ],       - object constructed from 3 points.
+        //    [  [x,y,zLow,zUp, [x,y,zLow,zUp],                  ]  ]             - object constructed from 2 points.
+        //
+        //Function return: SCALE 4 drawing objects in widow  window.varsValue.width;let height = window.varsValue.height;
+        //                 max&min x,y from all objects of AoAobj
+
+
+        var AoAobj = options.AoA;
+        var resArr = Utils.scaleAoA4Drawing3D(AoAobj[0] , gap);
+        var scale =resArr [1];
+        var minx = resArr [2];
+        var maxx = resArr [3];
+        var miny = resArr [4];
+        var maxy = resArr [5];
+        console.log( "AoAobj[0]: scale="+scale+" minx="+minx+" maxx="+maxx+" miny="+miny+"maxy="+maxy);
+        var tscale , tminx , tmaxx , tminy, tmaxy;
+        for (var j = 1; j < AoAobj.length; j++) {
+            resArr = Utils.scaleAoA4Drawing3D(AoAobj [j], gap);
+            tscale =resArr [1];
+            tminx = resArr [2];
+            tmaxx = resArr [3];
+            tminy = resArr [4];
+            tmaxy = resArr [5];
+            if (tscale < scale) scale = tscale;
+            if (tminx < minx)   minx = tminx;
+            if (tmaxx > maxx)   maxx = tmaxx;
+            if (tminy < miny)   miny = tminy;
+            if (tmaxy > maxy)   maxy = tmaxy;
+        }
+        var width = window.varsValue.width;
+        var height = window.varsValue.height;
+        var dx = maxx-minx;                       //range on axis x for all objects in AoA
+        var dy = maxy-miny;                       //range on axis y for all objects in AoA
+        var xscl = (width - 2 * gap) / dx;        // scale on axis X
+        var yscl = (height - 2 * gap) / dy;       // scale on axis Y
+        if (xscl > yscl) scale = yscl;  // Take smallest scale for proportional draw (the same scale on both axises)
+        else scale = xscl;
+        console.log( "Final: scale="+scale+" minx="+minx+" maxx="+maxx+" miny="+miny+"maxy="+maxy)
+        var retArr = Array(5);
+        retArr[0] = scale;
+        retArr[1] = minx;
+        retArr[2] = maxx;
+        retArr[3] = miny;
+        retArr[4] = maxy;
+
+        return retArr;
     };
 
     window.Utils.drawShadow= function (options) {
@@ -1336,250 +1407,251 @@
         to = new Point(width - gap, height - gap);
         boundRect = new Path.Rectangle(from, to);
         boundRect.strokeColor = fontAxisColor;
+        var lat = window.varsValue.B;
+        var lon = window.varsValue.L;
 
         var shadowsAoA = options.AoAshadows;     // AoA of shadows in world coordinate
         var objectsAoA = options.AoAobjects;     // AoA of objects in world coordinate
         var sMoment = options.aMoment;
-        // var lat = options.Latitude;
-        // var lon = options.Longitude;
-        var lat = window.varsValue.B;
-        var lon = window.varsValue.L;
         var dUTC = options.dUTCval;
         var minSunHeight = options.minSunHeight;
 
-        var resArr = Utils.scaleAoA4Drawing3D(objectsAoA[0], gap);   // Scale as 1-st OBJECT to define scale and max min
-        var scale =resArr [1];
-        scale = scale/ 4;                         //decrees scale for shadows drawing
-        var minx = resArr [2];
-        var maxx = resArr [3];
-        var miny = resArr [4];
-        var maxy = resArr [5];
+        var scale = options.scale;
+        var minx = options.minx;
+        var maxx = options.maxx;
+        var miny = options.miny;
+        var maxy = options.maxy;
+        //scale = scale/ 4;                         //decrees scale for shadows drawing
+
         var xlow,ylow,xup,yup,xup2,yup2,xlow2,ylow2;
-        var nightRect, GradientStops, dawnRect, ctwilightRect, ntwilightRect, atwilightRect;
+        var nightRect;
         var numShad = shadowsAoA.length;                              //Amount of shadows in array
         var r,g,b,c1,c2,d,rc, alf = 0.6;
 
-            for (var j = 0; j < numShad; j++) {
+        //////////////////////////////////////    Drawing shadows   ////////////////////////////////////
+        for (var j = 0; j < numShad; j++) {
 
-                var curSunHeight = shadowsAoA[j].pop();   // remove last element from Array before scaling
-                if (curSunHeight > minSunHeight) {
-                    // current object/shadow in screen coordinates with scale from 1-st object and center in 1-st object center
-                    var resArr3 = Utils.scaleAoA4Drawing3D(shadowsAoA[j], gap, scale, minx, maxx, miny, maxy);
-                    var curShad = resArr3[0];
-                    var numPnt = curShad.length;         // number of points in current shadow
+            var curSunHeight = shadowsAoA[j].pop();   // remove last element from Array before scaling
+            if (curSunHeight > minSunHeight) {
+                // current object/shadow in screen coordinates with scale from 1-st object and center in 1-st object center
+                var resArr3 = Utils.scaleAoA4Drawing3D(shadowsAoA[j], gap, scale, minx, maxx, miny, maxy);
+                var curShad = resArr3[0];
+                var numPnt = curShad.length;         // number of points in current shadow
 
-                    for (var i = 0; i < numPnt; i++) {  //Draw shadows polygon between 2-points of each line of shadow [LowShadow - UpShadow -nextPointUpShadow - nextPointLowShadow ]
-                        xlow = curShad [i][0];
-                        ylow = curShad [i][1];
-                        xup = curShad [i][3];
-                        yup = curShad [i][4];
-                        if (i === numPnt - 1) {
-                            xup2 = curShad [0][3];     //close to 1-st point
-                            yup2 = curShad [0][4];
-                            xlow2 = curShad [0][0];
-                            ylow2 = curShad [0][1];
-                        } else {
-                            xup2 = curShad [i + 1][3];
-                            yup2 = curShad [i + 1][4];
-                            xlow2 = curShad [i + 1][0];
-                            ylow2 = curShad [i + 1][1];
-                        }
-
-                        var plow = new Point(xlow, ylow);
-                        var pup = new Point(xup, yup);
-                        var pup2 = new Point(xup2, yup2);
-                        var plow2 = new Point(xlow2, ylow2);
-
-                        //////////////////    4debugging   4debugging   4debugging   4debugging  //////////////////
-                        // var ct = new Shape.Circle({
-                        //     center: plow,
-                        //     radius: 2,
-                        //     fillColor: mcol[(i*2%11)],
-                        // });
-                        // var pt = new PointText({
-                        //     fillColor: mcol[(i*2%11)],
-                        //     fontSize: hFont,
-                        //     point: plow + new Point(i*8, i*8),
-                        //     content: i.toFixed(0)
-                        // });
-                        // ct = new Shape.Circle({
-                        // center: pup,
-                        // radius: 2,
-                        // fillColor: mcol[(i*2%11)],
-                        // });
-                        // pt = new PointText({
-                        // fillColor: mcol[(i*2%11)],
-                        // fontSize: hFont,
-                        // point: pup + new Point(i*8, i*8),
-                        // content: i.toFixed(0)
-                        // });
-                        // ct = new Shape.Circle({
-                        //     center: pup2,
-                        //     radius: 2,
-                        //     fillColor: mcol[(i*2%11)],
-                        // });
-                        // pt = new PointText({
-                        //     fillColor: mcol[(i*2%11)],
-                        //     fontSize: hFont,
-                        //     point: pup2 + new Point(i*8, i*8),
-                        //     content: i.toFixed(0)
-                        // });
-                        // ct = new Shape.Circle({
-                        //     center: plow2,
-                        //     radius: 2,
-                        //     fillColor: mcol[(i*2%11)],
-                        // });
-                        // pt = new PointText({
-                        //     fillColor: mcol[(i*2%11)],
-                        //     fontSize: hFont,
-                        //     point: plow2 + new Point(i*8, i*8),
-                        //     content: i.toFixed(0)
-                        // });
-                        //////////////////    4debugging   4debugging   4debugging   4debugging  //////////////////
-                        var pathShad = new Path();
-
-                        pathShad.add(plow);
-                        pathShad.add(pup);
-                        pathShad.add(pup2);
-                        pathShad.add(plow2);
-                        pathShad.add(plow);
-                        pathShad.fillColor = 'lightgrey';
+                for (var i = 0; i < numPnt; i++) {  //Draw shadows polygon between 2-points of each line of shadow [LowShadow - UpShadow -nextPointUpShadow - nextPointLowShadow ]
+                    xlow = curShad [i][0];
+                    ylow = curShad [i][1];
+                    xup = curShad [i][3];
+                    yup = curShad [i][4];
+                    if (i === numPnt - 1) {
+                        xup2 = curShad [0][3];     //close to 1-st point
+                        yup2 = curShad [0][4];
+                        xlow2 = curShad [0][0];
+                        ylow2 = curShad [0][1];
+                    } else {
+                        xup2 = curShad [i + 1][3];
+                        yup2 = curShad [i + 1][4];
+                        xlow2 = curShad [i + 1][0];
+                        ylow2 = curShad [i + 1][1];
                     }
 
-                    var pathShadLow = new Path();       //Draw shadows polygon between all points of Low shadow clockwise
-                    for (i = 0; i < numPnt; i++) {
-                        xlow = curShad [i][0];
-                        ylow = curShad [i][1];
-                        plow = new Point(xlow, ylow);
-                        pathShadLow.add(plow)
-                    }
-                    pathShadLow.fillColor = 'lightgrey';
+                    var plow = new Point(xlow, ylow);
+                    var pup = new Point(xup, yup);
+                    var pup2 = new Point(xup2, yup2);
+                    var plow2 = new Point(xlow2, ylow2);
 
-                } else {                                   // dawn, twilight, night
-                    {
-                        function findMiddleColorComponent(comp1, comp2, percentChanged) {
-                            return (comp2 - comp1) * percentChanged + comp1;
-                        }
+                    //////////////////    4debugging   4debugging   4debugging   4debugging  //////////////////
+                    // var ct = new Shape.Circle({
+                    //     center: plow,
+                    //     radius: 2,
+                    //     fillColor: mcol[(i*2%11)],
+                    // });
+                    // var pt = new PointText({
+                    //     fillColor: mcol[(i*2%11)],
+                    //     fontSize: hFont,
+                    //     point: plow + new Point(i*8, i*8),
+                    //     content: i.toFixed(0)
+                    // });
+                    // ct = new Shape.Circle({
+                    // center: pup,
+                    // radius: 2,
+                    // fillColor: mcol[(i*2%11)],
+                    // });
+                    // pt = new PointText({
+                    // fillColor: mcol[(i*2%11)],
+                    // fontSize: hFont,
+                    // point: pup + new Point(i*8, i*8),
+                    // content: i.toFixed(0)
+                    // });
+                    // ct = new Shape.Circle({
+                    //     center: pup2,
+                    //     radius: 2,
+                    //     fillColor: mcol[(i*2%11)],
+                    // });
+                    // pt = new PointText({
+                    //     fillColor: mcol[(i*2%11)],
+                    //     fontSize: hFont,
+                    //     point: pup2 + new Point(i*8, i*8),
+                    //     content: i.toFixed(0)
+                    // });
+                    // ct = new Shape.Circle({
+                    //     center: plow2,
+                    //     radius: 2,
+                    //     fillColor: mcol[(i*2%11)],
+                    // });
+                    // pt = new PointText({
+                    //     fillColor: mcol[(i*2%11)],
+                    //     fontSize: hFont,
+                    //     point: plow2 + new Point(i*8, i*8),
+                    //     content: i.toFixed(0)
+                    // });
+                    //////////////////    4debugging   4debugging   4debugging   4debugging  //////////////////
+                    var pathShad = new Path();
 
-                        function findMiddleRGBColor(c1, c2, percentChanged) {
-                            return new Color(findMiddleColorComponent(c1.red, c2.red, percentChanged),
-                                findMiddleColorComponent(c1.green, c2.green, percentChanged),
-                                findMiddleColorComponent(c1.blue, c2.blue, percentChanged));
-                        }
-
-                        if (curSunHeight >= 0) {
-                            nightRect = new Path.Rectangle(from, to);
-                            c1 = new Color(1, 1, 1, alf);
-                            c2 = new Color(1, 1, 0, alf);
-                            d = (minSunHeight - curSunHeight) / minSunHeight;
-                            rc = findMiddleRGBColor(c1, c2, d);                              // white 1,1,1 to yellow 1,1,0
-                            //console.log(curSunHeight.toFixed(2),d.toFixed(2),' white to yellow=',rc);
-                            nightRect.fillColor = rc;
-                        } else if (curSunHeight >= civilTwilight) {
-                            nightRect = new Path.Rectangle(from, to);
-                            // gradient = new Gradient(['yellow', 'red', 'blue', 'black']);
-                            // nightRect.fillColor = new Color(gradient, from, to);
-                            c1 = new Color(1, 1, 0, alf);
-                            //c1 = window.varsValue.dawnColor;
-                            c2 = new Color(1, 0, 0, alf);
-                            d = curSunHeight / civilTwilight;
-                            rc = findMiddleRGBColor(c1, c2, d);                              // yellow 1,1,0 to red 1,0,0
-                            //console.log(curSunHeight.toFixed(2),d.toFixed(2),' yellow to red',rc);
-                            nightRect.fillColor = rc;
-                            window.varsValue.dawnColor = rc;
-                        } else if (curSunHeight >= nauticalTwilight) {
-                            nightRect = new Path.Rectangle(from, to);
-                            c1 = new Color(1, 0, 0, alf);
-                            //c1 = window.varsValue.dawnColor;
-                            c2 = new Color(0, 0, 1, alf);
-                            d = (curSunHeight - civilTwilight) / (nauticalTwilight - civilTwilight);
-                            rc = findMiddleRGBColor(c1, c2, d);                                // red 1,0,0 to blue 0,0,1
-                            //console.log(curSunHeight.toFixed(2),d.toFixed(2),' red to blue=',rc);
-                            nightRect.fillColor = rc;
-                        } else if (curSunHeight >= astronomicTwilight) {
-                            nightRect = new Path.Rectangle(from, to);
-                            c1 = new Color(0, 0, 1, alf);
-                            //c1 = window.varsValue.dawnColor;
-                            c2 = new Color(0, 0, 0, alf);
-                            d = (curSunHeight - nauticalTwilight) / (astronomicTwilight - nauticalTwilight);
-                            rc = findMiddleRGBColor(c1, c2, d);                                // blue 0,0,1 to black ,0,0,0
-                            //console.log(curSunHeight.toFixed(2),d.toFixed(2),' blue to black=',rc);
-                            nightRect.fillColor = rc;
-                        } else if (curSunHeight <= astronomicTwilight) {
-                            nightRect = new Path.Rectangle(from, to);
-                            nightRect.fillColor = 'black';
-                        }
-                    }
-
-
+                    pathShad.add(plow);
+                    pathShad.add(pup);
+                    pathShad.add(pup2);
+                    pathShad.add(plow2);
+                    pathShad.add(plow);
+                    pathShad.fillColor = 'lightgrey';
                 }
-            }
 
-            //////////////////////////////////////    Drawing objects   ////////////////////////////////////
-            var numObj = objectsAoA.length;       //Amount of objects in array
-            var txp, typ, ptob, ob1;
-            var allPathObj = new CompoundPath();
-            for (var l = 0; l < numObj; l++) {
-                var resArr2 = Utils.scaleAoA4Drawing3D(objectsAoA[l], gap, scale, minx, maxx, miny, maxy);
-                var sclObj = resArr2[0];
-                var pathObj = new Path();
-                for (var k = 0; k < sclObj.length; k++) {       //Draw scaled objects polygon
-                    txp = sclObj [k][0];
-                    typ = sclObj [k][1];
-                    ptob = new Point(txp, typ);
-                    if (k === 0) {
-                        ob1 = ptob
-                    }
-                    pathObj.add(ptob);
+                var pathShadLow = new Path();       //Draw shadows polygon between all points of Low shadow clockwise
+                for (i = 0; i < numPnt; i++) {
+                    xlow = curShad [i][0];
+                    ylow = curShad [i][1];
+                    plow = new Point(xlow, ylow);
+                    pathShadLow.add(plow)
                 }
-                pathObj.add(ob1);                 //1-st point for closing path
-                allPathObj.addChild(pathObj)
-            }
-            allPathObj.fillColor = '#A994FF';
-            allPathObj.strokeColor = 'blue';
+                pathShadLow.fillColor = 'lightgrey';
 
-            //////////////////////////////////////    Drawing objects   ////////////////////////////////////
+            } else {                                   // dawn, twilight, night
+                {
+                    function findMiddleColorComponent(comp1, comp2, percentChanged) {
+                        return (comp2 - comp1) * percentChanged + comp1;
+                    }
 
-            {
-                var textLat = new PointText({
-                    fillColor: fontAxisColor,
-                    fontFamily: sunFont,
-                    fontWeight: axisFontWeight,
-                    fontSize: hFont,
-                    point: [20, 20],
-                    content: window.locales['latLb'] + Utils.grad_number2text(lat)
-                });
-                var textLon = new PointText({
-                    fillColor: fontAxisColor,
-                    fontFamily: sunFont,
-                    fontWeight: axisFontWeight,
-                    fontSize: hFont,
-                    point: [20, 40],
-                    content: window.locales['lonLb'] + Utils.grad_number2text(lon)
-                });
-                var textMoment = new PointText({
-                    fillColor: fontAxisColor,
-                    fontFamily: sunFont,
-                    fontWeight: axisFontWeight,
-                    fontSize: hFont,
-                    point: [20, 60],
-                    content: window.locales["timeDropBtLb"] + sMoment +" "+ window.locales["dUTCLb"] +"="+ dUTC+"h"
-                });
-                var textSunHeight = new PointText({
-                    fillColor: fontAxisColor,
-                    fontFamily: sunFont,
-                    fontWeight: axisFontWeight,
-                    fontSize: hFont,
-                    point: [20, 80],
-                    content: window.locales["sunHeightUp"] + Utils.grad_number2text(curSunHeight, 0, "°")
-                });
+                    function findMiddleRGBColor(c1, c2, percentChanged) {
+                        return new Color(findMiddleColorComponent(c1.red, c2.red, percentChanged),
+                            findMiddleColorComponent(c1.green, c2.green, percentChanged),
+                            findMiddleColorComponent(c1.blue, c2.blue, percentChanged));
+                    }
+
+                    if (curSunHeight >= 0) {
+                        nightRect = new Path.Rectangle(from, to);
+                        c1 = new Color(1, 1, 1, alf);
+                        c2 = new Color(1, 1, 0, alf);
+                        d = (minSunHeight - curSunHeight) / minSunHeight;
+                        rc = findMiddleRGBColor(c1, c2, d);                              // white 1,1,1 to yellow 1,1,0
+                        //console.log(curSunHeight.toFixed(2),d.toFixed(2),' white to yellow=',rc);
+                        nightRect.fillColor = rc;
+                    } else if (curSunHeight >= civilTwilight) {
+                        nightRect = new Path.Rectangle(from, to);
+                        // gradient = new Gradient(['yellow', 'red', 'blue', 'black']);
+                        // nightRect.fillColor = new Color(gradient, from, to);
+                        c1 = new Color(1, 1, 0, alf);
+                        //c1 = window.varsValue.dawnColor;
+                        c2 = new Color(1, 0, 0, alf);
+                        d = curSunHeight / civilTwilight;
+                        rc = findMiddleRGBColor(c1, c2, d);                              // yellow 1,1,0 to red 1,0,0
+                        //console.log(curSunHeight.toFixed(2),d.toFixed(2),' yellow to red',rc);
+                        nightRect.fillColor = rc;
+                        window.varsValue.dawnColor = rc;
+                    } else if (curSunHeight >= nauticalTwilight) {
+                        nightRect = new Path.Rectangle(from, to);
+                        c1 = new Color(1, 0, 0, alf);
+                        //c1 = window.varsValue.dawnColor;
+                        c2 = new Color(0, 0, 1, alf);
+                        d = (curSunHeight - civilTwilight) / (nauticalTwilight - civilTwilight);
+                        rc = findMiddleRGBColor(c1, c2, d);                                // red 1,0,0 to blue 0,0,1
+                        //console.log(curSunHeight.toFixed(2),d.toFixed(2),' red to blue=',rc);
+                        nightRect.fillColor = rc;
+                    } else if (curSunHeight >= astronomicTwilight) {
+                        nightRect = new Path.Rectangle(from, to);
+                        c1 = new Color(0, 0, 1, alf);
+                        //c1 = window.varsValue.dawnColor;
+                        c2 = new Color(0, 0, 0, alf);
+                        d = (curSunHeight - nauticalTwilight) / (astronomicTwilight - nauticalTwilight);
+                        rc = findMiddleRGBColor(c1, c2, d);                                // blue 0,0,1 to black ,0,0,0
+                        //console.log(curSunHeight.toFixed(2),d.toFixed(2),' blue to black=',rc);
+                        nightRect.fillColor = rc;
+                    } else if (curSunHeight <= astronomicTwilight) {
+                        nightRect = new Path.Rectangle(from, to);
+                        nightRect.fillColor = 'black';
+                    }
+                }
+
+
             }
+        }
+        //////////////////////////////////////    Drawing shadows   ////////////////////////////////////
+
+        //////////////////////////////////////    Drawing objects   ////////////////////////////////////
+        var numObj = objectsAoA.length;       //Amount of objects in array
+        var txp, typ, ptob, ob1;
+        var allPathObj = new CompoundPath();
+        for (var l = 0; l < numObj; l++) {
+            var resArr2 = Utils.scaleAoA4Drawing3D(objectsAoA[l], gap, scale, minx, maxx, miny, maxy);
+            var sclObj = resArr2[0];
+            var pathObj = new Path();
+            for (var k = 0; k < sclObj.length; k++) {       //Draw scaled objects polygon
+                txp = sclObj [k][0];
+                typ = sclObj [k][1];
+                ptob = new Point(txp, typ);
+                if (k === 0) {
+                    ob1 = ptob
+                }
+                pathObj.add(ptob);
+            }
+            pathObj.add(ob1);                 //1-st point for closing path
+            allPathObj.addChild(pathObj)
+        }
+        allPathObj.fillColor = '#A994FF';
+        allPathObj.strokeColor = 'blue';
+        //////////////////////////////////////    Drawing objects   ////////////////////////////////////
+
+        //////// Values in upper-left corner
+        {
+            var textLat = new PointText({
+                fillColor: fontAxisColor,
+                fontFamily: sunFont,
+                fontWeight: axisFontWeight,
+                fontSize: hFont,
+                point: [20, 20],
+                content: window.locales['latLb'] + Utils.grad_number2text(lat)
+            });
+            var textLon = new PointText({
+                fillColor: fontAxisColor,
+                fontFamily: sunFont,
+                fontWeight: axisFontWeight,
+                fontSize: hFont,
+                point: [20, 40],
+                content: window.locales['lonLb'] + Utils.grad_number2text(lon)
+            });
+            var textMoment = new PointText({
+                fillColor: fontAxisColor,
+                fontFamily: sunFont,
+                fontWeight: axisFontWeight,
+                fontSize: hFont,
+                point: [20, 60],
+                content: window.locales["timeDropBtLb"] + sMoment +" "+ window.locales["dUTCLb"] +"="+ dUTC+"h"
+            });
+            var textSunHeight = new PointText({
+                fillColor: fontAxisColor,
+                fontFamily: sunFont,
+                fontWeight: axisFontWeight,
+                fontSize: hFont,
+                point: [20, 80],
+                content: window.locales["sunHeightUp"] + Utils.grad_number2text(curSunHeight, 0, "°")
+            });
+        }
+        //////// Values in upper-left corner
 
     };
 
     window.Utils.shadowAnimationDay = function (options) {
-        var AoAobj = options.AoA;   // Array of objects. Each objects described by points arrays.
-        var sMoment = options.aMoment;
+        var AoAobj = options.AoA;       // Array of objects. Each objects described by points arrays.
+        var sMoment = options.aMoment;  // Array of objects [  [ [x,y,zLow,zUp], [x,y,zLow zUp] ],........ ]
         var lat = window.varsValue.B;
         var lon = window.varsValue.L;
         var dUTCval = options.dUTCval;
@@ -1589,52 +1661,66 @@
 
         var atMoment;
         var aDuration = 40; //timelaps in miliseconds
-        var counter = 0;
 
         window.varsValue.animationYearWorks = false;
         window.varsValue.animationDayWorks  = true;
-        window.varsValue.drawShadowWorks  =  false;
+        window.varsValue.drawShadowWorks  =   false;
         window.varsValue.showGraphicWorks  =  false;
         clearTimeout(window.varsValue.yearTimeOut) ;        //2stop  shadowAnimationYear
 
+        //Define SCALE 4 drawing here. Finding biggest x,y range from all objects of AoAobj
+        var options3 = {
+            AoA: AoAobj,
+        };
+        var resArr = Utils.defineDrawScale(options3);
+        var scale =resArr[0];
+        var minx = resArr[1];
+        var maxx = resArr[2];
+        var miny = resArr[3];
+        var maxy = resArr[4];
 
+        (function delay(duration) {
 
-            (function delay(duration) {
+            if (!isPaused) {
+                atMoment = moment(sMoment, "").add(2, "minute");
+                sMoment = moment(atMoment, "").format('YYYY-MM-DD HH:mm:ss');
+            }
 
-                if (!isPaused) {
-                    atMoment = moment(sMoment, "").add(2, "minute");
-                    sMoment = moment(atMoment, "").format('YYYY-MM-DD HH:mm:ss');
-                }
+            var options = {
+                AoA: AoAobj,               // Array of objects [  [ [x,y,zLow,zUp], [x,y,zLow zUp] ],........ ]
+                aMoment: sMoment,
+                Latitude: lat,
+                Longitude: lon,
+                dUTCval: dUTCval,
+                Temperature: temp,
+                Pressure: press,
+                minSunHeight: minSunHeight
+            };
+            var shadArr = Utils.calcObjectsShadow3D(options);
 
-                    var options = {
-                        AoA: AoAobj,               // Array of objects [  [ [x,y,zLow,zUp], [x,y,zLow zUp] ],........ ]
-                        aMoment: sMoment,
-                        Latitude: lat,
-                        Longitude: lon,
-                        dUTCval: dUTCval,
-                        Temperature: temp,
-                        Pressure: press,
-                        minSunHeight: minSunHeight
-                    };
-                    var shadArr = Utils.calcObjectsShadow3D(options);
+            var options2 = {
+                AoAshadows: shadArr,
+                AoAobjects: AoAobj,        // [ Home3d,  Roof3d,  Fence23d ]
+                aMoment: sMoment,
+                Latitude: lat,
+                Longitude: lon,
+                dUTCval: dUTCval,
+                Temperature: temp,
+                Pressure: press,
+                minSunHeight: minSunHeight,
+                scale: scale,
+                minx: minx,
+                maxx: maxx,
+                miny: miny,
+                maxy: maxy
 
-                    var options2 = {
-                        AoAshadows: shadArr,
-                        AoAobjects: AoAobj,        // [ Home3d,  Roof3d,  Fence23d ]
-                        aMoment: sMoment,
-                        Latitude: lat,
-                        Longitude: lon,
-                        dUTCval: dUTCval,
-                        Temperature: temp,
-                        Pressure: press,
-                        minSunHeight: minSunHeight
-                    };
+            };
 
-                    Utils.drawShadow(options2);
+            Utils.drawShadow(options2);
 
-                    window.varsValue.dayTimeOut = setTimeout(delay, duration, duration);
+            window.varsValue.dayTimeOut = setTimeout(delay, duration, duration);
 
-            })(aDuration);
+        })(aDuration);
 
     };
 
@@ -1657,6 +1743,17 @@
         window.varsValue.drawShadowWorks  =  false;
         window.varsValue.showGraphicWorks  =  false;
         clearTimeout(window.varsValue.dayTimeOut) ;         //2stop  shadowAnimationYear
+
+        //Define SCALE 4 drawing here. Finding biggest x,y range from all objects of AoAobj
+        var options3 = {
+            AoA: AoAobj,
+        };
+        var resArr = Utils.defineDrawScale(options3);
+        var scale =resArr[0];
+        var minx = resArr[1];
+        var maxx = resArr[2];
+        var miny = resArr[3];
+        var maxy = resArr[4];
 
         (function delay(duration) {
 
@@ -1685,7 +1782,12 @@
                 dUTCval: dUTCval,
                 Temperature: temp,
                 Pressure: press,
-                minSunHeight: minSunHeight
+                minSunHeight: minSunHeight,
+                scale: scale,
+                minx: minx,
+                maxx: maxx,
+                miny: miny,
+                maxy: maxy
             };
 
             Utils.drawShadow(options2 );

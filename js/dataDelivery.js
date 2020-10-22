@@ -970,7 +970,7 @@ function sunShadowMaker3D(params){
 //
 // Function sunShadowMaker3D()  Returns: AoA of  [ [xLow, yLow, lLow, xUp, yUp, lUp], [], ..., sunHt ]
 //                              where: xLow, yLow are Easting and Northing of the end of shadow from Low point's height.
-////                                   xUp, yUp are Easting and Northing of the end of shadow from Upper point's height.                                     z of each point's shadow always = 0 (shadow is on the plane) and we not return it
+//                                   xUp, yUp are Easting and Northing of the end of shadow from Upper point's height.                                     z of each point's shadow always = 0 (shadow is on the plane) and we not return it
 //                                   lLow, lUp - length of each shadow on plane IF lUp=0 SUN IS UNDER HORIZON
 //                                   Each object drops this shadow from SUN at given local time sMoment (Date&Time).
 //   sunHt - (the last value in return array) is the Sun's height at sMoment (we use it for coloring twilight when draw)
@@ -1086,7 +1086,7 @@ function calcObjectsShadow3D(options) {
     // Each point describes by 3 coordinates x,y,z  as elements with index of 3-d level in global AoA
     // Example:
     // [  [  [x,y,zLow,zUp], [x,y,zLow zUp], [x,y,zLow,zUp], [x,y,zLow,zUp] ],- object constructed from 4 points.
-    //    [  [x,y,zLow,zUp], [x,y,zLow,zUp], [x,y,zLow,zUp          ],        - object constructed from 3 points.
+    //    [  [x,y,zLow,zUp], [x,y,zLow,zUp], [x,y,zLow,zUp]          ],        - object constructed from 3 points.
     //    [  [x,y,zLow,zUp, [x,y,zLow,zUp],                  ]  ]             - object constructed from 2 points.
     //
     //   Points of each objects must be written consequently clock-wise
@@ -1094,6 +1094,10 @@ function calcObjectsShadow3D(options) {
     // Function returns: AoA of shadow's end of input objects in the same coordinate system as input
     //
     //        [xLow, yLow, lLow, xUp, yUp, lUp], [xLow, yLow, lLow, xUp, yUp, lUp]   - object constructed from 2 points.
+    //                              where: xLow, yLow are Easting and Northing of the end of shadow from Low point's height.
+    //                                   xUp, yUp are Easting and Northing of the end of shadow from Upper point's height.                                     z of each point's shadow always = 0 (shadow is on the plane) and we not return it
+    //                                   lLow, lUp - length of each shadow on plane IF lUp=0 SUN IS UNDER HORIZON
+    //                                   Each object drops this shadow from SUN at given local time sMoment (Date&Time).
 
     let AoAobj = options.AoA;               // Array of some objects
     let sMoment = options.aMoment;

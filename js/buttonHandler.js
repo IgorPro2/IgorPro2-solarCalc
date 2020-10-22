@@ -24,8 +24,8 @@
     // let dUTCval = +dUTC.value;
 
     let Home = [ [5342.27,4624.58,0,6],[5346.09,4623.70,0,9.5],[5349.99,4622.80,0,6],[5349.18,4619.38,0,6],
-                 [5350.11,4619.160,0,6],[5349.55,4616.83,0,9.5],[5348.98,4614.48,0,6],[5348.08,4614.71,0,6],
-                 [5347.27,4611.28,0,6],[5343.45,4612.16,0,9.5],[5338.90,4613.22,0,5.44],[5340.09,4618.24,0,5.44], [5340.83,4618.09,0,6]  ];
+        [5350.11,4619.160,0,6],[5349.55,4616.83,0,9.5],[5348.98,4614.48,0,6],[5348.08,4614.71,0,6],
+        [5347.27,4611.28,0,6],[5343.45,4612.16,0,9.5],[5338.90,4613.22,0,5.44],[5340.09,4618.24,0,5.44], [5340.83,4618.09,0,6]  ];
     let Roof = [ [5346.09,4623.70,0,9.5], [5344.77,4617.92,0,9.5], [5349.55,4616.83,0,9.5], [5344.77,4617.92,0,9.5], [5343.45,4612.16,0,9.5]];
     let Fence1 = [ [5345.26,4633.94,1.8], [5346.27,4631.93,1.8], [5354.45,4629.62,1.8], [5354.40,4629.43,1.8], [5346.11,4631.77,1.8], [5345.14,4633.71,1.8]];
     let Fence2 = [ [5340.79,4635.33,0,2.1], [5345.26,4633.94,0,2.1], [5345.19,4633.70,0,2.1], [5340.72,4635.09,0,2.1] ];
@@ -384,6 +384,18 @@
             let AoA;
             if( window.varsValue.userObj4shadow) { AoA = window.varsValue.userObj4shadow;}
             else {AoA = objects4shadow;}
+            let gap = 4;                        //Pixels from screen edge to sketch
+
+            //Define SCALE 4 drawing here. Finding biggest x,y range from all objects of AoAobj
+            var options3 = {
+                AoA: AoA,
+            };
+            var resArr = Utils.defineDrawScale(options3);
+            var scale =resArr[0];
+            var minx = resArr[1];
+            var maxx = resArr[2];
+            var miny = resArr[3];
+            var maxy = resArr[4];
 
             let options = {
                 AoA: AoA,               // Array of objects  [x,y,zLow,zUp], [x,y,zLow zUp],........
@@ -406,7 +418,12 @@
                 dUTCval: dUTCval,
                 Temperature: temp,
                 Pressure: press,
-                minSunHeight: window.varsValue.minSunHeight
+                minSunHeight: window.varsValue.minSunHeight,
+                scale: scale,
+                minx: minx,
+                maxx: maxx,
+                miny: miny,
+                maxy: maxy
             };
 
             clearTimeout(window.varsValue.yearTimeOut) ;        //2stop  shadowAnimationYear
