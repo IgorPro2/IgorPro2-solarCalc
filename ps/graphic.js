@@ -1215,10 +1215,10 @@
             content: window.locales['year'] + sYear
         });
 
-        //6 minute's day lines LOOP
-        for (i=1; i < ws2.length ; i++){
+        //6 minute's 1-st day of each month lines LOOP
+        for (i=1; i < ws2.length-12 ; i++){     //i=0  Array of HEADER
             month = ws2[i][9];
-
+            //console.log("i="+i+" ws[i][9]="+ws2[i][0]+" "+ws2[i][1]+ws2[i][9]);
             tx = ws2[i][6];
             ty = ws2[i][7];
             txp = ox2  + tx  * s2;
@@ -1233,13 +1233,14 @@
         }
     };
 
-    window.Utils.scaleAoA4Drawing3D = function (AoAxyz, gap, scale, minx, maxx, miny, maxy) {
-        // Takes:  1. AoAxyz( ONE OBJECT) - AoA of [ [xLow, yLow, hLow, xUp, yUp, hUp], [], ... ]
-        //            where xLow, yLow, are object's Lower point Easting&Northing and hLow is Lower point height.
-        //            xUp, yUp, are object's Upper point Easting&Northing and hUp is Upper point height.
-        //            We use  OBJECTS for initial scaling 2define Scale       in that case height scaled too but useless
+    window.Utils.scale1Object4Drawing3D = function (AoAxyz, gap, scale, minx, maxx, miny, maxy) {
+        // Takes:  1. AoAxyz( ONE OBJECT) - AoA of
+        //            [  [x,y,zLow,zUp], [x,y,zLow,zUp], [x,y,zLow,zUp] ]   - object constructed from 3 points.
+        //            Each   [x, y, zLow, zUp] describe one point of object where x, y are object's Easting, Northing,
+        //            zLow is point's lower height, zUp is point's upper height.
+        //            We use  OBJECT for initial scaling 2define Scale  (in that case height scaled too but useless)
         //   OR
-        // Takes:  1. AoAxyz(ONE SHADOW) - AoA of [ [xLow, yLow, lLow, xUp, yUp, lUp], [], ... ]
+        // Takes:  1. AoAxyz(ONE SHADOW) - AoA of [ [xLow, yLow, lLow, xUp, yUp, lUp], [], ... , sunHt ]
         //            where xLow, yLow, are object's Low shadows Easting&Northing and lLow is Low shadow Length.
         //            xUp, yUp, are object's Up shadows Easting&Northing and lUp is Up shadow Length.
         //            We use  SHADOWS for scaling shadow's length and drawing it later
@@ -1320,7 +1321,7 @@
 
             sclArr[i] = rowArr;
         }
-        resArr[0] = sclArr;         // Array of scaled x,y and the scaled shadows length
+        resArr[0] = sclArr;         // Array of scaled x,y and the scaled shadows length (or height if object was in input)
         resArr[1] = scale;          // scale is Pixels amount in 1 initial x,y unit
         resArr[2] = minx;
         resArr[3] = maxx;
@@ -1335,32 +1336,32 @@
         // Each 1-st level element of global AoA describes one object.   It has index of 1-st level in global AoA
         // 2-d level elements are arrays of [x,y,z] that describes each point of one object. It has index of 2-nd level in global AoA
         // Each point describes by 3 coordinates x,y,z  as elements with index of 3-d level in global AoA
-        // Example:
-        // [  [  [x,y,zLow,zUp], [x,y,zLow zUp], [x,y,zLow,zUp], [x,y,zLow,zUp] ],- object constructed from 4 points.
-        //    [  [x,y,zLow,zUp], [x,y,zLow,zUp], [x,y,zLow,zUp]          ],       - object constructed from 3 points.
-        //    [  [x,y,zLow,zUp, [x,y,zLow,zUp],                  ]  ]             - object constructed from 2 points.
+        // Example of AoA:
+        // [  [  [x,y,zLow,zUp], [x,y,zLow zUp], [x,y,zLow,zUp], [x,y,zLow,zUp] ],    - object constructed from 4 points.
+        //    [  [x,y,zLow,zUp], [x,y,zLow,zUp], [x,y,zLow,zUp]                 ],    - object constructed from 3 points.
+        //    [  [x,y,zLow,zUp, [x,y,zLow,zUp],                                 ]  ]  - object constructed from 2 points.
         //
-        //Function return: SCALE 4 drawing objects in widow  window.varsValue.width;let height = window.varsValue.height;
+        //Function return: SCALE 4 drawing objects in widow window.varsValue.width;let height = window.varsValue.height;
         //                 max&min x,y from all objects of AoAobj
 
 
         var AoAobj = options.AoA;
-        var resArr = Utils.scaleAoA4Drawing3D(AoAobj[0] , gap);
+        var resArr = Utils.scale1Object4Drawing3D(AoAobj[0] , gap);
         var scale =resArr [1];
         var minx = resArr [2];
         var maxx = resArr [3];
         var miny = resArr [4];
         var maxy = resArr [5];
-        console.log( "AoAobj[0]: scale="+scale+" minx="+minx+" maxx="+maxx+" miny="+miny+"maxy="+maxy);
+        //console.log( "AoAobj[0]: scale="+scale+" minx="+minx+" maxx="+maxx+" miny="+miny+"maxy="+maxy);
         var tscale , tminx , tmaxx , tminy, tmaxy;
         for (var j = 1; j < AoAobj.length; j++) {
-            resArr = Utils.scaleAoA4Drawing3D(AoAobj [j], gap);
-            tscale =resArr [1];
+            resArr = Utils.scale1Object4Drawing3D(AoAobj [j], gap);
+            //tscale =resArr [1];
             tminx = resArr [2];
             tmaxx = resArr [3];
             tminy = resArr [4];
             tmaxy = resArr [5];
-            if (tscale < scale) scale = tscale;
+            //if (tscale < scale) scale = tscale;
             if (tminx < minx)   minx = tminx;
             if (tmaxx > maxx)   maxx = tmaxx;
             if (tminy < miny)   miny = tminy;
@@ -1368,13 +1369,16 @@
         }
         var width = window.varsValue.width;
         var height = window.varsValue.height;
-        var dx = maxx-minx;                       //range on axis x for all objects in AoA
-        var dy = maxy-miny;                       //range on axis y for all objects in AoA
-        var xscl = (width - 2 * gap) / dx;        // scale on axis X
-        var yscl = (height - 2 * gap) / dy;       // scale on axis Y
-        if (xscl > yscl) scale = yscl;  // Take smallest scale for proportional draw (the same scale on both axises)
+        var dx = maxx-minx;                 //range on axis x for all objects in AoA
+        var dy = maxy-miny;                 //range on axis y for all objects in AoA
+        var xscl = (width - 2 * gap) / dx;  // scale on axis X
+        var yscl = (height - 2 * gap) / dy; // scale on axis Y
+        if (xscl > yscl) scale = yscl;      // Take smallest scale for proportional draw (the same scale on both axises)
         else scale = xscl;
-        console.log( "Final: scale="+scale+" minx="+minx+" maxx="+maxx+" miny="+miny+"maxy="+maxy)
+
+        scale = scale/2;                   // To show all shadows around objects
+
+        //console.log( "Final: scale="+scale+" minx="+minx+" maxx="+maxx+" miny="+miny+"maxy="+maxy)
         var retArr = Array(5);
         retArr[0] = scale;
         retArr[1] = minx;
@@ -1416,6 +1420,9 @@
         var dUTC = options.dUTCval;
         var minSunHeight = options.minSunHeight;
 
+        // console.log("drawShadow()  objectsAoA="+objectsAoA[0]);
+        // console.log("drawShadow()  shadowsoAoA="+shadowsAoA[0]);
+
         var scale = options.scale;
         var minx = options.minx;
         var maxx = options.maxx;
@@ -1434,7 +1441,7 @@
             var curSunHeight = shadowsAoA[j].pop();   // remove last element from Array before scaling
             if (curSunHeight > minSunHeight) {
                 // current object/shadow in screen coordinates with scale from 1-st object and center in 1-st object center
-                var resArr3 = Utils.scaleAoA4Drawing3D(shadowsAoA[j], gap, scale, minx, maxx, miny, maxy);
+                var resArr3 = Utils.scale1Object4Drawing3D(shadowsAoA[j], gap, scale, minx, maxx, miny, maxy);
                 var curShad = resArr3[0];
                 var numPnt = curShad.length;         // number of points in current shadow
 
@@ -1591,7 +1598,7 @@
         var txp, typ, ptob, ob1;
         var allPathObj = new CompoundPath();
         for (var l = 0; l < numObj; l++) {
-            var resArr2 = Utils.scaleAoA4Drawing3D(objectsAoA[l], gap, scale, minx, maxx, miny, maxy);
+            var resArr2 = Utils.scale1Object4Drawing3D(objectsAoA[l], gap, scale, minx, maxx, miny, maxy);
             var sclObj = resArr2[0];
             var pathObj = new Path();
             for (var k = 0; k < sclObj.length; k++) {       //Draw scaled objects polygon
@@ -1672,6 +1679,8 @@
         var options3 = {
             AoA: AoAobj,
         };
+        // console.log(AoAobj[0]);
+        // console.log(AoAobj[1]);
         var resArr = Utils.defineDrawScale(options3);
         var scale =resArr[0];
         var minx = resArr[1];

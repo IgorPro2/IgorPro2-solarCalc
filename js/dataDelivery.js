@@ -860,97 +860,10 @@ function DecartRotation(rx, ry, rz, x, y, z) {
 
 }
 
-function sunShadowMaker(AoAxyz, sMoment, lat, lon, dUTC, temp, press ){
-// This function is intended for shadow calculation on one land parcel.
-// We assume that on horizontal plane exist some point objects. Distance between outside objects less than 1 nautical mile
-// Function does:
-// Takes: 1. AoAxyz - AoA of [ [x,y,z], [x,y,z] ... ] where x, y are object's Easting, Northing and z is object's height.
-//       2. sMoment - Date&Time string "YYYY-MM-DD-hh-mm-ss
-//       3. lat     - Latitude in decimal degrees  (of central point of parcel)
-//       4. lon     - Longitude in decimal degrees (of central point of parcel)
-//       5. dUTC    - difference between  LocalTime and UTC in decimal hours
-//       6. temp    - ambient temperature in Celsius decimal degrees
-//       7. press   - atmosphere's pressure in Hgmm
-// Returns: AoA of  [ [x,y,0], [x,y,0] ... ]      where x, y are Easting, Northing of end of each object's shadow.
-// Each object drops this shadow from SUN at given Date&Time.
-    let nn = AoAxyz.length;
-    let minSunHeight = window.varsValue.minSunHeight;  // Minimal height of sun above horizon in degrees for calculation
-    let options, solar, resArr, Ht0, Az0, i, xs, ys, zs, xp, yp, zp, lp, tt, sunHt, sunAz, rowArray, gnomonLen, maxlen =0;
-    let resAoA = new Array(nn);
-
-    for(i=0; i < nn; i++){
-        gnomonLen = AoAxyz[i][2];
-        if (gnomonLen > maxlen) {maxlen = gnomonLen}
-    }
-
-    let aMoment = moment(sMoment, "");
-    let sYear =   moment(aMoment).format('YYYY');
-    let sMonth =  moment(aMoment).format('MM');
-    let sDay =    moment(aMoment).format('DD');
-    let ht =      moment(aMoment).format('HH');
-    let mt =      moment(aMoment).format('mm');
-    let st =      moment(aMoment).format('ss');
-    let localTime = +ht+ mt/60+ st/3600;
-    let utcTime = (localTime - dUTC);
-
-    options = {
-        Lat: lat,
-        Lon: lon,
-        Day: sDay,
-        Month: sMonth,
-        Year: sYear,
-        UTCTime: utcTime,
-        dUTC: dUTC,
-        Temp: temp,
-        Press: press
-    };
-    solar = new Solar(options);
-    resArr = solar._calculate();           // resArr[5] Uncorrected height of  sun's center
-    sunHt = resArr[14];                     // new feature in solarClass - resArr[14]upperEdge
-    sunAz = resArr[0];
-
-    for(i=0;  i < nn; i++)  {
-        if (sunHt >= minSunHeight ){
-            // Calculate orthogonal 3d coordinates of sun, assume that sun is on sphere with radius of 10000 gnomons
-            // Assume that Sun'd latitude is Height of Suns UPPER EDGE corrected for refraction
-            // Assume that Sun'd longitude is (360-SunAzimuth) count it counterclockwise from NORTH AXIS
-            let shadArr = new Array(3);
-
-            gnomonLen= AoAxyz[i][2];
-            shadArr = Sphere2Decart(gnomonLen*10000, sunHt, (360-sunAz));
-
-            if (shadArr[2] >= 0) {
-                xs = shadArr[0];
-                ys = shadArr[1];
-                zs = shadArr[2];
-                tt = -1 * gnomonLen / (zs - gnomonLen);
-                zp = 0;
-
-                yp = xs * tt;                     // y = x
-                xp = -1 * (ys * tt);              // x = -y     Rotate North UP
-
-
-                lp = Math.sqrt(xp * xp + yp * yp); //shadow length
-            }
-            else { xp=yp=lp=0;}
-        }
-        else  { xp=yp=lp=0;}
-
-        rowArray = new Array(3);
-
-        rowArray[0] = AoAxyz[i][0] + xp;
-        rowArray[1] = AoAxyz[i][1] + yp;
-        rowArray[2] = lp;
-        resAoA[i] = rowArray;
-
-    }
-    return resAoA;
-}
-
-function sunShadowMaker3D(params){
+function sunShadowMaker4OneObject(params){
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// This function is intended for shadow calculation on one land parcel.
-// We assume that on horizontal plane exist one polygonal object. Plane dimension of object less than 1 nautical mile
+// This function is intended for sun shadow calculation of one object on horizontal plane.
+// We assume that on horizontal plane exist ONE polygonal object. Plane dimension of object less than 1 nautical mile
 // ( lat, lon are given for center of object and we not take into account parallax if object will be not very big)
 // Assume that plane height equals 0.
 //
@@ -1076,6 +989,7 @@ function sunShadowMaker3D(params){
         resAoA[i] = rowArray;
     }
     resAoA.push(sunHt);             //sunHt - (the last value in return array)
+
     return resAoA;                  //Returns: AoA of  [ [xLow, yLow, lLow, xUp, yUp, lUp], [], ..., sunHt ]
 }
 
@@ -1120,22 +1034,23 @@ function calcObjectsShadow3D(options) {
     for (let j = 0; j < numObj; j++) {
 
         let AoAxyz = AoAobj[j];                             // one object in initial coordinates
-            options = {
-                AoAxyz: AoAxyz,
-                sMoment: sMoment,
-                lat: lat,
-                lon: lon,
-                dUTC: dUTCval,
-                temp: temp,
-                press: press,
-                minSunHeight: minSunHeight
-            };
-            shadowsOne= sunShadowMaker3D(options);
+        options = {
+            AoAxyz: AoAxyz,
+            sMoment: sMoment,
+            lat: lat,
+            lon: lon,
+            dUTC: dUTCval,
+            temp: temp,
+            press: press,
+            minSunHeight: minSunHeight
+        };
+        shadowsOne= sunShadowMaker4OneObject(options);
         shadowsAll.push( shadowsOne )
     }
     return shadowsAll;
 
 }
+
 // //Philip example
 // ;(function () {
 //     var sheetsPicker = document.getElementById('sheetsPicker');
@@ -1171,6 +1086,7 @@ function calcObjectsShadow3D(options) {
 //     }
 // }());
 
+///////////////////// %%%%%%%%%%%%   PARSING  user csv file %%%%%%%%%
 ;(function () {
     if ( ! (window.File && window.FileReader && window.FileList && window.Blob)) {
         alert('The File APIs are not fully supported in this browser.');
@@ -1185,29 +1101,34 @@ function calcObjectsShadow3D(options) {
         reader.onload = function (e) {           //making AoA of each line
             let userCSV = reader.result.split("\n").map(function(x){return x.split(",")});
             console.log(userCSV);
-        ///////////////////// %%%%%%%%%%%%   PARSING  user csv file %%%%%%%%%
-        let numObj = userCSV.length, objName;
-        let obj4Shadow = [];
-        for (let i=0; i < numObj; i++ ){
-            let oneArr = userCSV[i];
-            objName = oneArr.shift();
-            let numEl = oneArr.length;
-            let oneObj = [];
+            ///////////////////// %%%%%%%%%%%%   PARSING  user csv file %%%%%%%%%
+            let numObj = userCSV.length, objName;
+            let obj4Shadow = [];
+            for (let i=0; i < numObj; i++ ){
+                let oneArr = userCSV[i];
+                objName = oneArr.shift();
+                let numEl = oneArr.length;
+                let oneObj = [];
 
-            for (let j=0; j < numEl; j=j+4 ){
-                let aPoint = [];
+                for (let j=0; j < numEl; j=j+4 ){
+                    let aPoint = [];
 
-                for (let k=j; k < j+4; k++) {
-                    aPoint.push(+oneArr[k])         //+ to make number from string
+                    for (let k=j; k < j+4; k++) {
+                        aPoint.push(+oneArr[k])         //+ to make number from string
+                    }
+                    oneObj.push(aPoint)
                 }
-                oneObj.push(aPoint)
+                obj4Shadow.push(oneObj)
             }
-            obj4Shadow.push(oneObj)
-        }
-        window.varsValue.userObj4shadow = obj4Shadow;
-        ///////////////////// %%%%%%%%%%%%   PARSING  user csv file %%%%%%%%%
+            window.varsValue.userObj4shadow = obj4Shadow;
 
-    };
+            clearTimeout(window.varsValue.yearTimeOut) ;        //2stop  shadowAnimationYear
+            clearTimeout(window.varsValue.dayTimeOut) ;         //2stop  shadowAnimationDay
+            Utils.shadowMap();
+
+            ///////////////////// %%%%%%%%%%%%   PARSING  user csv file %%%%%%%%%
+
+        };
 
 
     }
@@ -1215,14 +1136,77 @@ function calcObjectsShadow3D(options) {
         document.getElementById('filePicker').addEventListener('change', handleFileSelect, false);
     };
 
-
 }());
+
+// to call this 4Drawing when user take new object csv in dataDelivery.js
+function shadowMap() {
+    let sYear = document.getElementById("dateYear").value;
+    let sMonth  = document.getElementById("dateMonth").value;
+    let sDay = document.getElementById("dateDay").value;
+    let ht = document.getElementById("timeHour").value;
+    let mt = document.getElementById("timeMin").value;
+    let st = document.getElementById("timeSec").value;
+    let sMoment = sYear + "-" + sMonth + "-" + sDay + " " + ht + ":" + mt + ":" + st;
+    let lat = Utils.grad_textGMS2number(latGrad.value, latMin.value , latSec.value);
+    let lon = Utils.grad_textGMS2number(lonGrad.value, lonMin.value , lonSec.value);
+    let dUTCval = document.getElementById("dUTC").value;
+    let temp = document.getElementById("temp").value;
+    let press = document.getElementById("press").value;
+    let AoA;
+    if( window.varsValue.userObj4shadow) { AoA = window.varsValue.userObj4shadow;}
+    else {AoA = objects4shadow;}
+    let gap = 4;                        //Pixels from screen edge to sketch
+
+    //Define SCALE 4 drawing here. Finding biggest x,y range from all objects of AoAobj
+    var options3 = {
+        AoA: AoA,
+    };
+    var resArr = Utils.defineDrawScale(options3);
+    var scale =resArr[0];
+    var minx = resArr[1];
+    var maxx = resArr[2];
+    var miny = resArr[3];
+    var maxy = resArr[4];
+
+    let options = {
+        AoA: AoA,               // Array of objects  [x,y,zLow,zUp], [x,y,zLow zUp],........
+        aMoment: sMoment,
+        Latitude: lat,
+        Longitude: lon,
+        dUTCval: dUTCval,
+        Temperature: temp,
+        Pressure: press,
+        minSunHeight: window.varsValue.minSunHeight
+    };
+    let shadArr = Utils.calcObjectsShadow3D (options);
+
+    let options2 = {
+        AoAshadows: shadArr,
+        AoAobjects: AoA,
+        aMoment: sMoment,
+        Latitude: lat,
+        Longitude: lon,
+        dUTCval: dUTCval,
+        Temperature: temp,
+        Pressure: press,
+        minSunHeight: window.varsValue.minSunHeight,
+        scale: scale,
+        minx: minx,
+        maxx: maxx,
+        miny: miny,
+        maxy: maxy
+    };
+
+    clearTimeout(window.varsValue.yearTimeOut) ;        //2stop  shadowAnimationYear
+    clearTimeout(window.varsValue.dayTimeOut) ;         //2stop  shadowAnimationDay
+    Utils.drawShadow(options2 );
+}
 
 window.Utils.dataDeliveryDay = dataDeliveryDay;
 window.Utils.dataDeliveryYear = dataDeliveryYear;
 window.Utils.dataDeliveryDay2AoA = dataDeliveryDay2AoA;
 window.Utils.dataDeliveryYear2AoA = dataDeliveryYear2AoA;
 window.Utils.sunDials2AoA = sunDials2AoA;
-window.Utils.sunShadowMaker = sunShadowMaker;
-window.Utils.sunShadowMaker3D = sunShadowMaker3D;
+window.Utils.sunShadowMaker3D = sunShadowMaker4OneObject;
 window.Utils.calcObjectsShadow3D = calcObjectsShadow3D;
+window.Utils.shadowMap = shadowMap;

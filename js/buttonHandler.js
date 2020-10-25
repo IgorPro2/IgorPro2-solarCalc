@@ -445,8 +445,15 @@
             let temp = document.getElementById("temp").value;
             let press = document.getElementById("press").value;
             let AoA;
-            if( window.varsValue.userObj4shadow) { AoA = window.varsValue.userObj4shadow;}
-            else {AoA = objects4shadow;}
+            if( window.varsValue.userObj4shadow) {
+                AoA = window.varsValue.userObj4shadow;
+                console.log("userObj4shadow= "+AoA);
+            }
+            else {
+                AoA = objects4shadow;
+                console.log("objects4shadow= "+AoA);
+
+            }
 
             let options = {
                 AoA: AoA,
