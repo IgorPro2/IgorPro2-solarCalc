@@ -21,7 +21,6 @@
     let ht = timeHour.value;
     let mt = timeMin.value;
     let st = timeSec.value;
-    // let dUTCval = +dUTC.value;
 
     let Home = [ [5342.27,4624.58,0,6],[5346.09,4623.70,0,9.5],[5349.99,4622.80,0,6],[5349.18,4619.38,0,6],
         [5350.11,4619.160,0,6],[5349.55,4616.83,0,9.5],[5348.98,4614.48,0,6],[5348.08,4614.71,0,6],
@@ -40,7 +39,7 @@
     let holeLow =   [ [5356,4628,0,2],[5360,4628,0,2],[5360,4626,0,2],[5356,4626,0,2]];
     let holeUp =    [ [5356,4628,4,6],[5360,4628,4,6],[5360,4626,4,6],[5356,4626,4,6]];
     let objects4shadow = [ Home, Roof, Fence1, Fence2, Fence3, Fence4, Fence5, Fence6, Fence7, Fence8,cubeHole1,cubeHole2,holeLow,holeUp];
-
+    window.varsValue.objects4shadow  = objects4shadow;
     let sMoment = sYear + "-" + sMonth + "-" + sDay + " " + ht + ":" + mt + ":" + st;
 
     // let lat = Utils.grad_textGMS2number(latGrad.value, latMin.value , latSec.value);
@@ -301,7 +300,6 @@
             if (window.varsValue.showGraphicWorks)   { Utils.showGraphic();}
             if (window.varsValue.drawShadowWorks)    { this.shadowMap();}
         };
-
         function setInput(aTime) {
             sMoment = aTime;
             aMoment = moment(sMoment, "");
@@ -318,7 +316,6 @@
             timeMin.value = mt;
             timeSec.value = st;
         }
-
         this.dayTable = function (target) {
             let dayArr = Utils.dataDeliveryDay2AoA();    //Return Array of  Arrays of results
             let ws = XLSX.utils.aoa_to_sheet(
@@ -369,66 +366,17 @@
         };
 
         this.shadowMap = function (target){
-            let sYear = document.getElementById("dateYear").value;
-            let sMonth  = document.getElementById("dateMonth").value;
-            let sDay = document.getElementById("dateDay").value;
-            let ht = document.getElementById("timeHour").value;
-            let mt = document.getElementById("timeMin").value;
-            let st = document.getElementById("timeSec").value;
-            let sMoment = sYear + "-" + sMonth + "-" + sDay + " " + ht + ":" + mt + ":" + st;
-            let lat = Utils.grad_textGMS2number(latGrad.value, latMin.value , latSec.value);
-            let lon = Utils.grad_textGMS2number(lonGrad.value, lonMin.value , lonSec.value);
-            let dUTCval = document.getElementById("dUTC").value;
-            let temp = document.getElementById("temp").value;
-            let press = document.getElementById("press").value;
-            let AoA;
-            if( window.varsValue.userObj4shadow) { AoA = window.varsValue.userObj4shadow;}
-            else {AoA = objects4shadow;}
-            let gap = 4;                        //Pixels from screen edge to sketch
 
-            //Define SCALE 4 drawing here. Finding biggest x,y range from all objects of AoAobj
-            var options3 = {
-                AoA: AoA,
-            };
-            var resArr = Utils.defineDrawScale(options3);
-            var scale =resArr[0];
-            var minx = resArr[1];
-            var maxx = resArr[2];
-            var miny = resArr[3];
-            var maxy = resArr[4];
+            Utils.drawShadowMap();
 
-            let options = {
-                AoA: AoA,               // Array of objects  [x,y,zLow,zUp], [x,y,zLow zUp],........
-                aMoment: sMoment,
-                Latitude: lat,
-                Longitude: lon,
-                dUTCval: dUTCval,
-                Temperature: temp,
-                Pressure: press,
-                minSunHeight: window.varsValue.minSunHeight
-            };
-            let shadArr = Utils.calcObjectsShadow3D (options);
 
-            let options2 = {
-                AoAshadows: shadArr,
-                AoAobjects: AoA,
-                aMoment: sMoment,
-                Latitude: lat,
-                Longitude: lon,
-                dUTCval: dUTCval,
-                Temperature: temp,
-                Pressure: press,
-                minSunHeight: window.varsValue.minSunHeight,
-                scale: scale,
-                minx: minx,
-                maxx: maxx,
-                miny: miny,
-                maxy: maxy
-            };
+            // let scale = window.varsValue.scale;
+            // while (true){
+            //     if (scale !== window.varsValue.scale){
+            //         Utils.drawShadowMap();
+            //     }
+            // }
 
-            clearTimeout(window.varsValue.yearTimeOut) ;        //2stop  shadowAnimationYear
-            clearTimeout(window.varsValue.dayTimeOut) ;         //2stop  shadowAnimationDay
-            Utils.drawShadow(options2 );
         };
 
         this.dayShadowAnim = function (target){
@@ -447,11 +395,11 @@
             let AoA;
             if( window.varsValue.userObj4shadow) {
                 AoA = window.varsValue.userObj4shadow;
-                console.log("userObj4shadow= "+AoA);
+                //console.log("userObj4shadow= "+AoA);
             }
             else {
                 AoA = objects4shadow;
-                console.log("objects4shadow= "+AoA);
+                //console.log("objects4shadow= "+AoA);
 
             }
 
@@ -497,6 +445,7 @@
             };
             Utils.shadowAnimationYear(options);
         };
+
     }
 
     let graphicsButtons = document.getElementById('topRightGraphicsButtons');

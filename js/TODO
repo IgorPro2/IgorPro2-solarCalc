@@ -1,7 +1,7 @@
 /////////////////////// BUGS & IMPROVEMENT
 
-2. Stop/Start shadow animation when  mouse key pressed.
 
+1.Change scale of shadows with mouse wheel rotation.
 
 9. Improve announcement of SolarCalc text file
 
@@ -14,6 +14,7 @@
 
 
 ////////////////////////////////  DONE /////////////////////////////////////
+
 5. B,L reprocessing before calculation, in case of incorrect user input
 0. Keep user input place in memory.
 1. Add time of solstice&equinox on graphic page.
@@ -33,6 +34,7 @@ precise_round check!!! in console
 1.  Draw shadow's polygon which drops  some obstacle with  x,y,z coordinates
 2. Improve shadowmaker() for taking upper and lower heights (z) of any point of object. To make "flying" shadows
 1. Take user xyz.csv file and make objects for shadowing.
+2. Stop/Start shadow animation when  mouse key pressed.
 ////////////////////////////     NOT NEED /////////////////////////////////
 3. Rebuild buttons HERE CURRENT on main page converting them to button-lists.
 /////////////////////////////////////////////////////////////////////////////////////////////////
