@@ -370,13 +370,6 @@
             Utils.drawShadowMap();
 
 
-            // let scale = window.varsValue.scale;
-            // while (true){
-            //     if (scale !== window.varsValue.scale){
-            //         Utils.drawShadowMap();
-            //     }
-            // }
-
         };
 
         this.dayShadowAnim = function (target){

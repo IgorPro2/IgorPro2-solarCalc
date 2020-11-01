@@ -217,23 +217,6 @@
         if (window.currentAction === 'graphic') debouncedShowGraphic();
     };
 
-////////////////////////////////////////////            TOGGLE PAUSING ONCLICK    //////////////////////////////////////
-    var isPaused = false;
-    var mpwhenPressed;
-    tool.onMouseDown = function (event) {
-        // Pause/Unpause View at mouse click
-        if (isPaused) {
-            isPaused = false;
-            // console.log("isPaused = false");
-            view.play();
-        } else {
-            isPaused = true;
-            // console.log("isPaused = true");
-            view.pause();
-            mpwhenPressed = event.point;
-        }
-    };
-////////////////////////////////////////////      CHANGE ZOOM WITH MOUSE WHEEL    //////////////////////////////////////
     window.Utils.defineDrawScale= function (options){
         // Function takes: AoA of objects 3D coordinates.
         // Each 1-st level element of global AoA describes one object.   It has index of 1-st level in global AoA
@@ -408,32 +391,58 @@
         return resArr;           // Array of scaled x,y and the scaled shadows
     };
 
-    //Initialisation
+////////////////////////////////////////////            TOGGLE PAUSING ONCLICK    //////////////////////////////////////
+    var isPaused = false;
+    var textPaused= new PointText({
+        fillColor: fontAxisColor,
+        fontFamily: sunFont,
+        fontWeight: axisFontWeight,
+        fontSize: hFont,
+        point: [20, 120],
+    });
+    tool.onMouseDown = function (event) {
+        // Pause/Unpause View at mouse click
+        if(window.varsValue.animationDayWorks || window.varsValue.animationYearWorks) {
+            if (isPaused) {
+                isPaused = false;
+                textPaused.content = "Pausing...(click mouse to play)";
+                view.play();
+            } else {
+                isPaused = true;
+                textPaused.content = "Playing...(click mouse to stop)";
+                view.pause();
+            }
+        }
+        else {textPaused.content = ""}
+    };
+////////////////////////////////////////////      CHANGE ZOOM WITH MOUSE WHEEL    //////////////////////////////////////
     window.Utils.defineDimensions();                    //define width,height
     var mousePoint = new Point(width/2, height/2);
     var options = {
         AoA: window.varsValue.objects4shadow,
     };
     var resArr = window.Utils.defineDrawScale(options);
-    var scale;
+    var scale = resArr[0];
     var scale1 = resArr[0];
     window.varsValue.scale = scale1;
-    var newOrigin =  resArr[5];
+    window.varsValue.scale1 = scale1;
+    var newOrigin  =  resArr[5];
+    var newOrigin1 =  resArr[5];
     window.varsValue.originPoint = newOrigin;
-
+    window.varsValue.originPoint1 = newOrigin;
     graphicContainer.onwheel = scaleChange;
-
+    //var wheelDir,willScale,originPoint,m2o,m2oLen,newLen,m2oNew;
     function scaleChange(event){
         event.preventDefault();
         //console.log(" ");
         //console.log("event.deltaY=  "+event.deltaY + " width="+width+" height="+height);
-        var wheelDir = Math.sign(event.deltaY);
-        scale = window.varsValue.scale;
+        wheelDir = Math.sign(event.deltaY);
+        var scale = window.varsValue.scale;
         var willScale;
         if (wheelDir < 0) {willScale = scale *1.2 }     //1.2 scale step
         else              {willScale = scale /1.2 }
         mousePoint =  new Point( event.x, event.y);  //change drawing center to stay picture after zoom in place where mouse wheel rotation happens
-        var originPoint = window.varsValue.originPoint;
+        var originPoint  = window.varsValue.originPoint;
         var m2o = originPoint- mousePoint;          //vector from mouse to origin
         var m2oLen = m2o.length;
         var newLen = m2oLen * (willScale/scale);    //new length accordingly to willScale
@@ -455,13 +464,34 @@
             return; // Do nothing if the event was already processed
         }
         switch (event.key) {
+            case "Space": // IE/Edge specific value
+            case " ":
+                // Do something for "down arrow" key press.
+                console.log("Space pressed");
+                window.varsValue.originPoint = newOrigin1;
+                window.varsValue.scale = scale1;
+                if(!window.varsValue.animationDayWorks && !window.varsValue.animationYearWorks){
+                    Utils.drawShadowMap();      //Draw with initial zoom when no animation
+                }
+                break;
+            case "+":
+                scale = window.varsValue.scale;
+                willScale = scale *1.2;
+                window.varsValue.scale = willScale;
+                if(!window.varsValue.animationDayWorks && !window.varsValue.animationYearWorks){
+                    Utils.drawShadowMap();      //Draw with initial zoom when no animation
+                }
+                break;
+            case "-":
+                scale = window.varsValue.scale;
+                willScale = scale /1.2;
+                window.varsValue.scale = willScale;
+                if(!window.varsValue.animationDayWorks && !window.varsValue.animationYearWorks){
+                    Utils.drawShadowMap();      //Draw with initial zoom when no animation
+                }
+                break;
             case "Down": // IE/Edge specific value
             case "ArrowDown":
-                // Do something for "down arrow" key press.
-                console.log("ArrowDown");
-                window.varsValue.originPoint = new Point(width/2, height/2);
-                window.varsValue.scale = scale1;
-                Utils.drawShadowMap();
                 break;
             case "Up": // IE/Edge specific value
             case "ArrowUp":
@@ -566,6 +596,10 @@
 
         clearTimeout(window.varsValue.yearTimeOut);        //2stop  shadowAnimationYear
         clearTimeout(window.varsValue.dayTimeOut);         //2stop  shadowAnimationDay
+        window.varsValue.animationYearWorks = false;
+        window.varsValue.animationDayWorks  = false;
+        window.varsValue.drawShadowWorks  =   true;
+        window.varsValue.showGraphicWorks  =  false;
 
         Utils.drawShadow(options2);
     };
@@ -770,8 +804,6 @@
                         nightRect.fillColor = 'black';
                     }
                 }
-
-
             }
         }
         //////////////////////////////////////    Drawing shadows   ////////////////////////////////////
@@ -803,7 +835,7 @@
 
         //////////////////////////////////////    Drawing objects   ////////////////////////////////////
 
-        //////// Values in upper-left corner
+        /////////////////////////////////////  Values in upper-left corner   //////////////////////////
         {
             var textLat = new PointText({
                 fillColor: fontAxisColor,
@@ -837,8 +869,24 @@
                 point: [20, 80],
                 content: window.locales["sunHeightUp"] + Utils.grad_number2text(curSunHeight, 0, "°")
             });
+            var textPaused= new PointText({
+                fillColor: fontAxisColor,
+                fontFamily: sunFont,
+                fontWeight: axisFontWeight,
+                fontSize: hFont,
+                point: [20, 120],
+            });
+            if(window.varsValue.animationDayWorks || window.varsValue.animationYearWorks) {
+                if (isPaused) {
+                    textPaused.content = "Pausing...(click mouse to play)";
+                } else {
+                    textPaused.content = "Playing...(click mouse to stop)";
+                }
+            }
+            else {textPaused.content = ""}
+
         }
-        //////// Values in upper-left corner
+        /////////////////////////////////////  Values in upper-left corner   //////////////////////////
 
     };
 
