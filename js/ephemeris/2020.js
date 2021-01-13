@@ -369,7 +369,7 @@ window.ephemeris[2020] = {
         "Dec,32,184653.389,-225957.47,12.355,1617.54,325.875,-1.1761,120340.03,1.17").split(','),
     mom: {eclipticDeclination: 23.436625, springEquinox: "2020-03-20 03:50:41.4", summerSolstice: "2020-06-20 21:44:48.6",
         autumnEquinox: "2020-09-22 13:31:51.0", winterSolstice:"2020-12-21 10:03:25.2"  }
-}
+};
 
 
 //window.varsValue.eclipticDeclination = 23 + 26 / 60 + 11.85 / 3600; //Mean obliquity of ecliptic (eps) at J2020.5:  23.436625

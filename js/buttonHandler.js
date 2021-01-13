@@ -94,8 +94,8 @@
         //MAIN BUTTONS
         /////////////////
 
-        this.showResults = function (target) {
-            Utils.show_results();
+        this.showResult = function (target) {
+            Utils.showResult();
         };
         this.showResultTimer = function (target) {
             Utils.showResultTimer();
@@ -366,6 +366,11 @@
         };
 
         this.shadowMap = function (target){
+            var options = {
+                AoA: window.varsValue.objects4shadow,
+            };
+            var resArr = window.Utils.defineDrawScale(options);
+            window.varsValue.originPoint = resArr[5];
 
             Utils.drawShadowMap();
 

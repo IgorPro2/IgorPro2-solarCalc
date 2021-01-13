@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>{{sunCalcLb}}</title>
     <script src="js/navigatorLanguage.js"></script>
+    <script src="js/ephemeris/2022.js"></script>
+    <script src="js/ephemeris/2021.js"></script>
     <script src="js/ephemeris/2020.js"></script>
     <script src="js/ephemeris/2018.js"></script>
     <script src="js/ephemeris/2019.js"></script>
@@ -84,7 +86,7 @@
     <div class="row justify-content-center rowInput">
 
         <div class="col-sm-12 col-md-auto text-center text-nowrap">
-            <button id="buttonHere" onclick="Utils.getLocation();">{{hereBtLb}}</button>
+            <button id="buttonHere" onclick="Utils.getLocation();">{{hereBtLb}} </button>
         </div>
 
         <div class="col-sm-12 col-md-auto text-center text-nowrap">
@@ -110,7 +112,7 @@
         </div> -->
         <div class="col-sm-12 col-md-auto text-center text-nowrap">
             <label for="dateYear">{{dateLb}}</label>
-            <input id="dateYear" type="number" placeholder="Year" value="" size="2" max="2020" min="2017" step="1">
+            <input id="dateYear" type="number" placeholder="Year" value="" size="2" max="2120" min="2018" step="1">
             <input id="dateMonth" type="number" placeholder="Month" value="" size="2" max="12" min="1" step="1">
             <input id="dateDay" type="number" placeholder='Day' value="" size="2" max="31" min="1" step="1">
         </div>
@@ -122,7 +124,7 @@
         </div>
         <div class="col-sm-12 col-md-auto text-center text-nowrap">
             <label for="dUTC">{{dUTCLb}}</label>
-            <input id="dUTC" type="number" placeholder="Hours" value="" size="2" max="60" min="-60" step="1">
+            <input id="dUTC" type="number" placeholder="Hours" value="" size="2" max="12" min="-12" step="1">
         </div>
 
     </div>
@@ -450,6 +452,10 @@
 
 <script type="text/paperscript" canvas="myCanvas" src="ps/graphic.js"></script>
 
+<script>
+    Utils.getLocation();
+    Utils.showResult();
+</script>
 
 </body>
 </html>

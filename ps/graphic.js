@@ -146,7 +146,7 @@
         paper.project._activeLayer.clear();
 
         Utils.calcSunRise();                      // force max.heigt calculation
-        Utils.show_results();                     // fill main page after .this return
+        Utils.showResult();                     // fill main page after .this return
 
         ////////////////////////////////          DEFINE DRAW DIMENSIONS
         window.Utils.defineDimensions();
@@ -392,6 +392,7 @@
     };
 
 ////////////////////////////////////////////            TOGGLE PAUSING ONCLICK    //////////////////////////////////////
+    var mouseDown, mouseUp;
     var isPaused = false;
     var textPaused= new PointText({
         fillColor: fontAxisColor,
@@ -401,6 +402,7 @@
         point: [20, 120],
     });
     tool.onMouseDown = function (event) {
+        mouseDown = event.point;
         // Pause/Unpause View at mouse click
         if(window.varsValue.animationDayWorks || window.varsValue.animationYearWorks) {
             if (isPaused) {
@@ -414,6 +416,16 @@
             }
         }
         else {textPaused.content = ""}
+    };
+
+    tool.onMouseUp = function (event) {
+        mouseUp = event.point;
+        var mouseVector = mouseUp - mouseDown;
+        var origPoint = window.varsValue.originPoint;
+        window.varsValue.originPoint = origPoint + mouseVector;
+        if (!window.varsValue.animationDayWorks && !window.varsValue.animationYearWorks) {
+            Utils.drawShadowMap();
+        }
     };
 ////////////////////////////////////////////      CHANGE ZOOM WITH MOUSE WHEEL    //////////////////////////////////////
     window.Utils.defineDimensions();                    //define width,height
@@ -450,8 +462,8 @@
         newOrigin = mousePoint + m2oNew;            // find new originPoint
         //  var op = new Path.Circle( originPoint, 10 ); op.fillColor = "red";
         // var nop = new Path.Circle( newOrigin, 8);   nop.fillColor = "blue";
-        //console.log("wheelDir=" + wheelDir +" m2o=" + m2o  +" m2oLen=" + m2oLen + " newLen=" + newLen+ " m2oNew=" + m2oNew+ " scale="+scale+" willScale=" + willScale);
-        //console.log("mousePoint=" + mousePoint+ "originPoint" + originPoint +" newOrigin= " + newOrigin) ;
+        console.log("wheelDir=" + wheelDir +" m2o=" + m2o  +" m2oLen=" + m2oLen + " newLen=" + newLen+ " m2oNew=" + m2oNew+ " scale="+scale+" willScale=" + willScale);
+        console.log("mousePoint=" + mousePoint+ "originPoint" + originPoint +" newOrigin= " + newOrigin) ;
         window.varsValue.originPoint = newOrigin;
         window.varsValue.scale = willScale;
         if(!window.varsValue.animationDayWorks && !window.varsValue.animationYearWorks){

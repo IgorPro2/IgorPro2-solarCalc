@@ -38,6 +38,7 @@
     timeHour.value = "10";
     timeMin.value = "00";
     timeSec.value = "00";
+    getNow();
     tempC.value = "20";
     pressP.value = "756";
     eyeHeight.value = "1.68";          // THIS WILL BE LENGTH OF GNOMON
@@ -86,30 +87,31 @@
 
     let sunSetTime, sunRiseTime, dayDur, Time2Dawn;
     {
-        dateYear.addEventListener('input', function () {
-            let inp = this;
-            let EphArr, ExistYear, thisYear = inp.value ;
-            // if (inp.value > 2120) inp.value = 2120;
-            // if (inp.value < 2018) inp.value = 2018;
-            // Refresh globals in window.varsValue according to given year
-            EphArr = Utils.ReadDataFromResourceString("01", "01",  thisYear, 0, 0, 0);
-            ExistYear = EphArr[15];
-            // Desired year replaced by nearest we have ephemeris. &change input value
-            if ((+thisYear !== +ExistYear)) dateYear.value = ExistYear;
-            if(window.varsValue.eclipticDeclination )         takeEquinoxSolsticeAE() ;
-            else                                              calcEquinoxSolstice();
+        // dateYear.addEventListener('input', function () {
+        //     let inp = this;
+        //     let EphArr, ExistYear, thisYear = inp.value ;
+        //     // if (inp.value > 2120) inp.value = 2120;
+        //     // if (inp.value < 2018) inp.value = 2018;
+        //     // Refresh globals in window.varsValue according to given year
+        //     EphArr = Utils.ReadDataFromResourceString("01", "01",  thisYear, 0, 0, 0);
+        //     ExistYear = EphArr[15];
+        //     // Desired year replaced by nearest we have ephemeris. &change input value
+        //     if ((+thisYear !== +ExistYear)) dateYear.value = ExistYear;
+        //     if(window.varsValue.eclipticDeclination )         takeEquinoxSolsticeAE() ;
+        //     else                                              calcEquinoxSolstice();
+        //
+        // });
+        // dateMonth.addEventListener('input', function () {
+        //     let inp = this;
+        //     if (inp.value > 12) inp.value = 12;
+        //     if (inp.value < 1) inp.value = 1;
+        // });
+        // dateDay.addEventListener('input', function () {
+        //     let inp = this;
+        //     if (inp.value > 31) inp.value = 31;
+        //     if (inp.value < 1) inp.value = 1;
+        // });
 
-        });
-        dateMonth.addEventListener('input', function () {
-            let inp = this;
-            if (inp.value > 12) inp.value = 12;
-            if (inp.value < 1) inp.value = 1;
-        });
-        dateDay.addEventListener('input', function () {
-            let inp = this;
-            if (inp.value > 31) inp.value = 31;
-            if (inp.value < 1) inp.value = 1;
-        });
         latGrad.addEventListener('input', function () {
             let inp = this;
             if (inp.value > 90) inp.value = 90;
@@ -195,7 +197,7 @@
         });
     }
     let buttonCalculate = document.getElementById("buttonCalc");
-    buttonCalculate.addEventListener("click", show_results);
+    buttonCalculate.addEventListener("click", showResult);
     let x;
 
     function getLocation(callback) {
@@ -236,7 +238,7 @@
     }
 
 ///////////////////////////////////////////////////   SHOW RESULTS     /////////////////////////////////////////////////
-    function show_results() {
+    function showResult() {
         window.timerIsOn = false;       // to stop showTimer() in function showResultTimer()
         let g, m, s, B, L, Barr, Larr;
         let utcTime, dUTCval;
@@ -288,6 +290,9 @@
         timeHour.classList.remove("calcVal");
         timeMin.classList.remove("calcVal");
         timeSec.classList.remove("calcVal");
+        timeHour.classList.remove("nowVal");
+        timeMin.classList.remove("nowVal");
+        timeSec.classList.remove("nowVal");
         givHg.classList.remove("invalidVal");
         givHm.classList.remove("invalidVal");
         givHs.classList.remove("invalidVal");
@@ -296,15 +301,17 @@
         givAs.classList.remove("invalidVal");
 
     }
+
     var delay = async (ms) => await new Promise(resolve => setTimeout(resolve, ms));
 
 ///////////////////////////////////////////////////   SHOW RESULTS TIMER    ////////////////////////////////////////////
 
     function showResultTimer() {
         window.timerIsOn = true;
-        timeHour.classList.remove("calcVal");
-        timeMin.classList.remove("calcVal");
-        timeSec.classList.remove("calcVal");
+        timeHour.classList.add("nowVal");
+        timeMin.classList.add("nowVal");
+        timeSec.classList.add("nowVal");
+
         let g, m, s, B, L, D, E, utcTime, Radius, resArr, dUTCval, rAsc, Barr, Larr;
         let sDay, sMonth, sYear;
         let digits = Number(nDigits.value);
@@ -870,9 +877,6 @@
             timeHour.value = g;
             timeMin.value = m;
             timeSec.value = s;
-            timeHour.classList.add("calcVal");
-            timeMin.classList.add("calcVal");
-            timeSec.classList.add("calcVal");
         }
         if (radioAz.checked) {
             options = {
@@ -897,19 +901,21 @@
             timeHour.value = g;
             timeMin.value = m;
             timeSec.value = s;
-            timeHour.classList.add("calcVal");
-            timeMin.classList.add("calcVal");
-            timeSec.classList.add("calcVal");
 
         }
+        timeHour.classList.remove("nowVal");
+        timeMin.classList.remove("nowVal");
+        timeSec.classList.remove("nowVal");
+        timeHour.classList.add("calcVal");
+        timeMin.classList.add("calcVal");
+        timeSec.classList.add("calcVal");
 
 
     }
 
-
     window.Utils.getLocation = getLocation;
     window.Utils.showResultTimer = showResultTimer;
-    window.Utils.show_results = show_results;
+    window.Utils.showResult = showResult;
     window.Utils.calcTimeAtGivenHA = calcTimeAtGivenHA;
     window.Utils.getHere = getHere;
     window.Utils.takeEquinoxSolsticeAE =  takeEquinoxSolsticeAE;
